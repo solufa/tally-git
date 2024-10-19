@@ -2,7 +2,7 @@
   "name": "tally-git",
   "private": true,
   "scripts": {
-    "dev": "node -r esbuild-register index.ts",
+    "dev": "node -r esbuild-register --watch index.ts",
     "generate": "run-p generate:*",
     "lint": "run-p lint:*",
     "lint:js": "eslint .",
@@ -14,6 +14,7 @@
     "typecheck:server": "npm run typecheck --prefix server"
   },
   "devDependencies": {
+    "@types/node": "^22.7.7",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",
     "esbuild-register": "^3.6.0",

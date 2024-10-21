@@ -1,25 +1,32 @@
 /* eslint-disable */
 import { exec } from 'child_process';
+import dayjs from 'dayjs';
+import { writeFileSync } from 'fs';
 import { promisify } from 'util';
 
 const execPromise = promisify(exec);
-const dirPath = process.argv.at(-1);
 
 // 除外するファイルパターン
-const excludedFiles = ['cityCodes.ts', 'package-lock.json', 'yarn.lock', 'composer.lock'];
+const excludedFiles = [
+  'cityCodes.ts',
+  '.json',
+  '.csv',
+  '.md',
+  'package-lock.json',
+  'yarn.lock',
+  'composer.lock',
+];
 
-const getFirstCommitHash = async (): Promise<string> => {
-  const { stdout } = await execPromise(
-    `cd ${dirPath} && git log --reverse --pretty="%H" | head -n 1`,
-  );
+// const getFirstCommitHash = async (dir: string): Promise<string> => {
+//   const { stdout } = await execPromise(`cd ${dir} && git log --reverse --pretty="%H" | head -n 1`);
 
-  return stdout.trim();
-};
+//   return stdout.trim();
+// };
 
 // Git log コマンドを実行し、18か月前から12か月前までのコミット履歴と変更行数を取得
-const getGitLog = async (until: number) => {
+const getGitLog = async (dir: string, until: number) => {
   const command = `
-    cd ${dirPath} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:'%Y-%m-%d'
+    cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:'%Y-%m-%d'
   `;
 
   const { stdout } = await execPromise(command);
@@ -29,7 +36,7 @@ const getGitLog = async (until: number) => {
 
 type CommitData = { commits: number; insertions: number; deletions: number };
 
-type AuthorLog = Record<string, Record<string, CommitData | undefined> | undefined>;
+type AuthorLog = Record<string, Record<string, CommitData | undefined>>;
 
 // ログデータを解析して、メンバーごとのコミット数、変更行数、初回/最終コミット日を集計
 const parseGitLog = (authorLog: AuthorLog, logData: string) => {
@@ -41,17 +48,16 @@ const parseGitLog = (authorLog: AuthorLog, logData: string) => {
   const mergeIfExists = () => {
     if (current) {
       authorLog[current.author] = { ...authorLog[current.author] };
-      const commitData = {
+      const commitData = authorLog[current.author][current.YM] ?? {
         commits: 0,
         insertions: 0,
         deletions: 0,
-        ...authorLog[current.author]![current.YM],
       };
 
-      authorLog[current.author]![current.YM] = {
+      authorLog[current.author][current.YM] = {
         commits: commitData.commits + 1,
         insertions: commitData.insertions + current.insertions,
-        deletions: commitData.deletions + commitData.deletions,
+        deletions: commitData.deletions + current.deletions,
       };
     }
   };
@@ -70,7 +76,7 @@ const parseGitLog = (authorLog: AuthorLog, logData: string) => {
       const [insertions, deletions, file] = line.split('\t');
 
       // 除外ファイルかどうかチェック
-      if (!excludedFiles.some((excludedFile) => file.includes(excludedFile))) {
+      if (!excludedFiles.some((excludedFile) => file.endsWith(excludedFile))) {
         current!.insertions += +insertions;
         current!.deletions += +deletions;
       }
@@ -82,21 +88,58 @@ const parseGitLog = (authorLog: AuthorLog, logData: string) => {
   return { authorLog, lastHash };
 };
 
+const toCsv = (authorLog: AuthorLog, months: number) => {
+  const monthColumns = [...Array(months)].map((_, i) =>
+    dayjs()
+      .subtract(months - i - 1, 'month')
+      .format('YYYY-MM'),
+  );
+  console.log(monthColumns);
+
+  const header = `,${monthColumns.join(',')}`;
+  const commits = Object.entries(authorLog).map(
+    ([author, monthData]) =>
+      `${author},${monthColumns.map((column) => monthData[column]?.commits ?? 0).join(',')}`,
+  );
+  const insertions = Object.entries(authorLog).map(
+    ([author, monthData]) =>
+      `${author},${monthColumns.map((column) => monthData[column]?.insertions ?? 0).join(',')}`,
+  );
+  const deletions = Object.entries(authorLog).map(
+    ([author, monthData]) =>
+      `${author},${monthColumns.map((column) => monthData[column]?.deletions ?? 0).join(',')}`,
+  );
+
+  return `${header}
+コミット数
+${commits.join('\n')}
+
+
+追加行数
+${insertions.join('\n')}
+
+
+削除行数
+${deletions.join('\n')}`;
+};
+
+const dirPath = process.argv[2];
+const targetDirs = dirPath ? [dirPath] : [];
+
 // メイン処理
 (async () => {
-  const firstHash = await getFirstCommitHash();
+  for (const dir of targetDirs) {
+    let authorLog: AuthorLog = {};
+    let months = 0;
 
-  let authorLog: AuthorLog = {};
+    for (; months < 17; months += 1) {
+      const gitLog = await getGitLog(dir, months);
+      const result = parseGitLog(authorLog, gitLog);
+      authorLog = result.authorLog;
+    }
 
-  for (let i = 0; ; i += 1) {
-    console.log(i);
-
-    const gitLog = await getGitLog(i);
-    const result = parseGitLog(authorLog, gitLog);
-    authorLog = result.authorLog;
-
-    if (firstHash === result.lastHash) break;
+    const csv = toCsv(authorLog, months);
+    writeFileSync(`out/${dir.replace(/\/$/, '').split('/').at(-1)}.csv`, csv, 'utf8');
+    console.log(authorLog);
   }
-
-  console.log(authorLog);
 })();

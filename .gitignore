@@ -9,3 +9,6 @@ tsconfig.tsbuildinfo
 
 # debug
 npm-debug.log*
+
+out/**
+!out/.gitkeep

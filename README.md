@@ -7,3 +7,7 @@ $ npm run dev
 # or
 $ npm run dev <dir path> # ex. npm run dev ../my-project
 ```
+
+言語行数計算
+
+cloc --vcs=git --not-match-f='(package-lock.json|yarn.lock|composer.lock)'

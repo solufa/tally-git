@@ -124,7 +124,22 @@ ${deletions.join('\n')}`;
 };
 
 const dirPath = process.argv[2];
-const targetDirs = dirPath ? [dirPath] : [];
+const targetDirs = dirPath
+  ? [dirPath]
+  : [
+      '../yuso',
+      '../hojin-seikyu',
+      '../cashless',
+      '../manabufw',
+      '../blueboard',
+      '../sigyo-online',
+      '../catapult',
+      '../magnito',
+      '../deus-creatio',
+      '../deus-template',
+      '../susanowo',
+      '../reserve',
+    ];
 
 // メイン処理
 (async () => {

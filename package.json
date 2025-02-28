@@ -4,32 +4,29 @@
   "scripts": {
     "dev": "node -r esbuild-register --watch index.ts",
     "start": "node -r esbuild-register index.ts",
-    "generate": "run-p generate:*",
     "lint": "run-p lint:*",
     "lint:js": "eslint .",
     "lint:prettier": "prettier --check \"./**/*.{ts,tsx,js}\" --ignore-path .gitignore",
-    "lint:server": "npm run lint --prefix server",
-    "fix:lint": "npm run lint:js -- --fix && npm run lint:style -- --fix && npm run lint:prettier -- --write",
-    "typecheck": "run-p typecheck:*",
-    "typecheck:client": "npm run typecheck --prefix client",
-    "typecheck:server": "npm run typecheck --prefix server"
+    "fix:lint": "npm run lint:js -- --fix && npm run lint:prettier -- --write",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/eslint-config-prettier": "^6.11.3",
     "@types/node": "^22.7.7",
     "dayjs": "^1.11.13",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",
     "esbuild-register": "^3.6.0",
-    "eslint": "^9.11.0",
-    "eslint-config-flat-gitignore": "^0.3.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.36.1",
-    "globals": "^15.9.0",
+    "eslint": "^9.21.0",
+    "eslint-config-flat-gitignore": "^2.1.0",
+    "eslint-config-prettier": "^10.0.2",
+    "globals": "^16.0.0",
+    "jiti": "^2.4.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.0.0",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.6.0"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0"
   },
   "engines": {
     "node": ">=20.0.0"

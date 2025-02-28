@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { exec } from 'child_process';
 import dayjs from 'dayjs';
 import { writeFileSync } from 'fs';

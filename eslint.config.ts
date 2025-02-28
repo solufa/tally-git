@@ -1,12 +1,10 @@
 import js from '@eslint/js';
 import gitignore from 'eslint-config-flat-gitignore';
 import prettierConfig from 'eslint-config-prettier';
-import reactPlugin from 'eslint-plugin-react';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { files: ['**/*.(ts,js,tsx)'] },
   gitignore(),
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -18,14 +16,6 @@ export default tseslint.config(
         ...globals.es2020,
       },
     },
-    plugins: {
-      react: reactPlugin,
-    },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
     rules: {
       eqeqeq: 'error',
       'no-param-reassign': 'error',
@@ -35,6 +25,7 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'error',
       complexity: ['error', 5],
       'max-depth': ['error', 2],
       'max-nested-callbacks': ['error', 3],
@@ -50,30 +41,5 @@ export default tseslint.config(
       ],
     },
   },
-  {
-    files: ['**/*.tsx'],
-    rules: {
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      'react/self-closing-comp': 'error',
-      // 'react-hooks/rules-of-hooks': 'error',
-      // 'react-hooks/exhaustive-deps': 'error',
-    },
-  },
-  {
-    files: ['server/**/*.ts', 'infra/**/*.ts'],
-    rules: { '@typescript-eslint/explicit-function-return-type': ['error'] },
-  },
-  {
-    files: [
-      'server/api/**/controller.ts',
-      'server/api/**/hooks.ts',
-      'infra/api/**/controller.ts',
-      'infra/api/**/hooks.ts',
-    ],
-    rules: { '@typescript-eslint/explicit-function-return-type': ['off'] },
-  },
-  { files: ['**/*.js'], rules: { '@typescript-eslint/no-require-imports': ['off'] } },
-  { files: ['server/tests/**/*.ts'], rules: { 'max-lines': 'off' } },
   prettierConfig,
 );

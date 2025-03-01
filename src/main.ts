@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import dayjs from 'dayjs';
 import { promisify } from 'util';
 import { toMarkdownWithMermaid } from './markdown';
+import { toPdf } from './pdf';
 import type { AuthorLog } from './types';
 
 export const main = async (
@@ -9,13 +10,20 @@ export const main = async (
   outputDir: string,
   periodMonths: number,
 ): Promise<
-  { authorLog: AuthorLog; path: string; csv: string; md: { path: string; content: string } }[]
+  {
+    authorLog: AuthorLog;
+    path: string;
+    csv: string;
+    md: { path: string; content: string };
+    pdf: { path: string; content: NodeJS.ReadableStream };
+  }[]
 > => {
   const results: {
     authorLog: AuthorLog;
     path: string;
     csv: string;
     md: { path: string; content: string };
+    pdf: { path: string; content: NodeJS.ReadableStream };
   }[] = [];
 
   for (const dir of targetDirs) {
@@ -30,6 +38,9 @@ export const main = async (
     const csvContent = toCsv(authorLog, periodMonths);
     const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
 
+    const pdfPath = `${outputDir}/${projectName}.pdf`;
+    const pdfContent = await toPdf(authorLog, periodMonths, projectName, pdfPath);
+
     results.push({
       authorLog,
       path: `${outputDir}/${projectName}.csv`,
@@ -37,6 +48,10 @@ export const main = async (
       md: {
         path: `${outputDir}/${projectName}.md`,
         content: toMarkdownWithMermaid(authorLog, periodMonths, projectName),
+      },
+      pdf: {
+        path: pdfPath,
+        content: pdfContent,
       },
     });
   }
@@ -46,7 +61,6 @@ export const main = async (
 
 const execPromise = promisify(exec);
 
-// 除外するファイルパターン
 const excludedFiles = [
   'cityCodes.ts',
   '.json',
@@ -57,13 +71,6 @@ const excludedFiles = [
   'composer.lock',
 ];
 
-// const getFirstCommitHash = async (dir: string): Promise<string> => {
-//   const { stdout } = await execPromise(`cd ${dir} && git log --reverse --pretty="%H" | head -n 1`);
-
-//   return stdout.trim();
-// };
-
-// Git log コマンドを実行し、18か月前から12か月前までのコミット履歴と変更行数を取得
 const getGitLog = async (dir: string, until: number): Promise<string> => {
   const command = `
     cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:'%Y-%m-%d'
@@ -74,14 +81,12 @@ const getGitLog = async (dir: string, until: number): Promise<string> => {
   return stdout;
 };
 
-// コミット情報を処理する関数
 const processCommitLine = (line: string): { hash: string; author: string; YM: string } => {
   const [hash, author, date] = line.split(',');
   const YM = date.slice(0, 7);
   return { hash, author, YM };
 };
 
-// 変更行数を処理する関数
 const processStatLine = (
   line: string,
   current: { author: string; YM: string; insertions: number; deletions: number } | null,
@@ -95,7 +100,6 @@ const processStatLine = (
     return current;
   }
 
-  // 変更行数を加算して新しいオブジェクトを返す
   return {
     ...current,
     insertions: current.insertions + +insertions,
@@ -103,7 +107,6 @@ const processStatLine = (
   };
 };
 
-// ログデータを解析して、メンバーごとのコミット数、変更行数、初回/最終コミット日を集計
 const parseGitLog = (
   authorLog: AuthorLog,
   logData: string,
@@ -144,7 +147,6 @@ const parseGitLog = (
     // 変更行数の行でない場合はスキップ
     if (!line.match(/^\d+\t\d+\t.+/)) continue;
 
-    // 変更行数を処理
     current = processStatLine(line, current);
   }
 

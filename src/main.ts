@@ -5,26 +5,20 @@ import { toMarkdownWithMermaid } from './markdown';
 import { toPdf } from './pdf';
 import type { AuthorLog } from './types';
 
+type Result = {
+  authorLog: AuthorLog;
+  path: string;
+  csv: string;
+  md: { path: string; content: string };
+  pdf: { path: string; content: NodeJS.ReadableStream };
+};
+
 export const main = async (
   targetDirs: string[],
   outputDir: string,
   periodMonths: number,
-): Promise<
-  {
-    authorLog: AuthorLog;
-    path: string;
-    csv: string;
-    md: { path: string; content: string };
-    pdf: { path: string; content: NodeJS.ReadableStream };
-  }[]
-> => {
-  const results: {
-    authorLog: AuthorLog;
-    path: string;
-    csv: string;
-    md: { path: string; content: string };
-    pdf: { path: string; content: NodeJS.ReadableStream };
-  }[] = [];
+): Promise<Result[]> => {
+  const results: Result[] = [];
 
   for (const dir of targetDirs) {
     let authorLog: AuthorLog = {};

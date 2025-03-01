@@ -1,6 +1,7 @@
 import {
   Circle,
   Document,
+  Font,
   G,
   Page,
   Path,
@@ -11,6 +12,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
+import path from 'path';
 import React from 'react';
 import type { AuthorLog } from './types';
 
@@ -18,7 +20,7 @@ import type { AuthorLog } from './types';
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'Helvetica',
+    fontFamily: 'NotoSansJP',
   },
   title: {
     fontSize: 24,
@@ -78,6 +80,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+});
+
+Font.register({
+  family: styles.page.fontFamily,
+  fonts: [{ src: path.resolve('./src/fonts/NotoSansJP-Regular.ttf') }],
 });
 
 // 折れ線グラフを描画するコンポーネント

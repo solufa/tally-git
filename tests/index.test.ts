@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { main } from '../src/main';
 
 test('laravel', async () => {
-  const [result] = await main(['./tests/projects/laravel']);
+  const [result] = await main(['./tests/projects/laravel'], 'out');
 
   expect(result.path).toEqual('out/laravel.csv');
 

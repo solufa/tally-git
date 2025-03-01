@@ -6,6 +6,7 @@ import type { AuthorLog } from './types';
 
 export const main = async (
   targetDirs: string[],
+  outputDir: string,
 ): Promise<
   { authorLog: AuthorLog; path: string; csv: string; md: { path: string; content: string } }[]
 > => {
@@ -31,10 +32,10 @@ export const main = async (
 
     results.push({
       authorLog,
-      path: `out/${projectName}.csv`,
+      path: `${outputDir}/${projectName}.csv`,
       csv: csvContent,
       md: {
-        path: `out/${projectName}.md`,
+        path: `${outputDir}/${projectName}.md`,
         content: toMarkdownWithMermaid(authorLog, months, projectName),
       },
     });

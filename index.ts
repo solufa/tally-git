@@ -23,7 +23,7 @@ const excludedFiles = [
 // };
 
 // Git log コマンドを実行し、18か月前から12か月前までのコミット履歴と変更行数を取得
-const getGitLog = async (dir: string, until: number) => {
+const getGitLog = async (dir: string, until: number): Promise<string> => {
   const command = `
     cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:'%Y-%m-%d'
   `;
@@ -37,28 +37,60 @@ type CommitData = { commits: number; insertions: number; deletions: number };
 
 type AuthorLog = Record<string, Record<string, CommitData | undefined>>;
 
+// コミット情報を処理する関数
+const processCommitLine = (line: string): { hash: string; author: string; YM: string } => {
+  const [hash, author, date] = line.split(',');
+  const YM = date.slice(0, 7);
+  return { hash, author, YM };
+};
+
+// 変更行数を処理する関数
+const processStatLine = (
+  line: string,
+  current: { author: string; YM: string; insertions: number; deletions: number } | null,
+): { author: string; YM: string; insertions: number; deletions: number } | null => {
+  if (!current) return null;
+
+  const [insertions, deletions, file] = line.split('\t');
+
+  // 除外ファイルの場合はそのまま返す
+  if (excludedFiles.some((excludedFile) => file.endsWith(excludedFile))) {
+    return current;
+  }
+
+  // 変更行数を加算して新しいオブジェクトを返す
+  return {
+    ...current,
+    insertions: current.insertions + +insertions,
+    deletions: current.deletions + +deletions,
+  };
+};
+
 // ログデータを解析して、メンバーごとのコミット数、変更行数、初回/最終コミット日を集計
-const parseGitLog = (authorLog: AuthorLog, logData: string) => {
+const parseGitLog = (
+  authorLog: AuthorLog,
+  logData: string,
+): { authorLog: AuthorLog; lastHash: string | null } => {
   const lines = logData.split('\n');
 
   let current: { author: string; YM: string; insertions: number; deletions: number } | null = null;
   let lastHash: string | null = null;
 
-  const mergeIfExists = () => {
-    if (current) {
-      authorLog[current.author] = { ...authorLog[current.author] };
-      const commitData = authorLog[current.author][current.YM] ?? {
-        commits: 0,
-        insertions: 0,
-        deletions: 0,
-      };
+  const mergeIfExists = (): void => {
+    if (!current) return;
 
-      authorLog[current.author][current.YM] = {
-        commits: commitData.commits + 1,
-        insertions: commitData.insertions + current.insertions,
-        deletions: commitData.deletions + current.deletions,
-      };
-    }
+    authorLog[current.author] = { ...authorLog[current.author] };
+    const commitData = authorLog[current.author][current.YM] ?? {
+      commits: 0,
+      insertions: 0,
+      deletions: 0,
+    };
+
+    authorLog[current.author][current.YM] = {
+      commits: commitData.commits + 1,
+      insertions: commitData.insertions + current.insertions,
+      deletions: commitData.deletions + current.deletions,
+    };
   };
 
   for (const line of lines) {
@@ -66,20 +98,17 @@ const parseGitLog = (authorLog: AuthorLog, logData: string) => {
     if (line.match(/^[a-f0-9]+,.+,\d{4}-\d{2}-\d{2}$/)) {
       mergeIfExists();
 
-      const [hash, author, date] = line.split(',');
-      const YM = date.slice(0, 7);
+      const { hash, author, YM } = processCommitLine(line);
       current = { author, YM, insertions: 0, deletions: 0 };
       lastHash = hash;
-    } else if (line.match(/^\d+\t\d+\t.+/)) {
-      // 変更行数をカウント（挿入と削除）し、ファイル名を確認
-      const [insertions, deletions, file] = line.split('\t');
-
-      // 除外ファイルかどうかチェック
-      if (!excludedFiles.some((excludedFile) => file.endsWith(excludedFile))) {
-        current!.insertions += +insertions;
-        current!.deletions += +deletions;
-      }
+      continue;
     }
+
+    // 変更行数の行でない場合はスキップ
+    if (!line.match(/^\d+\t\d+\t.+/)) continue;
+
+    // 変更行数を処理
+    current = processStatLine(line, current);
   }
 
   mergeIfExists();
@@ -87,7 +116,7 @@ const parseGitLog = (authorLog: AuthorLog, logData: string) => {
   return { authorLog, lastHash };
 };
 
-const toCsv = (authorLog: AuthorLog, months: number) => {
+const toCsv = (authorLog: AuthorLog, months: number): string => {
   const monthColumns = [...Array(months)].map((_, i) =>
     dayjs()
       .subtract(months - i - 1, 'month')
@@ -141,7 +170,7 @@ const targetDirs = dirPath
     ];
 
 // メイン処理
-(async () => {
+(async (): Promise<void> => {
   for (const dir of targetDirs) {
     let authorLog: AuthorLog = {};
     let months = 0;

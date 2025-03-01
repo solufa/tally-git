@@ -10,6 +10,8 @@ test('laravel', async () => {
 
   expect(result.authorLog).toEqual(JSON.parse(readFileSync(`${outputDir}/authorLog.json`, 'utf8')));
 
+  expect(result.outlierCommits).toEqual(JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')));
+
   expect(result.csv.content).toEqual(readFileSync(`${outputDir}/laravel.csv`, 'utf8'));
 
   expect(result.md.path).toEqual(`${outputDir}/laravel.md`);

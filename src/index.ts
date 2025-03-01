@@ -7,17 +7,17 @@ import { main } from './main';
     ? [dirPath]
     : [
         '../yuso',
-        '../hojin-seikyu',
-        '../cashless',
-        '../manabufw',
-        '../blueboard',
-        '../shokumujo-seikyu',
-        '../catapult',
-        '../magnito',
-        '../deus-creatio',
-        '../deus-template',
-        '../susanowo',
-        '../reserve',
+        // '../hojin-seikyu',
+        // '../cashless',
+        // '../manabufw',
+        // '../blueboard',
+        // '../shokumujo-seikyu',
+        // '../catapult',
+        // '../magnito',
+        // '../deus-creatio',
+        // '../deus-template',
+        // '../susanowo',
+        // '../reserve',
       ];
 
   const results = await main(targetDirs, 'out', 17);
@@ -47,6 +47,11 @@ import { main } from './main';
   await writeFile(
     './tests/assets/authorLog.json',
     JSON.stringify(laravelResult.authorLog, null, 2),
+    'utf8',
+  );
+  await writeFile(
+    './tests/assets/outlierCommits.json',
+    JSON.stringify(laravelResult.outlierCommits, null, 2),
     'utf8',
   );
 

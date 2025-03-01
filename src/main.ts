@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import { promisify } from 'util';
 import { toMarkdownWithMermaid } from './markdown';
 import { toPdf } from './pdf';
+import type { CommitDetail } from './stats';
+import { findOutlierCommits, parseGitLogLine, processStatLine } from './stats';
 import type { AuthorLog } from './types';
 
 type Result = {
@@ -10,6 +12,7 @@ type Result = {
   csv: { path: string; content: string };
   md: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
+  outlierCommits: CommitDetail[];
 };
 
 export const main = async (
@@ -21,12 +24,16 @@ export const main = async (
 
   for (const dir of targetDirs) {
     let authorLog: AuthorLog = {};
+    const allCommitDetails: CommitDetail[] = [];
 
     for (let month = 0; month < periodMonths; month += 1) {
       const gitLog = await getGitLog(dir, month);
       const result = parseGitLog(authorLog, gitLog);
       authorLog = result.authorLog;
+      allCommitDetails.push(...result.commitDetails);
     }
+
+    const outlierCommits = findOutlierCommits(allCommitDetails);
 
     const csvContent = toCsv(authorLog, periodMonths);
     const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
@@ -42,6 +49,7 @@ export const main = async (
         content: toMarkdownWithMermaid(authorLog, periodMonths, projectName),
       },
       pdf: { path: pdfPath, content: pdfContent },
+      outlierCommits,
     });
   }
 
@@ -70,40 +78,21 @@ const getGitLog = async (dir: string, until: number): Promise<string> => {
   return stdout;
 };
 
-const processCommitLine = (line: string): { hash: string; author: string; YM: string } => {
-  const [hash, author, date] = line.split(',');
-  const YM = date.slice(0, 7);
-  return { hash, author, YM };
-};
-
-const processStatLine = (
-  line: string,
-  current: { author: string; YM: string; insertions: number; deletions: number } | null,
-): { author: string; YM: string; insertions: number; deletions: number } | null => {
-  if (!current) return null;
-
-  const [insertions, deletions, file] = line.split('\t');
-
-  // 除外ファイルの場合はそのまま返す
-  if (excludedFiles.some((excludedFile) => file.endsWith(excludedFile))) {
-    return current;
-  }
-
-  return {
-    ...current,
-    insertions: current.insertions + +insertions,
-    deletions: current.deletions + +deletions,
-  };
-};
-
 const parseGitLog = (
   authorLog: AuthorLog,
   logData: string,
-): { authorLog: AuthorLog; lastHash: string | null } => {
+): { authorLog: AuthorLog; lastHash: string | null; commitDetails: CommitDetail[] } => {
   const lines = logData.split('\n');
-
-  let current: { author: string; YM: string; insertions: number; deletions: number } | null = null;
+  let current: {
+    hash: string;
+    author: string;
+    date: string;
+    YM: string;
+    insertions: number;
+    deletions: number;
+  } | null = null;
   let lastHash: string | null = null;
+  const commitDetails: CommitDetail[] = [];
 
   const mergeIfExists = (): void => {
     if (!current) return;
@@ -120,28 +109,34 @@ const parseGitLog = (
       insertions: commitData.insertions + current.insertions,
       deletions: commitData.deletions + current.deletions,
     };
+
+    commitDetails.push({
+      hash: current.hash,
+      author: current.author,
+      date: current.date,
+      insertions: current.insertions,
+      deletions: current.deletions,
+    });
   };
 
   for (const line of lines) {
-    // コミット情報が見つかったら、コミットを保存
-    if (line.match(/^[a-f0-9]+,.+,\d{4}-\d{2}-\d{2}$/)) {
+    const commitInfo = parseGitLogLine(line);
+    if (commitInfo) {
       mergeIfExists();
-
-      const { hash, author, YM } = processCommitLine(line);
-      current = { author, YM, insertions: 0, deletions: 0 };
+      const { hash, author, date, YM } = commitInfo;
+      current = { hash, author, date, YM, insertions: 0, deletions: 0 };
       lastHash = hash;
       continue;
     }
 
-    // 変更行数の行でない場合はスキップ
     if (!line.match(/^\d+\t\d+\t.+/)) continue;
 
-    current = processStatLine(line, current);
+    const processedCurrent = processStatLine(line, current, excludedFiles);
+    current = processedCurrent;
   }
 
   mergeIfExists();
-
-  return { authorLog, lastHash };
+  return { authorLog, lastHash, commitDetails };
 };
 
 const toCsv = (authorLog: AuthorLog, months: number): string => {

@@ -23,6 +23,7 @@ import { main } from './main';
   const results = await main(targetDirs);
 
   await Promise.all(results.map((result) => writeFile(result.path, result.csv, 'utf8')));
+  await Promise.all(results.map((result) => writeFile(result.md.path, result.md.content, 'utf8')));
 
   results.map((result) => console.log(result.authorLog));
 })();

@@ -1,11 +1,20 @@
 import { exec } from 'child_process';
 import dayjs from 'dayjs';
 import { promisify } from 'util';
+import { toMarkdownWithMermaid } from './markdown';
+import type { AuthorLog } from './types';
 
 export const main = async (
   targetDirs: string[],
-): Promise<{ authorLog: AuthorLog; path: string; csv: string }[]> => {
-  const results: { authorLog: AuthorLog; path: string; csv: string }[] = [];
+): Promise<
+  { authorLog: AuthorLog; path: string; csv: string; md: { path: string; content: string } }[]
+> => {
+  const results: {
+    authorLog: AuthorLog;
+    path: string;
+    csv: string;
+    md: { path: string; content: string };
+  }[] = [];
 
   for (const dir of targetDirs) {
     let authorLog: AuthorLog = {};
@@ -17,10 +26,17 @@ export const main = async (
       authorLog = result.authorLog;
     }
 
+    const csvContent = toCsv(authorLog, months);
+    const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
+
     results.push({
       authorLog,
-      path: `out/${dir.replace(/\/$/, '').split('/').at(-1)}.csv`,
-      csv: toCsv(authorLog, months),
+      path: `out/${projectName}.csv`,
+      csv: csvContent,
+      md: {
+        path: `out/${projectName}.md`,
+        content: toMarkdownWithMermaid(authorLog, months, projectName),
+      },
     });
   }
 
@@ -56,10 +72,6 @@ const getGitLog = async (dir: string, until: number): Promise<string> => {
 
   return stdout;
 };
-
-type CommitData = { commits: number; insertions: number; deletions: number };
-
-type AuthorLog = Record<string, Record<string, CommitData | undefined>>;
 
 // コミット情報を処理する関数
 const processCommitLine = (line: string): { hash: string; author: string; YM: string } => {

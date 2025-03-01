@@ -8,6 +8,7 @@
     "lint:js": "eslint .",
     "lint:prettier": "prettier --check \"./**/*.{ts,js}\" --ignore-path .gitignore",
     "fix:lint": "npm run lint:js -- --fix && npm run lint:prettier -- --write",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -26,7 +27,8 @@
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.0.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.25.0"
+    "typescript-eslint": "^8.25.0",
+    "vitest": "^3.0.7"
   },
   "engines": {
     "node": ">=20.0.0"

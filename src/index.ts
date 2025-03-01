@@ -160,7 +160,7 @@ const targetDirs = dirPath
       '../cashless',
       '../manabufw',
       '../blueboard',
-      '../sigyo-online',
+      '../shokumujo-seikyu',
       '../catapult',
       '../magnito',
       '../deus-creatio',

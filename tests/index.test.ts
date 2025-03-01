@@ -4,7 +4,7 @@ import { main } from '../src/main';
 
 test('laravel', async () => {
   const outputDir = './tests/assets';
-  const [result] = await main(['./tests/projects/laravel'], outputDir);
+  const [result] = await main(['./tests/projects/laravel'], outputDir, 17);
 
   expect(result.path).toEqual(`${outputDir}/laravel.csv`);
 

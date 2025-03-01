@@ -20,12 +20,12 @@ import { main } from './main';
         '../reserve',
       ];
 
-  const results = await main(targetDirs, 'out');
+  const results = await main(targetDirs, 'out', 17);
 
   await Promise.all(results.map((result) => writeFile(result.path, result.csv, 'utf8')));
   await Promise.all(results.map((result) => writeFile(result.md.path, result.md.content, 'utf8')));
 
-  const [laravelResult] = await main(['./tests/projects/laravel'], 'tests/assets');
+  const [laravelResult] = await main(['./tests/projects/laravel'], 'tests/assets', 17);
 
   await writeFile(laravelResult.path, laravelResult.csv, 'utf8');
   await writeFile(laravelResult.md.path, laravelResult.md.content, 'utf8');

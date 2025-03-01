@@ -7,6 +7,7 @@ import type { AuthorLog } from './types';
 export const main = async (
   targetDirs: string[],
   outputDir: string,
+  periodMonths: number,
 ): Promise<
   { authorLog: AuthorLog; path: string; csv: string; md: { path: string; content: string } }[]
 > => {
@@ -19,15 +20,14 @@ export const main = async (
 
   for (const dir of targetDirs) {
     let authorLog: AuthorLog = {};
-    let months = 0;
 
-    for (; months < 17; months += 1) {
-      const gitLog = await getGitLog(dir, months);
+    for (let month = 0; month < periodMonths; month += 1) {
+      const gitLog = await getGitLog(dir, month);
       const result = parseGitLog(authorLog, gitLog);
       authorLog = result.authorLog;
     }
 
-    const csvContent = toCsv(authorLog, months);
+    const csvContent = toCsv(authorLog, periodMonths);
     const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
 
     results.push({
@@ -36,7 +36,7 @@ export const main = async (
       csv: csvContent,
       md: {
         path: `${outputDir}/${projectName}.md`,
-        content: toMarkdownWithMermaid(authorLog, months, projectName),
+        content: toMarkdownWithMermaid(authorLog, periodMonths, projectName),
       },
     });
   }

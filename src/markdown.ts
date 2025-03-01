@@ -84,8 +84,8 @@ export const toMarkdownWithMermaid = (
   // Mermaidグラフ - コミット数の推移（折れ線グラフ）
   markdown += `## コミット数の推移\n\n`;
   markdown += '```mermaid\n';
-  markdown += 'line chart\n';
-  markdown += '    title コミット数の推移\n';
+  markdown += 'xychart-beta\n';
+  markdown += '    title "コミット数の推移"\n';
   markdown += `    x-axis [${monthColumns.map((m) => `"${m}"`).join(', ')}]\n`;
   markdown += '    y-axis "コミット数"\n';
   markdown += `    line [${monthlyTotals.map((m) => m.commits).join(', ')}]\n`;
@@ -94,8 +94,8 @@ export const toMarkdownWithMermaid = (
   // Mermaidグラフ - 追加・削除行数の推移（折れ線グラフ）
   markdown += `## 追加・削除行数の推移\n\n`;
   markdown += '```mermaid\n';
-  markdown += 'line chart\n';
-  markdown += '    title 追加・削除行数の推移\n';
+  markdown += 'xychart-beta\n';
+  markdown += '    title "追加・削除行数の推移"\n';
   markdown += `    x-axis [${monthColumns.map((m) => `"${m}"`).join(', ')}]\n`;
   markdown += '    y-axis "行数"\n';
   markdown += `    line "追加行数" [${monthlyTotals.map((m) => m.insertions).join(', ')}]\n`;

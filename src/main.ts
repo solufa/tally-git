@@ -1,7 +1,6 @@
 import { exec } from 'child_process';
 import dayjs from 'dayjs';
 import { promisify } from 'util';
-import { toMarkdownWithMermaid } from './markdown';
 import { toPdf } from './pdf';
 import type { CommitDetail } from './stats';
 import {
@@ -16,7 +15,6 @@ type Result = {
   authorLog: AuthorLog;
   filteredAuthorLog: AuthorLog;
   csv: { path: string; content: string };
-  md: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
   outlierCommits: CommitDetail[];
 };
@@ -51,10 +49,6 @@ export const main = async (
       authorLog,
       filteredAuthorLog: createFilteredAuthorLog(authorLog, outlierCommits),
       csv: { path: `${outputDir}/${projectName}.csv`, content: csvContent },
-      md: {
-        path: `${outputDir}/${projectName}.md`,
-        content: toMarkdownWithMermaid(authorLog, periodMonths, projectName),
-      },
       pdf: { path: pdfPath, content: pdfContent },
       outlierCommits,
     });

@@ -11,15 +11,15 @@ test('laravel', async () => {
 
   expect(result.authorLog).toEqual(JSON.parse(readFileSync(`${outputDir}/authorLog.json`, 'utf8')));
 
+  expect(result.filteredAuthorLog).toEqual(
+    JSON.parse(readFileSync(`${outputDir}/filteredAuthorLog.json`, 'utf8')),
+  );
+
   expect(result.outlierCommits).toEqual(
     JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')),
   );
 
   expect(result.csv.content).toEqual(readFileSync(`${outputDir}/laravel.csv`, 'utf8'));
-
-  expect(result.md.path).toEqual(`${outputDir}/laravel.md`);
-
-  expect(result.md.content).toEqual(readFileSync(`${outputDir}/laravel.md`, 'utf8'));
 });
 
 test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致する', async () => {

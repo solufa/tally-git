@@ -33,7 +33,7 @@ export const main = async (
     const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
 
     const pdfPath = `${outputDir}/${projectName}.pdf`;
-    const pdfContent = await toPdf(authorLog, periodMonths, projectName, pdfPath);
+    const pdfContent = await toPdf(authorLog, periodMonths, projectName);
 
     results.push({
       authorLog,

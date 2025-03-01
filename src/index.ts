@@ -22,7 +22,9 @@ import { main } from './main';
 
   const results = await main(targetDirs, 'out', 17);
 
-  await Promise.all(results.map((result) => writeFile(result.path, result.csv, 'utf8')));
+  await Promise.all(
+    results.map((result) => writeFile(result.csv.path, result.csv.content, 'utf8')),
+  );
   await Promise.all(results.map((result) => writeFile(result.md.path, result.md.content, 'utf8')));
 
   // PDFファイルの保存
@@ -40,7 +42,7 @@ import { main } from './main';
 
   const [laravelResult] = await main(['./tests/projects/laravel'], 'tests/assets', 17);
 
-  await writeFile(laravelResult.path, laravelResult.csv, 'utf8');
+  await writeFile(laravelResult.csv.path, laravelResult.csv.content, 'utf8');
   await writeFile(laravelResult.md.path, laravelResult.md.content, 'utf8');
   await writeFile(
     './tests/assets/authorLog.json',

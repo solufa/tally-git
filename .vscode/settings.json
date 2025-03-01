@@ -1,11 +1,10 @@
 {
-  "eslint.run": "onSave",
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.stylelint": "explicit"
-  },
+  // "eslint.run": "onSave",
+  // "editor.formatOnSave": true,
+  // "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // "editor.codeActionsOnSave": {
+  //   "source.fixAll.eslint": "explicit"
+  // },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.referencesCodeLens.enabled": true,
   "files.eol": "\n",

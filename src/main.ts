@@ -7,8 +7,7 @@ import type { AuthorLog } from './types';
 
 type Result = {
   authorLog: AuthorLog;
-  path: string;
-  csv: string;
+  csv: { path: string; content: string };
   md: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
 };
@@ -37,16 +36,12 @@ export const main = async (
 
     results.push({
       authorLog,
-      path: `${outputDir}/${projectName}.csv`,
-      csv: csvContent,
+      csv: { path: `${outputDir}/${projectName}.csv`, content: csvContent },
       md: {
         path: `${outputDir}/${projectName}.md`,
         content: toMarkdownWithMermaid(authorLog, periodMonths, projectName),
       },
-      pdf: {
-        path: pdfPath,
-        content: pdfContent,
-      },
+      pdf: { path: pdfPath, content: pdfContent },
     });
   }
 

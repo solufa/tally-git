@@ -2,6 +2,7 @@ import { Document, renderToStream } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
+import { ChartPage } from './pdf-pages/chart-page';
 import { ContributorsPage } from './pdf-pages/contributors-page';
 import { SummaryPage } from './pdf-pages/summary-page';
 import { registerFonts } from './styles/pdf-styles';
@@ -79,9 +80,9 @@ export const toPdf = async (
         monthColumns={monthColumns}
         sortedAuthors={sortedAuthors}
       />
-      <ActivityPage
+      <ActivityPage monthlyTotals={monthlyTotals} />
+      <ChartPage
         monthColumns={monthColumns}
-        monthlyTotals={monthlyTotals}
         commitsData={commitsData}
         insertionsData={insertionsData}
         deletionsData={deletionsData}

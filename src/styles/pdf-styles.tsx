@@ -1,11 +1,13 @@
 import { Font, StyleSheet } from '@react-pdf/renderer';
 import path from 'path';
 
+const fontFamily = 'NotoSansJP';
+
 // スタイルの定義
 export const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'NotoSansJP',
+    fontFamily,
   },
   title: {
     fontSize: 24,
@@ -64,6 +66,10 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  lineChartLegend: {
+    fontSize: 10,
+    fontFamily,
   },
 });
 

@@ -4,11 +4,17 @@ import { promisify } from 'util';
 import { toMarkdownWithMermaid } from './markdown';
 import { toPdf } from './pdf';
 import type { CommitDetail } from './stats';
-import { findOutlierCommits, parseGitLogLine, processStatLine } from './stats';
-import type { AuthorLog } from './types';
+import {
+  createFilteredAuthorLog,
+  findOutlierCommits,
+  parseGitLogLine,
+  processStatLine,
+} from './stats';
+import type { AuthorLog, CommitData } from './types';
 
 type Result = {
   authorLog: AuthorLog;
+  filteredAuthorLog: AuthorLog;
   csv: { path: string; content: string };
   md: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
@@ -43,6 +49,7 @@ export const main = async (
 
     results.push({
       authorLog,
+      filteredAuthorLog: createFilteredAuthorLog(authorLog, outlierCommits),
       csv: { path: `${outputDir}/${projectName}.csv`, content: csvContent },
       md: {
         path: `${outputDir}/${projectName}.md`,
@@ -145,19 +152,22 @@ const toCsv = (authorLog: AuthorLog, months: number): string => {
       .subtract(months - i - 1, 'month')
       .format('YYYY-MM'),
   );
-
   const header = `,${monthColumns.join(',')}`;
-  const commits = Object.entries(authorLog).map(
-    ([author, monthData]) =>
-      `${author},${monthColumns.map((column) => monthData[column]?.commits ?? 0).join(',')}`,
+
+  const formatRow = (
+    author: string,
+    monthData: Record<string, CommitData | undefined>,
+    key: keyof CommitData,
+  ): string => `${author},${monthColumns.map((column) => monthData[column]?.[key] ?? 0).join(',')}`;
+
+  const commits = Object.entries(authorLog).map(([author, monthData]) =>
+    formatRow(author, monthData, 'commits'),
   );
-  const insertions = Object.entries(authorLog).map(
-    ([author, monthData]) =>
-      `${author},${monthColumns.map((column) => monthData[column]?.insertions ?? 0).join(',')}`,
+  const insertions = Object.entries(authorLog).map(([author, monthData]) =>
+    formatRow(author, monthData, 'insertions'),
   );
-  const deletions = Object.entries(authorLog).map(
-    ([author, monthData]) =>
-      `${author},${monthColumns.map((column) => monthData[column]?.deletions ?? 0).join(',')}`,
+  const deletions = Object.entries(authorLog).map(([author, monthData]) =>
+    formatRow(author, monthData, 'deletions'),
   );
 
   return `${header}

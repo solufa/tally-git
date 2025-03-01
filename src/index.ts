@@ -50,6 +50,11 @@ import { main } from './main';
     'utf8',
   );
   await writeFile(
+    './tests/assets/filteredAuthorLog.json',
+    JSON.stringify(laravelResult.filteredAuthorLog, null, 2),
+    'utf8',
+  );
+  await writeFile(
     './tests/assets/outlierCommits.json',
     JSON.stringify(laravelResult.outlierCommits, null, 2),
     'utf8',

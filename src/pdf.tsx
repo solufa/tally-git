@@ -36,7 +36,11 @@ export const toPdf = async (
       (sum, data) => sum + (data?.deletions ?? 0),
       0,
     );
-    return { author, totalCommits, totalInsertions, totalDeletions };
+    // 稼働月数を計算（コミット数が1回以上ある月をカウント）
+    const activeMonths = Object.values(monthData).filter(
+      (data) => (data?.commits ?? 0) > 0,
+    ).length;
+    return { author, totalCommits, totalInsertions, totalDeletions, activeMonths };
   });
 
   const sortedAuthors = authorTotals

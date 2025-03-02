@@ -2,12 +2,47 @@ import { Font, StyleSheet } from '@react-pdf/renderer';
 import path from 'path';
 
 const fontFamily = 'NotoSansJP';
+const primaryColor = '#08c6d6';
 
 export const pdfStyles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: '20mm 8mm 14mm',
     fontFamily,
     fontSize: 12,
+    color: '#333',
+  },
+  header: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    position: 'absolute',
+    height: '15mm',
+    top: 0,
+    right: 0,
+    left: 0,
+    borderBottom: 0.5,
+    borderColor: primaryColor,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0mm 6mm',
+  },
+  footer: {
+    fontSize: 10,
+    color: primaryColor,
+    fontWeight: 'bold',
+    position: 'absolute',
+    height: '11mm',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    borderTop: 0.5,
+    borderColor: primaryColor,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '0mm 5mm 1mm',
   },
   title: {
     fontSize: 20,

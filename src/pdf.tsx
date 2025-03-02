@@ -65,24 +65,24 @@ export const toPdf = async (
   const insertionsData = monthlyTotals.map((m) => m.insertions);
   const deletionsData = monthlyTotals.map((m) => m.deletions);
 
-  // 貢献者別コミット数データの準備
+  // 作業者別コミット数データの準備
   const topContributors = sortedAuthors.slice(0, 10);
 
-  // 貢献者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
+  // 作業者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
   const contributorCommitsData = topContributors.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.commits ?? 0;
     });
   });
 
-  // 貢献者別の月ごとの追加行数データを準備（積み上げ棒グラフ用）
+  // 作業者別の月ごとの追加行数データを準備（積み上げ棒グラフ用）
   const contributorInsertionsData = topContributors.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.insertions ?? 0;
     });
   });
 
-  // 貢献者別の月ごとの削除行数データを準備（積み上げ棒グラフ用）
+  // 作業者別の月ごとの削除行数データを準備（積み上げ棒グラフ用）
   const contributorDeletionsData = topContributors.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.deletions ?? 0;
@@ -98,8 +98,13 @@ export const toPdf = async (
         monthColumns={monthColumns}
         sortedAuthors={sortedAuthors}
       />
-      <ActivityPage monthlyTotals={monthlyTotals} />
+      <ActivityPage
+        projectName={projectName}
+        monthColumns={monthColumns}
+        monthlyTotals={monthlyTotals}
+      />
       <ChartPage
+        projectName={projectName}
         monthColumns={monthColumns}
         contributorCommitsData={contributorCommitsData}
         contributorNames={contributorNames}
@@ -108,7 +113,11 @@ export const toPdf = async (
         contributorInsertionsData={contributorInsertionsData}
         contributorDeletionsData={contributorDeletionsData}
       />
-      <OutliersPage outlierCommits={outlierCommits} />
+      <OutliersPage
+        projectName={projectName}
+        monthColumns={monthColumns}
+        outlierCommits={outlierCommits}
+      />
     </Document>
   );
 

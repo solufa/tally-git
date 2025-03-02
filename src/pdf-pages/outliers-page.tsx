@@ -3,8 +3,11 @@ import dayjs from 'dayjs';
 import React from 'react';
 import type { CommitDetail } from '../stats';
 import { pdfStyles } from '../styles/pdf-styles';
+import { PdfFooter, PdfHeader } from './layout';
 
 type OutliersPageProps = {
+  projectName: string;
+  monthColumns: string[];
   outlierCommits: CommitDetail[];
 };
 
@@ -15,7 +18,11 @@ type MonthlyOutlierData = {
   deletions: number;
 };
 
-export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.ReactElement => {
+export const OutliersPage = ({
+  projectName,
+  monthColumns,
+  outlierCommits,
+}: OutliersPageProps): React.ReactElement => {
   // 月ごとにグループ化する
   const groupByMonth = (commits: CommitDetail[]): MonthlyOutlierData[] => {
     const monthlyData: Record<string, MonthlyOutlierData> = {};
@@ -48,7 +55,7 @@ export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.React
 
   return (
     <Page size="A4" style={pdfStyles.page}>
-      <Text style={pdfStyles.title}>外れ値コミット分析</Text>
+      <PdfHeader projectName={projectName} monthColumns={monthColumns} />
       <Text style={pdfStyles.sectionTitle}>月別外れ値コミット</Text>
 
       {monthlyOutliers.length > 0 ? (
@@ -99,6 +106,7 @@ export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.React
       </Text>
       <Text style={pdfStyles.text}>1. 5000行以上の追加行数を持つコミット</Text>
       <Text style={pdfStyles.text}>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
+      <PdfFooter />
     </Page>
   );
 };

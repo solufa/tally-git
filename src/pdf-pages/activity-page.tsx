@@ -2,8 +2,11 @@ import { Page, Text, View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
+import { PdfFooter, PdfHeader } from './layout';
 
 interface ActivityPageProps {
+  projectName: string;
+  monthColumns: string[];
   monthlyTotals: Array<{
     month: string;
     commits: number;
@@ -12,15 +15,20 @@ interface ActivityPageProps {
   }>;
 }
 
-export const ActivityPage = ({ monthlyTotals }: ActivityPageProps): React.ReactElement => {
+export const ActivityPage = ({
+  projectName,
+  monthColumns,
+  monthlyTotals,
+}: ActivityPageProps): React.ReactElement => {
   const descSortedMonthlyTotals = monthlyTotals.sort((a, b) =>
     dayjs(b.month, 'YYYY-MM').diff(dayjs(a.month, 'YYYY-MM')),
   );
 
   return (
     <Page size="A4" style={pdfStyles.page}>
+      <PdfHeader projectName={projectName} monthColumns={monthColumns} />
       <View style={pdfStyles.section}>
-        <Text style={pdfStyles.sectionTitle}>月別活動</Text>
+        <Text style={pdfStyles.sectionTitle}>月別</Text>
         <View style={pdfStyles.table}>
           <View style={pdfStyles.tableHeaderRow}>
             <View style={[pdfStyles.tableCol, { width: '25%' }]}>
@@ -54,6 +62,7 @@ export const ActivityPage = ({ monthlyTotals }: ActivityPageProps): React.ReactE
           ))}
         </View>
       </View>
+      <PdfFooter />
     </Page>
   );
 };

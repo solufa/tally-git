@@ -1,6 +1,7 @@
 import { Page, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
+import { PdfFooter, PdfHeader } from './layout';
 
 interface SummaryPageProps {
   projectName: string;
@@ -20,12 +21,9 @@ export const SummaryPage = ({
   sortedAuthors,
 }: SummaryPageProps): React.ReactElement => (
   <Page size="A4" style={pdfStyles.page}>
-    <Text style={pdfStyles.title}>{projectName} Git自動解析レポート</Text>
+    <PdfHeader projectName={projectName} monthColumns={monthColumns} />
 
     <View style={pdfStyles.section}>
-      <Text style={pdfStyles.text}>
-        期間: {monthColumns[0]} から {monthColumns[monthColumns.length - 1]}
-      </Text>
       <Text style={pdfStyles.text}>
         総コミット数: {sortedAuthors.reduce((sum, a) => sum + a.totalCommits, 0)}
       </Text>
@@ -35,15 +33,15 @@ export const SummaryPage = ({
       <Text style={pdfStyles.text}>
         総削除行数: {sortedAuthors.reduce((sum, a) => sum + a.totalDeletions, 0)}
       </Text>
-      <Text style={pdfStyles.text}>貢献者数: {sortedAuthors.length}</Text>
+      <Text style={pdfStyles.text}>作業者数: {sortedAuthors.length}</Text>
     </View>
 
     <View style={pdfStyles.section}>
-      <Text style={pdfStyles.sectionTitle}>貢献者</Text>
+      <Text style={pdfStyles.sectionTitle}>作業者別</Text>
       <View style={pdfStyles.table}>
         <View style={pdfStyles.tableHeaderRow}>
           <View style={[pdfStyles.tableCol, { width: '35%' }]}>
-            <Text style={pdfStyles.tableHeader}>貢献者</Text>
+            <Text style={pdfStyles.tableHeader}>作業者</Text>
           </View>
           <View style={[pdfStyles.tableCol, { width: '15%' }]}>
             <Text style={pdfStyles.tableHeader}>コミット数</Text>
@@ -106,5 +104,6 @@ export const SummaryPage = ({
         )}
       </View>
     </View>
+    <PdfFooter />
   </Page>
 );

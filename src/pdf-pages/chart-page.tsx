@@ -3,8 +3,10 @@ import React from 'react';
 import { DualBarChart } from '../charts/dual-bar-chart';
 import { StackedBarChart } from '../charts/stacked-bar-chart';
 import { pdfStyles } from '../styles/pdf-styles';
+import { PdfFooter, PdfHeader } from './layout';
 
 interface ChartPageProps {
+  projectName: string;
   monthColumns: string[];
   contributorCommitsData: number[][];
   contributorNames: string[];
@@ -15,6 +17,7 @@ interface ChartPageProps {
 }
 
 export const ChartPage = ({
+  projectName,
   monthColumns,
   contributorCommitsData,
   contributorNames,
@@ -24,6 +27,7 @@ export const ChartPage = ({
   contributorDeletionsData,
 }: ChartPageProps): React.ReactElement => (
   <Page size="A4" style={pdfStyles.page}>
+    <PdfHeader projectName={projectName} monthColumns={monthColumns} />
     <StackedBarChart
       title="コミット数の推移"
       data={contributorCommitsData}
@@ -41,5 +45,6 @@ export const ChartPage = ({
       width={500}
       height={300}
     />
+    <PdfFooter />
   </Page>
 );

@@ -1,4 +1,5 @@
 import { Page, Text, View } from '@react-pdf/renderer';
+import dayjs from 'dayjs';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
 
@@ -11,46 +12,48 @@ interface ActivityPageProps {
   }>;
 }
 
-export const ActivityPage = ({ monthlyTotals }: ActivityPageProps): React.ReactElement => (
-  <Page size="A4" style={pdfStyles.page}>
-    {/* 月別活動テーブル */}
-    <View style={pdfStyles.section}>
-      <Text style={pdfStyles.sectionTitle}>月別活動</Text>
-      <View style={pdfStyles.table}>
-        {/* テーブルヘッダー */}
-        <View style={pdfStyles.tableHeaderRow}>
-          <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-            <Text style={pdfStyles.tableHeader}>月</Text>
-          </View>
-          <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-            <Text style={pdfStyles.tableHeader}>コミット数</Text>
-          </View>
-          <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-            <Text style={pdfStyles.tableHeader}>追加行数</Text>
-          </View>
-          <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-            <Text style={pdfStyles.tableHeader}>削除行数</Text>
-          </View>
-        </View>
+export const ActivityPage = ({ monthlyTotals }: ActivityPageProps): React.ReactElement => {
+  const descSortedMonthlyTotals = monthlyTotals.sort((a, b) =>
+    dayjs(b.month, 'YYYY-MM').diff(dayjs(a.month, 'YYYY-MM')),
+  );
 
-        {/* テーブルデータ */}
-        {monthlyTotals.map((month, i) => (
-          <View key={i} style={pdfStyles.tableRow}>
+  return (
+    <Page size="A4" style={pdfStyles.page}>
+      <View style={pdfStyles.section}>
+        <Text style={pdfStyles.sectionTitle}>月別活動</Text>
+        <View style={pdfStyles.table}>
+          <View style={pdfStyles.tableHeaderRow}>
             <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-              <Text style={pdfStyles.tableCell}>{month.month}</Text>
+              <Text style={pdfStyles.tableHeader}>月</Text>
             </View>
             <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-              <Text style={pdfStyles.tableCellRight}>{month.commits}</Text>
+              <Text style={pdfStyles.tableHeader}>コミット数</Text>
             </View>
             <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-              <Text style={pdfStyles.tableCellRight}>{month.insertions}</Text>
+              <Text style={pdfStyles.tableHeader}>追加行数</Text>
             </View>
             <View style={[pdfStyles.tableCol, { width: '25%' }]}>
-              <Text style={pdfStyles.tableCellRight}>{month.deletions}</Text>
+              <Text style={pdfStyles.tableHeader}>削除行数</Text>
             </View>
           </View>
-        ))}
+          {descSortedMonthlyTotals.map((month, i) => (
+            <View key={i} style={pdfStyles.tableRow}>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCell}>{month.month}</Text>
+              </View>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCellRight}>{month.commits}</Text>
+              </View>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCellRight}>{month.insertions}</Text>
+              </View>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCellRight}>{month.deletions}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
-    </View>
-  </Page>
-);
+    </Page>
+  );
+};

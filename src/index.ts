@@ -20,7 +20,7 @@ import { main } from './main';
         // '../reserve',
       ];
 
-  const results = await main(targetDirs, 'out', 17);
+  const results = await main(targetDirs, 'out', 7);
 
   await Promise.all(
     results.map((result) => writeFile(result.csv.path, result.csv.content, 'utf8')),

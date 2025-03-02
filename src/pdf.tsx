@@ -63,7 +63,6 @@ export const toPdf = async (
   });
 
   // グラフデータの準備
-  const commitsData = monthlyTotals.map((m) => m.commits);
   const insertionsData = monthlyTotals.map((m) => m.insertions);
   const deletionsData = monthlyTotals.map((m) => m.deletions);
 
@@ -71,6 +70,14 @@ export const toPdf = async (
   const topContributors = sortedAuthors.slice(0, 10);
   const pieData = topContributors.map((a) => a.totalCommits);
   const pieLabels = topContributors.map((a) => a.author);
+
+  // 貢献者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
+  const contributorCommitsData = topContributors.map((author) => {
+    return monthColumns.map((month) => {
+      return authorLog[author.author]?.[month]?.commits ?? 0;
+    });
+  });
+  const contributorNames = topContributors.map((a) => a.author);
 
   const MyDocument = (): React.ReactElement => (
     <Document>
@@ -82,7 +89,8 @@ export const toPdf = async (
       <ActivityPage monthlyTotals={monthlyTotals} />
       <ChartPage
         monthColumns={monthColumns}
-        commitsData={commitsData}
+        contributorCommitsData={contributorCommitsData}
+        contributorNames={contributorNames}
         insertionsData={insertionsData}
         deletionsData={deletionsData}
       />

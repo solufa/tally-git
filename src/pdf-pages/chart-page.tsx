@@ -1,18 +1,21 @@
 import { Page, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { LineChart } from '../charts/line-chart';
+import { StackedBarChart } from '../charts/stacked-bar-chart';
 import { pdfStyles } from '../styles/pdf-styles';
 
 interface ChartPageProps {
   monthColumns: string[];
-  commitsData: number[];
+  contributorCommitsData: number[][];
+  contributorNames: string[];
   insertionsData: number[];
   deletionsData: number[];
 }
 
 export const ChartPage = ({
   monthColumns,
-  commitsData,
+  contributorCommitsData,
+  contributorNames,
   insertionsData,
   deletionsData,
 }: ChartPageProps): React.ReactElement => (
@@ -20,17 +23,14 @@ export const ChartPage = ({
     <View style={pdfStyles.section}>
       <Text style={pdfStyles.sectionTitle}>活動グラフ</Text>
     </View>
-
-    {/* コミット数の推移グラフ */}
-    <LineChart
+    <StackedBarChart
       title="コミット数の推移"
-      data={commitsData}
+      data={contributorCommitsData}
       labels={monthColumns}
+      contributors={contributorNames}
       width={500}
       height={250}
     />
-
-    {/* 追加・削除行数の推移グラフ */}
     <LineChart
       title="追加・削除行数の推移"
       data={[insertionsData, deletionsData]}

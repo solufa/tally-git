@@ -17,8 +17,8 @@ const run = async (): Promise<void> => {
   }
 
   const targets: { projectName: string; dir: string; months: number }[] = [
-    { projectName: 'Laravel版法人請求', dir: '../yuso', months: 13 },
-    { projectName: 'TypeScript版法人請求', dir: '../hojin-seikyu', months: 7 },
+    { projectName: 'Laravel版法人請求', dir: '../yuso', months: 12 },
+    { projectName: 'ManabuFW版法人請求', dir: '../hojin-seikyu', months: 6 },
     // '../cashless',
     // '../manabufw',
     // '../blueboard',
@@ -46,7 +46,7 @@ const run = async (): Promise<void> => {
     projectName: 'OSS Laravel',
     targetDir: './tests/projects/laravel',
     outputDir: 'tests/assets',
-    periodMonths: 13,
+    periodMonths: 12,
   });
 
   await generateFiles(laravelResult);

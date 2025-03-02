@@ -7,12 +7,12 @@ import { PdfFooter, PdfHeader } from './layout';
 interface ActivityPageProps {
   projectName: string;
   monthColumns: string[];
-  monthlyTotals: Array<{
+  monthlyTotals: {
     month: string;
     commits: number;
     insertions: number;
     deletions: number;
-  }>;
+  }[];
 }
 
 export const ActivityPage = ({

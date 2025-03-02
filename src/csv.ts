@@ -1,14 +1,5 @@
-import dayjs from 'dayjs';
 import type { CommitDetail } from './stats';
 import type { AuthorLog, CommitData } from './types';
-
-const generateMonthColumns = (months: number): string[] => {
-  return [...Array(months)].map((_, i) =>
-    dayjs()
-      .subtract(months - i - 1, 'month')
-      .format('YYYY-MM'),
-  );
-};
 
 const formatDataRow = (
   author: string,
@@ -84,11 +75,10 @@ ${outlierInfo}`;
 
 export const toCsv = (
   authorLog: AuthorLog,
-  months: number,
+  monthColumns: string[],
   outlierCommits: CommitDetail[],
   insertionsThreshold: number,
 ): string => {
-  const monthColumns = generateMonthColumns(months);
   const header = `,${monthColumns.join(',')}`;
 
   const activityData = generateActivityRows(authorLog, monthColumns);

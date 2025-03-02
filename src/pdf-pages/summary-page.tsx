@@ -6,13 +6,13 @@ import { PdfFooter, PdfHeader } from './layout';
 interface SummaryPageProps {
   projectName: string;
   monthColumns: string[];
-  sortedAuthors: Array<{
+  sortedAuthors: {
     author: string;
     totalCommits: number;
     totalInsertions: number;
     totalDeletions: number;
     activeMonths: number;
-  }>;
+  }[];
 }
 
 export const SummaryPage = ({

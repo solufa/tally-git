@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import dayjs from 'dayjs';
 import { promisify } from 'util';
 import { toCsv } from './csv';
 import { toPdf } from './pdf';
@@ -29,9 +30,9 @@ export const main = async (option: {
   let authorLog: AuthorLog = {};
   const allCommitDetails: CommitDetail[] = [];
 
-  for (let month = 0; month < option.periodMonths; month += 1) {
+  for (let month = 0; month <= option.periodMonths; month += 1) {
     const gitLog = await getGitLog(option.targetDir, month);
-    const result = parseGitLog(authorLog, gitLog);
+    const result = parseGitLog(authorLog, gitLog, option.periodMonths);
     authorLog = result.authorLog;
     allCommitDetails.push(...result.commitDetails);
   }
@@ -39,18 +40,17 @@ export const main = async (option: {
   const { outliers: outlierCommits, insertionsThreshold } = findOutlierCommits(allCommitDetails);
 
   const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
-
-  const csvContent = toCsv(
-    filteredAuthorLog,
-    option.periodMonths,
-    outlierCommits,
-    insertionsThreshold,
+  const monthColumns = [...Array(option.periodMonths)].map((_, i) =>
+    dayjs()
+      .subtract(option.periodMonths - i, 'month')
+      .format('YYYY-MM'),
   );
+  const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits, insertionsThreshold);
 
   const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1) ?? '';
   const pdfContent = await toPdf(
     filteredAuthorLog,
-    option.periodMonths,
+    monthColumns,
     option.projectName ?? dirName,
     outlierCommits,
   );
@@ -90,8 +90,8 @@ const getGitLog = async (dir: string, until: number): Promise<string> => {
 const parseGitLog = (
   authorLog: AuthorLog,
   logData: string,
+  periodMonths: number,
 ): { authorLog: AuthorLog; lastHash: string | null; commitDetails: CommitDetail[] } => {
-  const lines = logData.split('\n');
   let current: {
     hash: string;
     author: string;
@@ -128,22 +128,33 @@ const parseGitLog = (
     });
   };
 
-  for (const line of lines) {
+  const lines = logData.split('\n');
+  const currentMonth = dayjs().format('YYYY-MM');
+  const ignoredMonth = dayjs()
+    .subtract(periodMonths + 1, 'month')
+    .format('YYYY-MM');
+
+  lines.forEach((line) => {
     const commitInfo = parseGitLogLine(line);
+
     if (commitInfo) {
+      if (commitInfo.YM === currentMonth || commitInfo.YM === ignoredMonth) return;
+
       mergeIfExists();
       const { hash, author, date, YM } = commitInfo;
       current = { hash, author, date, YM, insertions: 0, deletions: 0 };
       lastHash = hash;
-      continue;
+
+      return;
     }
 
-    if (!line.match(/^\d+\t\d+\t.+/)) continue;
+    if (!line.match(/^\d+\t\d+\t.+/)) return;
 
     const processedCurrent = processStatLine(line, current, excludedFiles);
     current = processedCurrent;
-  }
+  });
 
   mergeIfExists();
+
   return { authorLog, lastHash, commitDetails };
 };

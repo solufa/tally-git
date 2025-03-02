@@ -1,5 +1,4 @@
 import { Document, renderToStream } from '@react-pdf/renderer';
-import dayjs from 'dayjs';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
 import { ChartPage } from './pdf-pages/chart-page';
@@ -13,16 +12,10 @@ registerFonts();
 
 export const toPdf = async (
   authorLog: AuthorLog,
-  months: number,
+  monthColumns: string[],
   projectName: string,
   outlierCommits: CommitDetail[],
 ): Promise<NodeJS.ReadableStream> => {
-  const monthColumns = [...Array(months)].map((_, i) =>
-    dayjs()
-      .subtract(months - i - 1, 'month')
-      .format('YYYY-MM'),
-  );
-
   const authorTotals = Object.entries(authorLog).map(([author, monthData]) => {
     const totalCommits = Object.values(monthData).reduce(
       (sum, data) => sum + (data?.commits ?? 0),

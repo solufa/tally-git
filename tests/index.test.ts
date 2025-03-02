@@ -9,7 +9,7 @@ test('laravel', async () => {
     projectName: 'OSS Laravel',
     targetDir: './tests/projects/laravel',
     outputDir,
-    periodMonths: 13,
+    periodMonths: 12,
   });
 
   expect(result.csv.path).toEqual(`${outputDir}/laravel.csv`);
@@ -29,7 +29,7 @@ test('laravel', async () => {
 
 test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致する', async () => {
   const outputDir = './tests/assets';
-  const result = await main({ targetDir: './tests/projects/laravel', outputDir, periodMonths: 17 });
+  const result = await main({ targetDir: './tests/projects/laravel', outputDir, periodMonths: 16 });
   const mergedAuthorLog = structuredClone(result.filteredAuthorLog);
 
   result.outlierCommits.forEach((commit: CommitDetail) => {

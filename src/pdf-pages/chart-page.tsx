@@ -29,7 +29,7 @@ export const ChartPage = ({
   <Page size="A4" style={pdfStyles.page}>
     <PdfHeader projectName={projectName} monthColumns={monthColumns} />
     <StackedBarChart
-      title="コミット数の推移"
+      title="上位10人のコミット数推移"
       data={contributorCommitsData}
       labels={monthColumns}
       contributors={contributorNames}
@@ -37,7 +37,7 @@ export const ChartPage = ({
       height={300}
     />
     <DualBarChart
-      title="追加（左グラフ）・削除（右グラフ）行数の推移"
+      title="上位10人の追加（左グラフ）・削除（右グラフ）行数推移"
       data={[insertionsData, deletionsData]}
       contributorData={[contributorInsertionsData, contributorDeletionsData]}
       labels={monthColumns}

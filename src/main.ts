@@ -11,7 +11,7 @@ import {
 } from './stats';
 import type { AuthorLog } from './types';
 
-type Result = {
+export type Result = {
   authorLog: AuthorLog;
   filteredAuthorLog: AuthorLog;
   csv: { path: string; content: string };
@@ -21,64 +21,57 @@ type Result = {
   insertionsThreshold: number;
 };
 
-export const main = async (
-  targetDirs: string[],
-  outputDir: string,
-  periodMonths: number,
-): Promise<Result[]> => {
-  const results: Result[] = [];
+export const main = async (option: {
+  projectName?: string;
+  targetDir: string;
+  outputDir: string;
+  periodMonths: number;
+}): Promise<Result> => {
+  let authorLog: AuthorLog = {};
+  const allCommitDetails: CommitDetail[] = [];
 
-  for (const dir of targetDirs) {
-    let authorLog: AuthorLog = {};
-    const allCommitDetails: CommitDetail[] = [];
-
-    for (let month = 0; month < periodMonths; month += 1) {
-      const gitLog = await getGitLog(dir, month);
-      const result = parseGitLog(authorLog, gitLog);
-      authorLog = result.authorLog;
-      allCommitDetails.push(...result.commitDetails);
-    }
-
-    const {
-      outliers: outlierCommits,
-      insertionsMean,
-      insertionsThreshold,
-    } = findOutlierCommits(allCommitDetails);
-
-    const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
-
-    const csvContent = toCsv(
-      filteredAuthorLog,
-      periodMonths,
-      outlierCommits,
-      insertionsMean,
-      insertionsThreshold,
-    );
-
-    const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
-
-    const pdfPath = `${outputDir}/${projectName}.pdf`;
-    const pdfContent = await toPdf(
-      filteredAuthorLog,
-      periodMonths,
-      projectName,
-      outlierCommits,
-      insertionsMean,
-      insertionsThreshold,
-    );
-
-    results.push({
-      authorLog,
-      filteredAuthorLog,
-      csv: { path: `${outputDir}/${projectName}.csv`, content: csvContent },
-      pdf: { path: pdfPath, content: pdfContent },
-      outlierCommits,
-      insertionsMean,
-      insertionsThreshold,
-    });
+  for (let month = 0; month < option.periodMonths; month += 1) {
+    const gitLog = await getGitLog(option.targetDir, month);
+    const result = parseGitLog(authorLog, gitLog);
+    authorLog = result.authorLog;
+    allCommitDetails.push(...result.commitDetails);
   }
 
-  return results;
+  const {
+    outliers: outlierCommits,
+    insertionsMean,
+    insertionsThreshold,
+  } = findOutlierCommits(allCommitDetails);
+
+  const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
+
+  const csvContent = toCsv(
+    filteredAuthorLog,
+    option.periodMonths,
+    outlierCommits,
+    insertionsMean,
+    insertionsThreshold,
+  );
+
+  const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1) ?? '';
+  const pdfContent = await toPdf(
+    filteredAuthorLog,
+    option.periodMonths,
+    option.projectName ?? dirName,
+    outlierCommits,
+    insertionsMean,
+    insertionsThreshold,
+  );
+
+  return {
+    authorLog,
+    filteredAuthorLog,
+    csv: { path: `${option.outputDir}/${dirName}.csv`, content: csvContent },
+    pdf: { path: `${option.outputDir}/${dirName}.pdf`, content: pdfContent },
+    outlierCommits,
+    insertionsMean,
+    insertionsThreshold,
+  };
 };
 
 const execPromise = promisify(exec);

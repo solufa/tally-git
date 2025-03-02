@@ -19,7 +19,7 @@ export const SummaryPage = ({
   sortedAuthors,
 }: SummaryPageProps): React.ReactElement => (
   <Page size="A4" style={pdfStyles.page}>
-    <Text style={pdfStyles.title}>{projectName} プロジェクト開発レポート</Text>
+    <Text style={pdfStyles.title}>{projectName} Git解析レポート</Text>
 
     {/* 概要セクション */}
     <View style={pdfStyles.section}>

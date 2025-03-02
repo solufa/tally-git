@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
 import { ChartPage } from './pdf-pages/chart-page';
-import { ContributorsPage } from './pdf-pages/contributors-page';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { SummaryPage } from './pdf-pages/summary-page';
 import type { CommitDetail } from './stats';
@@ -68,8 +67,6 @@ export const toPdf = async (
 
   // 貢献者別コミット数データの準備
   const topContributors = sortedAuthors.slice(0, 10);
-  const pieData = topContributors.map((a) => a.totalCommits);
-  const pieLabels = topContributors.map((a) => a.author);
 
   // 貢献者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
   const contributorCommitsData = topContributors.map((author) => {
@@ -111,7 +108,6 @@ export const toPdf = async (
         contributorInsertionsData={contributorInsertionsData}
         contributorDeletionsData={contributorDeletionsData}
       />
-      <ContributorsPage pieData={pieData} pieLabels={pieLabels} />
       <OutliersPage
         outlierCommits={outlierCommits}
         insertionsMean={insertionsMean}

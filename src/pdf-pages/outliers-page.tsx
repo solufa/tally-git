@@ -27,18 +27,14 @@ const styles = StyleSheet.create({
     width: '15%',
   },
   hashCell: {
-    width: '15%',
+    width: '20%',
   },
   insertionsCell: {
-    width: '15%',
+    width: '20%',
     textAlign: 'right',
   },
   deletionsCell: {
-    width: '15%',
-    textAlign: 'right',
-  },
-  impactCell: {
-    width: '15%',
+    width: '20%',
     textAlign: 'right',
   },
   noOutliers: {
@@ -71,28 +67,27 @@ export const OutliersPage = ({
           <Text style={[styles.tableCell, styles.hashCell]}>コミットハッシュ</Text>
           <Text style={[styles.tableCell, styles.insertionsCell]}>追加行数</Text>
           <Text style={[styles.tableCell, styles.deletionsCell]}>削除行数</Text>
-          <Text style={[styles.tableCell, styles.impactCell]}>影響度</Text>
         </View>
-        {outlierCommits.map((commit, index) => {
-          const impact = commit.insertions + commit.deletions;
-          return (
-            <View key={index} style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.authorCell]}>{commit.author}</Text>
-              <Text style={[styles.tableCell, styles.dateCell]}>{commit.date}</Text>
-              <Text style={[styles.tableCell, styles.hashCell]}>{commit.hash.substring(0, 7)}</Text>
-              <Text style={[styles.tableCell, styles.insertionsCell]}>{commit.insertions}</Text>
-              <Text style={[styles.tableCell, styles.deletionsCell]}>{commit.deletions}</Text>
-              <Text style={[styles.tableCell, styles.impactCell]}>{impact}</Text>
-            </View>
-          );
-        })}
+        {outlierCommits.map((commit, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableCell, styles.authorCell]}>{commit.author}</Text>
+            <Text style={[styles.tableCell, styles.dateCell]}>{commit.date}</Text>
+            <Text style={[styles.tableCell, styles.hashCell]}>{commit.hash.substring(0, 7)}</Text>
+            <Text style={[styles.tableCell, styles.insertionsCell]}>{commit.insertions}</Text>
+            <Text style={[styles.tableCell, styles.deletionsCell]}>{commit.deletions}</Text>
+          </View>
+        ))}
       </View>
     ) : (
       <Text style={styles.noOutliers}>外れ値のコミットは検出されませんでした。</Text>
     )}
 
     <Text style={styles.subtitle}>外れ値の判定基準</Text>
-    <Text>外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：</Text>
+    <Text>
+      通常のコミットパターンから大きく逸脱したコミットは統計から除外されています。
+      これらは大規模なリファクタリング、ライブラリの更新、自動生成されたコードの追加などによって発生することがあります。
+      外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：
+    </Text>
     <Text>1. 標準偏差の2倍以上の追加行数を持つコミット</Text>
     <Text>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
     <View style={styles.table}>
@@ -116,12 +111,5 @@ export const OutliersPage = ({
         <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>追加行数 × 10</Text>
       </View>
     </View>
-
-    <Text style={styles.subtitle}>外れ値コミットの影響</Text>
-    <Text>
-      外れ値コミットは、通常のコミットパターンから大きく逸脱したコミットです。これらは大規模なリファクタリング、
-      ライブラリの更新、自動生成されたコードの追加などによって発生することがあります。
-      これらのコミットを統計から除外することで、より正確な開発活動の分析が可能になります。
-    </Text>
   </Page>
 );

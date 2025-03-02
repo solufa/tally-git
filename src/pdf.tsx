@@ -4,18 +4,23 @@ import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
 import { ChartPage } from './pdf-pages/chart-page';
 import { ContributorsPage } from './pdf-pages/contributors-page';
+import { OutliersPage } from './pdf-pages/outliers-page';
 import { SummaryPage } from './pdf-pages/summary-page';
+import type { CommitDetail } from './stats';
 import { registerFonts } from './styles/pdf-styles';
 import type { AuthorLog } from './types';
 
-// フォント登録
 registerFonts();
 
-// PDFドキュメントを生成する関数
 export const toPdf = async (
   authorLog: AuthorLog,
   months: number,
   projectName: string,
+  outlierCommits: CommitDetail[],
+  insertionsMean: number,
+  insertionsThreshold: number,
+  deletionsMean: number,
+  deletionsThreshold: number,
 ): Promise<NodeJS.ReadableStream> => {
   const monthColumns = [...Array(months)].map((_, i) =>
     dayjs()
@@ -23,7 +28,6 @@ export const toPdf = async (
       .format('YYYY-MM'),
   );
 
-  // 各著者の合計コミット数、追加行数、削除行数を計算
   const authorTotals = Object.entries(authorLog).map(([author, monthData]) => {
     const totalCommits = Object.values(monthData).reduce(
       (sum, data) => sum + (data?.commits ?? 0),
@@ -40,12 +44,10 @@ export const toPdf = async (
     return { author, totalCommits, totalInsertions, totalDeletions };
   });
 
-  // コミット数でソート
   const sortedAuthors = authorTotals
     .sort((a, b) => b.totalCommits - a.totalCommits)
     .filter((a) => a.totalCommits > 0);
 
-  // 月ごとの合計を計算
   const monthlyTotals = monthColumns.map((month) => {
     const commits = Object.values(authorLog).reduce(
       (sum, monthData) => sum + (monthData[month]?.commits ?? 0),
@@ -72,7 +74,6 @@ export const toPdf = async (
   const pieData = topContributors.map((a) => a.totalCommits);
   const pieLabels = topContributors.map((a) => a.author);
 
-  // PDFドキュメントの作成
   const MyDocument = (): React.ReactElement => (
     <Document>
       <SummaryPage
@@ -88,11 +89,15 @@ export const toPdf = async (
         deletionsData={deletionsData}
       />
       <ContributorsPage pieData={pieData} pieLabels={pieLabels} />
+      <OutliersPage
+        outlierCommits={outlierCommits}
+        insertionsMean={insertionsMean}
+        insertionsThreshold={insertionsThreshold}
+        deletionsMean={deletionsMean}
+        deletionsThreshold={deletionsThreshold}
+      />
     </Document>
   );
 
-  // PDFストリームの生成
-  const stream = await renderToStream(React.createElement(MyDocument));
-
-  return stream;
+  return await renderToStream(React.createElement(MyDocument));
 };

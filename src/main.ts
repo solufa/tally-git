@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
-import dayjs from 'dayjs';
 import { promisify } from 'util';
+import { toCsv } from './csv';
 import { toPdf } from './pdf';
 import type { CommitDetail } from './stats';
 import {
@@ -9,7 +9,7 @@ import {
   parseGitLogLine,
   processStatLine,
 } from './stats';
-import type { AuthorLog, CommitData } from './types';
+import type { AuthorLog } from './types';
 
 type Result = {
   authorLog: AuthorLog;
@@ -17,6 +17,10 @@ type Result = {
   csv: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
   outlierCommits: CommitDetail[];
+  insertionsMean: number;
+  insertionsThreshold: number;
+  deletionsMean: number;
+  deletionsThreshold: number;
 };
 
 export const main = async (
@@ -37,20 +41,50 @@ export const main = async (
       allCommitDetails.push(...result.commitDetails);
     }
 
-    const outlierCommits = findOutlierCommits(allCommitDetails);
+    const {
+      outliers: outlierCommits,
+      insertionsMean,
+      insertionsThreshold,
+      deletionsMean,
+      deletionsThreshold,
+    } = findOutlierCommits(allCommitDetails);
 
-    const csvContent = toCsv(authorLog, periodMonths);
+    const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
+
+    const csvContent = toCsv(
+      filteredAuthorLog,
+      periodMonths,
+      outlierCommits,
+      insertionsMean,
+      insertionsThreshold,
+      deletionsMean,
+      deletionsThreshold,
+    );
+
     const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
 
     const pdfPath = `${outputDir}/${projectName}.pdf`;
-    const pdfContent = await toPdf(authorLog, periodMonths, projectName);
+    const pdfContent = await toPdf(
+      filteredAuthorLog,
+      periodMonths,
+      projectName,
+      outlierCommits,
+      insertionsMean,
+      insertionsThreshold,
+      deletionsMean,
+      deletionsThreshold,
+    );
 
     results.push({
       authorLog,
-      filteredAuthorLog: createFilteredAuthorLog(authorLog, outlierCommits),
+      filteredAuthorLog,
       csv: { path: `${outputDir}/${projectName}.csv`, content: csvContent },
       pdf: { path: pdfPath, content: pdfContent },
       outlierCommits,
+      insertionsMean,
+      insertionsThreshold,
+      deletionsMean,
+      deletionsThreshold,
     });
   }
 
@@ -138,41 +172,4 @@ const parseGitLog = (
 
   mergeIfExists();
   return { authorLog, lastHash, commitDetails };
-};
-
-const toCsv = (authorLog: AuthorLog, months: number): string => {
-  const monthColumns = [...Array(months)].map((_, i) =>
-    dayjs()
-      .subtract(months - i - 1, 'month')
-      .format('YYYY-MM'),
-  );
-  const header = `,${monthColumns.join(',')}`;
-
-  const formatRow = (
-    author: string,
-    monthData: Record<string, CommitData | undefined>,
-    key: keyof CommitData,
-  ): string => `${author},${monthColumns.map((column) => monthData[column]?.[key] ?? 0).join(',')}`;
-
-  const commits = Object.entries(authorLog).map(([author, monthData]) =>
-    formatRow(author, monthData, 'commits'),
-  );
-  const insertions = Object.entries(authorLog).map(([author, monthData]) =>
-    formatRow(author, monthData, 'insertions'),
-  );
-  const deletions = Object.entries(authorLog).map(([author, monthData]) =>
-    formatRow(author, monthData, 'deletions'),
-  );
-
-  return `${header}
-コミット数
-${commits.join('\n')}
-
-
-追加行数
-${insertions.join('\n')}
-
-
-削除行数
-${deletions.join('\n')}`;
 };

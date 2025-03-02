@@ -1,6 +1,6 @@
-import { Page, Text, View } from '@react-pdf/renderer';
+import { Page } from '@react-pdf/renderer';
 import React from 'react';
-import { LineChart } from '../charts/line-chart';
+import { DualBarChart } from '../charts/dual-bar-chart';
 import { StackedBarChart } from '../charts/stacked-bar-chart';
 import { pdfStyles } from '../styles/pdf-styles';
 
@@ -10,6 +10,8 @@ interface ChartPageProps {
   contributorNames: string[];
   insertionsData: number[];
   deletionsData: number[];
+  contributorInsertionsData: number[][];
+  contributorDeletionsData: number[][];
 }
 
 export const ChartPage = ({
@@ -18,26 +20,26 @@ export const ChartPage = ({
   contributorNames,
   insertionsData,
   deletionsData,
+  contributorInsertionsData,
+  contributorDeletionsData,
 }: ChartPageProps): React.ReactElement => (
   <Page size="A4" style={pdfStyles.page}>
-    <View style={pdfStyles.section}>
-      <Text style={pdfStyles.sectionTitle}>活動グラフ</Text>
-    </View>
     <StackedBarChart
       title="コミット数の推移"
       data={contributorCommitsData}
       labels={monthColumns}
       contributors={contributorNames}
       width={500}
-      height={250}
+      height={300}
     />
-    <LineChart
-      title="追加・削除行数の推移"
+    <DualBarChart
+      title="追加（左グラフ）・削除（右グラフ）行数の推移"
       data={[insertionsData, deletionsData]}
+      contributorData={[contributorInsertionsData, contributorDeletionsData]}
       labels={monthColumns}
+      contributors={contributorNames}
       width={500}
-      height={250}
-      multiLine={true}
+      height={300}
     />
   </Page>
 );

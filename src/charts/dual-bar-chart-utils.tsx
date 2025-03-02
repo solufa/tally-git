@@ -1,28 +1,29 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
 
-export interface StackedBarChartProps {
+export interface DualBarChartProps {
   title: string;
-  data: number[][];
+  data: [number[], number[]]; // [追加データ, 削除データ]
+  contributorData: [number[][], number[][]]; // [貢献者ごとの追加データ, 貢献者ごとの削除データ]
   labels: string[];
-  contributors: string[];
+  contributors: string[]; // 貢献者名
   width?: number;
   height?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
   colors?: string[];
 }
 
-export interface StackedBarChartSvgProps {
+export interface DualBarChartSvgProps {
   width: number;
   height: number;
   margin: { top: number; right: number; bottom: number; left: number };
   chartWidth: number;
   chartHeight: number;
   maxValue: number;
-  data: number[][];
+  contributorData: [number[][], number[][]];
   labels: string[];
-  contributors: string[];
   colors: string[];
+  contributors: string[];
 }
 
 export const XAxis = ({
@@ -57,18 +58,17 @@ export const YAxis = ({
 
 export const renderXAxisLabels = (
   labels: string[],
-  barWidth: number,
   margin: { top: number; right: number; bottom: number; left: number },
   chartHeight: number,
   chartWidth: number,
+  monthWidth: number,
+  barWidth: number,
+  monthPadding: number,
 ): React.ReactNode[] => {
-  // 棒グラフの間隔を計算
-  const barSpacing = (chartWidth / labels.length) * 0.2;
-
   return labels
     .map((label, i) => {
-      // 棒グラフの中心位置を計算
-      const x = margin.left + i * (chartWidth / labels.length) + barWidth / 2 + barSpacing / 2;
+      // 追加と削除の棒グラフのちょうど中間に配置
+      const x = margin.left + i * monthWidth + monthPadding + barWidth;
       const y = margin.top + chartHeight + 20;
       // ラベルが多い場合は間引く
       if (labels.length > 12 && i % 2 !== 0 && i !== labels.length - 1) return null;

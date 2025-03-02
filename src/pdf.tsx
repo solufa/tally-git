@@ -77,6 +77,21 @@ export const toPdf = async (
       return authorLog[author.author]?.[month]?.commits ?? 0;
     });
   });
+
+  // 貢献者別の月ごとの追加行数データを準備（積み上げ棒グラフ用）
+  const contributorInsertionsData = topContributors.map((author) => {
+    return monthColumns.map((month) => {
+      return authorLog[author.author]?.[month]?.insertions ?? 0;
+    });
+  });
+
+  // 貢献者別の月ごとの削除行数データを準備（積み上げ棒グラフ用）
+  const contributorDeletionsData = topContributors.map((author) => {
+    return monthColumns.map((month) => {
+      return authorLog[author.author]?.[month]?.deletions ?? 0;
+    });
+  });
+
   const contributorNames = topContributors.map((a) => a.author);
 
   const MyDocument = (): React.ReactElement => (
@@ -93,6 +108,8 @@ export const toPdf = async (
         contributorNames={contributorNames}
         insertionsData={insertionsData}
         deletionsData={deletionsData}
+        contributorInsertionsData={contributorInsertionsData}
+        contributorDeletionsData={contributorDeletionsData}
       />
       <ContributorsPage pieData={pieData} pieLabels={pieLabels} />
       <OutliersPage

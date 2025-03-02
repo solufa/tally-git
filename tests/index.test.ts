@@ -5,7 +5,7 @@ import type { CommitDetail } from '../src/stats';
 
 test('laravel', async () => {
   const outputDir = './tests/assets';
-  const [result] = await main(['./tests/projects/laravel'], outputDir, 17);
+  const [result] = await main(['./tests/projects/laravel'], outputDir, 12);
 
   expect(result.csv.path).toEqual(`${outputDir}/laravel.csv`);
 

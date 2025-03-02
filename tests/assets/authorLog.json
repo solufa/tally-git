@@ -9,11 +9,6 @@
       "commits": 3,
       "insertions": 123,
       "deletions": 8
-    },
-    "2024-02": {
-      "commits": 1,
-      "insertions": 161,
-      "deletions": 0
     }
   },
   "KentarouTakeda": {
@@ -52,11 +47,6 @@
       "deletions": 0
     },
     "2024-10": {
-      "commits": 1,
-      "insertions": 0,
-      "deletions": 0
-    },
-    "2024-02": {
       "commits": 1,
       "insertions": 0,
       "deletions": 0
@@ -110,16 +100,6 @@
       "commits": 5,
       "insertions": 2,
       "deletions": 0
-    },
-    "2024-03": {
-      "commits": 1,
-      "insertions": 0,
-      "deletions": 0
-    },
-    "2024-02": {
-      "commits": 31,
-      "insertions": 1463,
-      "deletions": 1468
     }
   },
   "Casper Bloemendaal": {
@@ -139,11 +119,6 @@
       "commits": 6,
       "insertions": 102,
       "deletions": 105
-    },
-    "2024-02": {
-      "commits": 3,
-      "insertions": 19,
-      "deletions": 23
     }
   },
   "Jesper Noordsij": {
@@ -242,11 +217,6 @@
       "commits": 1,
       "insertions": 2,
       "deletions": 2
-    },
-    "2023-10": {
-      "commits": 1,
-      "insertions": 2,
-      "deletions": 2
     }
   },
   "erikn69": {
@@ -315,16 +285,6 @@
       "commits": 1,
       "insertions": 13,
       "deletions": 5
-    },
-    "2024-02": {
-      "commits": 10,
-      "insertions": 155,
-      "deletions": 293
-    },
-    "2024-01": {
-      "commits": 1,
-      "insertions": 8,
-      "deletions": 3
     }
   },
   "stefanScrumble": {
@@ -353,139 +313,6 @@
       "commits": 1,
       "insertions": 106,
       "deletions": 0
-    }
-  },
-  "GeoSot": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 5,
-      "deletions": 2
-    }
-  },
-  "Menthol": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 85,
-      "deletions": 4
-    }
-  },
-  "Hans van Luttikhuizen-Ross": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 192,
-      "deletions": 28
-    }
-  },
-  "Norman Huth": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 1,
-      "deletions": 1
-    }
-  },
-  "Caleb White": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 116,
-      "deletions": 5
-    }
-  },
-  "Sven": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 1,
-      "deletions": 0
-    }
-  },
-  "Ben Poulson": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 4,
-      "deletions": 0
-    }
-  },
-  "leo108": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 8,
-      "deletions": 3
-    }
-  },
-  "James Bhatta": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 0,
-      "deletions": 0
-    }
-  },
-  "Filip Iulian Pacurar": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 191,
-      "deletions": 0
-    }
-  },
-  "snmatsui": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 1,
-      "deletions": 0
-    }
-  },
-  "Ruben Robles": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 239,
-      "deletions": 1
-    }
-  },
-  "Allan Laal": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 0,
-      "deletions": 0
-    }
-  },
-  "PapaBear": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 5,
-      "deletions": 0
-    }
-  },
-  "netpok": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 14,
-      "deletions": 14
-    }
-  },
-  "Jackey Cheung": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 3,
-      "deletions": 0
-    }
-  },
-  "Toby Twigger": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 0,
-      "deletions": 0
-    }
-  },
-  "Oleksandr Oliinyk": {
-    "2024-02": {
-      "commits": 1,
-      "insertions": 161,
-      "deletions": 0
-    }
-  },
-  "dependabot[bot]": {
-    "2023-11": {
-      "commits": 1,
-      "insertions": 2,
-      "deletions": 2
     }
   }
 }

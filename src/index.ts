@@ -20,7 +20,7 @@ import { main } from './main';
         // '../reserve',
       ];
 
-  const results = await main(targetDirs, 'out', 7);
+  const results = await main(targetDirs, 'out', 12);
 
   await Promise.all(
     results.map((result) => writeFile(result.csv.path, result.csv.content, 'utf8')),
@@ -39,7 +39,7 @@ import { main } from './main';
     }),
   );
 
-  const [laravelResult] = await main(['./tests/projects/laravel'], 'tests/assets', 17);
+  const [laravelResult] = await main(['./tests/projects/laravel'], 'tests/assets', 12);
 
   await writeFile(laravelResult.csv.path, laravelResult.csv.content, 'utf8');
   await writeFile(
@@ -66,4 +66,7 @@ import { main } from './main';
     writeStream.on('finish', resolve);
     writeStream.on('error', reject);
   });
+
+  console.log('generated:', laravelResult.csv.path);
+  console.log('generated:', laravelResult.pdf.path);
 })();

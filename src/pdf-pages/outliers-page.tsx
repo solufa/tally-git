@@ -1,88 +1,104 @@
-import { Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Page, Text, View } from '@react-pdf/renderer';
+import dayjs from 'dayjs';
 import React from 'react';
 import type { CommitDetail } from '../stats';
 import { pdfStyles } from '../styles/pdf-styles';
-
-const styles = StyleSheet.create({
-  ...pdfStyles,
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 10,
-    marginTop: 20,
-  },
-  tableHeader: {
-    backgroundColor: '#f0f0f0',
-  },
-  tableCell: {
-    padding: 5,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: '#bfbfbf',
-    fontSize: 10,
-  },
-  authorCell: {
-    width: '25%',
-  },
-  dateCell: {
-    width: '15%',
-  },
-  hashCell: {
-    width: '20%',
-  },
-  insertionsCell: {
-    width: '20%',
-    textAlign: 'right',
-  },
-  deletionsCell: {
-    width: '20%',
-    textAlign: 'right',
-  },
-  noOutliers: {
-    fontSize: 14,
-    marginTop: 20,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-});
 
 type OutliersPageProps = {
   outlierCommits: CommitDetail[];
 };
 
-export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.ReactElement => (
-  <Page size="A4" style={styles.page}>
-    <Text style={styles.title}>外れ値コミット分析</Text>
-    <Text style={styles.subtitle}>検出された外れ値コミット</Text>
-    {outlierCommits.length > 0 ? (
-      <View style={styles.table}>
-        <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={[styles.tableCell, styles.authorCell]}>著者</Text>
-          <Text style={[styles.tableCell, styles.dateCell]}>日付</Text>
-          <Text style={[styles.tableCell, styles.hashCell]}>コミットハッシュ</Text>
-          <Text style={[styles.tableCell, styles.insertionsCell]}>追加行数</Text>
-          <Text style={[styles.tableCell, styles.deletionsCell]}>削除行数</Text>
-        </View>
-        {outlierCommits.map((commit, index) => (
-          <View key={index} style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.authorCell]}>{commit.author}</Text>
-            <Text style={[styles.tableCell, styles.dateCell]}>{commit.date}</Text>
-            <Text style={[styles.tableCell, styles.hashCell]}>{commit.hash.substring(0, 7)}</Text>
-            <Text style={[styles.tableCell, styles.insertionsCell]}>{commit.insertions}</Text>
-            <Text style={[styles.tableCell, styles.deletionsCell]}>{commit.deletions}</Text>
-          </View>
-        ))}
-      </View>
-    ) : (
-      <Text style={styles.noOutliers}>外れ値のコミットは検出されませんでした。</Text>
-    )}
+type MonthlyOutlierData = {
+  month: string;
+  commits: number;
+  insertions: number;
+  deletions: number;
+};
 
-    <Text style={styles.subtitle}>外れ値の判定基準</Text>
-    <Text>
-      通常のコミットパターンから大きく逸脱したコミットは統計から除外されています。
-      これらは大規模なリファクタリング、ライブラリの更新、自動生成されたコードの追加などによって発生することがあります。
-      外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：
-    </Text>
-    <Text>1. 5000行以上の追加行数を持つコミット</Text>
-    <Text>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
-  </Page>
-);
+export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.ReactElement => {
+  // 月ごとにグループ化する
+  const groupByMonth = (commits: CommitDetail[]): MonthlyOutlierData[] => {
+    const monthlyData: Record<string, MonthlyOutlierData> = {};
+
+    commits.forEach((commit) => {
+      // YYYY-MM 形式で月を取得
+      const month = commit.date.slice(0, 7);
+
+      if (!monthlyData[month]) {
+        monthlyData[month] = {
+          month,
+          commits: 0,
+          insertions: 0,
+          deletions: 0,
+        };
+      }
+
+      monthlyData[month].commits += 1;
+      monthlyData[month].insertions += commit.insertions;
+      monthlyData[month].deletions += commit.deletions;
+    });
+
+    return Object.values(monthlyData);
+  };
+
+  // 月別データを作成し、降順にソート
+  const monthlyOutliers = groupByMonth(outlierCommits).sort((a, b) =>
+    dayjs(b.month, 'YYYY-MM').diff(dayjs(a.month, 'YYYY-MM')),
+  );
+
+  return (
+    <Page size="A4" style={pdfStyles.page}>
+      <Text style={pdfStyles.title}>外れ値コミット分析</Text>
+      <Text style={pdfStyles.sectionTitle}>月別外れ値コミット</Text>
+
+      {monthlyOutliers.length > 0 ? (
+        <View style={pdfStyles.table}>
+          <View style={pdfStyles.tableHeaderRow}>
+            <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+              <Text style={pdfStyles.tableHeader}>月</Text>
+            </View>
+            <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+              <Text style={pdfStyles.tableHeader}>コミット数</Text>
+            </View>
+            <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+              <Text style={pdfStyles.tableHeader}>追加行数</Text>
+            </View>
+            <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+              <Text style={pdfStyles.tableHeader}>削除行数</Text>
+            </View>
+          </View>
+
+          {monthlyOutliers.map((month, i) => (
+            <View key={i} style={pdfStyles.tableRow}>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCell}>{month.month}</Text>
+              </View>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCellRight}>{month.commits}</Text>
+              </View>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCellRight}>{month.insertions}</Text>
+              </View>
+              <View style={[pdfStyles.tableCol, { width: '25%' }]}>
+                <Text style={pdfStyles.tableCellRight}>{month.deletions}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={{ marginTop: 20, marginBottom: 20, alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, fontStyle: 'italic' }}>外れ値コミットはありません</Text>
+        </View>
+      )}
+
+      <Text style={pdfStyles.sectionTitle}>外れ値の判定基準</Text>
+      <Text style={pdfStyles.text}>
+        通常のコミットパターンから大きく逸脱したコミットは統計から除外されています。
+        これらは大規模なリファクタリング、ライブラリの更新、自動生成されたコードの追加などによって発生することがあります。
+        外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：
+      </Text>
+      <Text style={pdfStyles.text}>1. 5000行以上の追加行数を持つコミット</Text>
+      <Text style={pdfStyles.text}>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
+    </Page>
+  );
+};

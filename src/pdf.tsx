@@ -37,9 +37,7 @@ export const toPdf = async (
       0,
     );
     // 稼働月数を計算（コミット数が1回以上ある月をカウント）
-    const activeMonths = Object.values(monthData).filter(
-      (data) => (data?.commits ?? 0) > 0,
-    ).length;
+    const activeMonths = Object.values(monthData).filter((data) => (data?.commits ?? 0) > 0).length;
     return { author, totalCommits, totalInsertions, totalDeletions, activeMonths };
   });
 

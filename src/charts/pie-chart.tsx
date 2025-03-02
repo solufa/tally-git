@@ -1,6 +1,6 @@
 import { G, Path, Svg, Text, View } from '@react-pdf/renderer';
 import React from 'react';
-import { styles } from '../styles/pdf-styles';
+import { pdfStyles } from '../styles/pdf-styles';
 
 export interface PieChartProps {
   title: string;
@@ -181,8 +181,8 @@ export const PieChart = ({
   const paths = generatePaths(data, labels, colors, centerX, centerY, radius);
 
   return (
-    <View style={styles.chart}>
-      <Text style={styles.chartTitle}>{title}</Text>
+    <View style={pdfStyles.chart}>
+      <Text style={pdfStyles.chartTitle}>{title}</Text>
       <Svg width={width} height={height}>
         {paths.map((item, i) => (
           <Path key={`pie-${i}`} d={item.path} fill={item.color} stroke="#FFFFFF" strokeWidth={1} />

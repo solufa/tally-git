@@ -1,32 +1,14 @@
+import { Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import React from 'react';
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import type { CommitDetail } from '../stats';
+import { pdfStyles } from '../styles/pdf-styles';
 
 const styles = StyleSheet.create({
-  page: {
-    padding: 30,
-    fontFamily: 'NotoSansJP',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
+  ...pdfStyles,
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 10,
     marginTop: 20,
-  },
-  table: {
-    display: 'flex',
-    width: 'auto',
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: '#bfbfbf',
-    marginBottom: 20,
-  },
-  tableRow: {
-    flexDirection: 'row',
   },
   tableHeader: {
     backgroundColor: '#f0f0f0',
@@ -71,16 +53,12 @@ type OutliersPageProps = {
   outlierCommits: CommitDetail[];
   insertionsMean: number;
   insertionsThreshold: number;
-  deletionsMean: number;
-  deletionsThreshold: number;
 };
 
 export const OutliersPage = ({
   outlierCommits,
   insertionsMean,
   insertionsThreshold,
-  deletionsMean,
-  deletionsThreshold
 }: OutliersPageProps): React.ReactElement => (
   <Page size="A4" style={styles.page}>
     <Text style={styles.title}>外れ値コミット分析</Text>
@@ -114,24 +92,28 @@ export const OutliersPage = ({
     )}
 
     <Text style={styles.subtitle}>外れ値の判定基準</Text>
-    <Text>
-      外れ値コミットは、標準偏差の2倍を超える変更行数を持つコミットとして検出されています。
-    </Text>
+    <Text>外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：</Text>
+    <Text>1. 標準偏差の2倍以上の追加行数を持つコミット</Text>
+    <Text>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
     <View style={styles.table}>
       <View style={[styles.tableRow, styles.tableHeader]}>
         <Text style={[styles.tableCell, { width: '50%' }]}>指標</Text>
         <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>平均値</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>閾値 (標準偏差×2)</Text>
+        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>閾値</Text>
       </View>
       <View style={styles.tableRow}>
         <Text style={[styles.tableCell, { width: '50%' }]}>追加行数</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>{Math.round(insertionsMean)}</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>{Math.round(insertionsThreshold)}</Text>
+        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>
+          {Math.round(insertionsMean)}
+        </Text>
+        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>
+          {Math.round(insertionsThreshold)}
+        </Text>
       </View>
       <View style={styles.tableRow}>
         <Text style={[styles.tableCell, { width: '50%' }]}>削除行数</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>{Math.round(deletionsMean)}</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>{Math.round(deletionsThreshold)}</Text>
+        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>-</Text>
+        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>追加行数 × 10</Text>
       </View>
     </View>
 

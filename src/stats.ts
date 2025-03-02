@@ -32,35 +32,28 @@ export const findOutlierCommits = (
   outliers: CommitDetail[];
   insertionsMean: number;
   insertionsThreshold: number;
-  deletionsMean: number;
-  deletionsThreshold: number;
 } => {
   const insertions = commitDetails.map((commit) => commit.insertions);
-  const deletions = commitDetails.map((commit) => commit.deletions);
 
   const insertionsMean =
     insertions.length > 0
       ? insertions.reduce((sum, value) => sum + value, 0) / insertions.length
       : 0;
-  const deletionsMean =
-    deletions.length > 0 ? deletions.reduce((sum, value) => sum + value, 0) / deletions.length : 0;
 
   const insertionsStdDev = calculateStandardDeviation(insertions);
-  const deletionsStdDev = calculateStandardDeviation(deletions);
 
   const insertionsThreshold = insertionsStdDev * stdDevMultiplier;
-  const deletionsThreshold = deletionsStdDev * stdDevMultiplier;
 
   const outliers = commitDetails.filter(
-    (commit) => commit.insertions > insertionsThreshold || commit.deletions > deletionsThreshold,
+    (commit) =>
+      commit.insertions > insertionsThreshold ||
+      (commit.insertions > 0 && commit.deletions >= commit.insertions * 10),
   );
 
   return {
     outliers,
     insertionsMean,
     insertionsThreshold,
-    deletionsMean,
-    deletionsThreshold,
   };
 };
 

@@ -1,7 +1,7 @@
 import { Page, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { LineChart } from '../charts/line-chart';
-import { styles } from '../styles/pdf-styles';
+import { pdfStyles } from '../styles/pdf-styles';
 
 interface ChartPageProps {
   monthColumns: string[];
@@ -16,9 +16,9 @@ export const ChartPage = ({
   insertionsData,
   deletionsData,
 }: ChartPageProps): React.ReactElement => (
-  <Page size="A4" style={styles.page}>
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>活動グラフ</Text>
+  <Page size="A4" style={pdfStyles.page}>
+    <View style={pdfStyles.section}>
+      <Text style={pdfStyles.sectionTitle}>活動グラフ</Text>
     </View>
 
     {/* コミット数の推移グラフ */}

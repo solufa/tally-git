@@ -1,9 +1,8 @@
 import { Circle, G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { styles } from '../styles/pdf-styles';
+import { pdfStyles } from '../styles/pdf-styles';
 import { generatePath } from './line-chart-utils';
 
-// データラインを描画する関数
 export const renderDataLines = (
   data: number[][] | number[],
   multiLine: boolean,
@@ -36,7 +35,6 @@ export const renderDataLines = (
   );
 };
 
-// データポイントを描画する関数
 export const renderDataPoints = (
   data: number[][] | number[],
   multiLine: boolean,
@@ -48,7 +46,6 @@ export const renderDataPoints = (
     return (data as number[][]).flatMap((lineData, lineIndex) =>
       lineData
         .map((value, i) => {
-          // NaNや無限大の値をチェック
           if (isNaN(value) || !isFinite(value)) return null;
           return (
             <Circle
@@ -65,14 +62,12 @@ export const renderDataPoints = (
   }
   return (data as number[])
     .map((value, i) => {
-      // NaNや無限大の値をチェック
       if (isNaN(value) || !isFinite(value)) return null;
       return <Circle key={`point-${i}`} cx={xScale(i)} cy={yScale(value)} r={3} fill={colors[0]} />;
     })
     .filter(Boolean);
 };
 
-// 凡例を描画する関数
 export const renderLegend = (
   multiLine: boolean,
   margin: { top: number; right: number; bottom: number; left: number },
@@ -82,7 +77,11 @@ export const renderLegend = (
   if (!multiLine) return null;
   return (
     <G>
-      <Text x={margin.left + chartWidth - 100} y={margin.top - 20} style={styles.lineChartLegend}>
+      <Text
+        x={margin.left + chartWidth - 100}
+        y={margin.top - 20}
+        style={pdfStyles.lineChartLegend}
+      >
         追加行数
       </Text>
       <Path
@@ -90,7 +89,7 @@ export const renderLegend = (
         stroke={colors[0]}
         strokeWidth={2}
       />
-      <Text x={margin.left + chartWidth - 100} y={margin.top - 5} style={styles.lineChartLegend}>
+      <Text x={margin.left + chartWidth - 100} y={margin.top - 5} style={pdfStyles.lineChartLegend}>
         削除行数
       </Text>
       <Path

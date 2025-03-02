@@ -19,8 +19,6 @@ export const toPdf = async (
   outlierCommits: CommitDetail[],
   insertionsMean: number,
   insertionsThreshold: number,
-  deletionsMean: number,
-  deletionsThreshold: number,
 ): Promise<NodeJS.ReadableStream> => {
   const monthColumns = [...Array(months)].map((_, i) =>
     dayjs()
@@ -93,8 +91,6 @@ export const toPdf = async (
         outlierCommits={outlierCommits}
         insertionsMean={insertionsMean}
         insertionsThreshold={insertionsThreshold}
-        deletionsMean={deletionsMean}
-        deletionsThreshold={deletionsThreshold}
       />
     </Document>
   );

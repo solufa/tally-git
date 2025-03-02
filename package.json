@@ -6,7 +6,7 @@
     "start": "node -r esbuild-register src/index.ts",
     "lint": "run-p lint:*",
     "lint:js": "eslint .",
-    "lint:prettier": "prettier --check \"./**/*.{ts,js}\" --ignore-path .gitignore",
+    "lint:prettier": "prettier --check \"./**/*.{ts,tsx,js}\" --ignore-path .gitignore",
     "fix:lint": "npm run lint:js -- --fix && npm run lint:prettier -- --write",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

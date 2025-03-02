@@ -3,14 +3,14 @@ import path from 'path';
 
 const fontFamily = 'NotoSansJP';
 
-// スタイルの定義
-export const styles = StyleSheet.create({
+export const pdfStyles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily,
+    fontSize: 12,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 10,
     fontWeight: 'bold',
   },
@@ -73,10 +73,9 @@ export const styles = StyleSheet.create({
   },
 });
 
-// フォント登録
 export const registerFonts = (): void => {
   Font.register({
-    family: styles.page.fontFamily,
+    family: pdfStyles.page.fontFamily,
     fonts: [{ src: path.resolve('./src/fonts/NotoSansJP-Regular.ttf') }],
   });
 };

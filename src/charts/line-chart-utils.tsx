@@ -1,7 +1,6 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
 
-// 折れ線グラフ関連の型定義
 export interface LineChartProps {
   title: string;
   data: number[][] | number[];
@@ -19,12 +18,10 @@ export interface ChartPoint {
   i: number;
 }
 
-// 折れ線グラフのデータを処理する関数
 export const processLineChartData = (
   data: number[][] | number[],
   multiLine: boolean,
 ): { maxValue: number } => {
-  // データの最大値を取得
   let maxValue = 0;
   if (multiLine) {
     const multiLineData = data as number[][];
@@ -40,7 +37,6 @@ export const processLineChartData = (
   return { maxValue: maxValue * 1.1 };
 };
 
-// X軸を描画するコンポーネント
 export const XAxis = ({
   margin,
   chartHeight,
@@ -57,7 +53,6 @@ export const XAxis = ({
   />
 );
 
-// Y軸を描画するコンポーネント
 export const YAxis = ({
   margin,
   chartHeight,
@@ -72,7 +67,6 @@ export const YAxis = ({
   />
 );
 
-// X軸ラベルを描画する関数
 export const renderXAxisLabels = (
   labels: string[],
   xScale: (i: number) => number,
@@ -101,7 +95,6 @@ export const renderXAxisLabels = (
     .filter(Boolean);
 };
 
-// Y軸ラベルを描画する関数
 export const renderYAxisLabels = (
   maxValue: number,
   yScale: (value: number) => number,
@@ -125,13 +118,11 @@ export const renderYAxisLabels = (
   });
 };
 
-// パスを生成する関数
 export const generatePath = (
   lineData: number[],
   xScale: (i: number) => number,
   yScale: (value: number) => number,
 ): string => {
-  // 有効なデータポイントのみをフィルタリング
   const validPoints = lineData
     .map((value, i) => {
       if (isNaN(value) || !isFinite(value)) return null;
@@ -141,7 +132,6 @@ export const generatePath = (
     })
     .filter((point): point is ChartPoint => point !== null);
 
-  // 有効なデータポイントがない場合は空のパスを返す
   if (validPoints.length === 0) return '';
 
   // パスを生成

@@ -32,16 +32,10 @@ const formatOutlierCommits = (outlierCommits: CommitDetail[]): string => {
     .join('\n');
 };
 
-const formatThresholdValues = (
-  insertionsMean: number,
-  insertionsThreshold: number,
-  deletionsMean: number,
-  deletionsThreshold: number,
-): string => {
+const formatThresholdValues = (insertionsMean: number, insertionsThreshold: number): string => {
   return `追加行数の平均値,${Math.round(insertionsMean)}
 追加行数の閾値（標準偏差×2）,${Math.round(insertionsThreshold)}
-削除行数の平均値,${Math.round(deletionsMean)}
-削除行数の閾値（標準偏差×2）,${Math.round(deletionsThreshold)}`;
+削除行数の閾値（追加行数の10倍以上）,追加行数 × 10`;
 };
 
 const generateActivityRows = (
@@ -95,20 +89,13 @@ export const toCsv = (
   outlierCommits: CommitDetail[],
   insertionsMean: number,
   insertionsThreshold: number,
-  deletionsMean: number,
-  deletionsThreshold: number,
 ): string => {
   const monthColumns = generateMonthColumns(months);
   const header = `,${monthColumns.join(',')}`;
 
   const activityData = generateActivityRows(authorLog, monthColumns);
 
-  const thresholdInfo = formatThresholdValues(
-    insertionsMean,
-    insertionsThreshold,
-    deletionsMean,
-    deletionsThreshold,
-  );
+  const thresholdInfo = formatThresholdValues(insertionsMean, insertionsThreshold);
 
   const outlierInfo = formatOutlierCommits(outlierCommits);
 

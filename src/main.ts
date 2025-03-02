@@ -19,8 +19,6 @@ type Result = {
   outlierCommits: CommitDetail[];
   insertionsMean: number;
   insertionsThreshold: number;
-  deletionsMean: number;
-  deletionsThreshold: number;
 };
 
 export const main = async (
@@ -45,8 +43,6 @@ export const main = async (
       outliers: outlierCommits,
       insertionsMean,
       insertionsThreshold,
-      deletionsMean,
-      deletionsThreshold,
     } = findOutlierCommits(allCommitDetails);
 
     const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
@@ -57,8 +53,6 @@ export const main = async (
       outlierCommits,
       insertionsMean,
       insertionsThreshold,
-      deletionsMean,
-      deletionsThreshold,
     );
 
     const projectName = dir.replace(/\/$/, '').split('/').at(-1) || '';
@@ -71,8 +65,6 @@ export const main = async (
       outlierCommits,
       insertionsMean,
       insertionsThreshold,
-      deletionsMean,
-      deletionsThreshold,
     );
 
     results.push({
@@ -83,8 +75,6 @@ export const main = async (
       outlierCommits,
       insertionsMean,
       insertionsThreshold,
-      deletionsMean,
-      deletionsThreshold,
     });
   }
 

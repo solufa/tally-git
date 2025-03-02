@@ -1,7 +1,7 @@
 import { Page } from '@react-pdf/renderer';
 import React from 'react';
 import { PieChart } from '../charts/pie-chart';
-import { styles } from '../styles/pdf-styles';
+import { pdfStyles } from '../styles/pdf-styles';
 
 interface ContributorsPageProps {
   pieData: number[];
@@ -12,7 +12,7 @@ export const ContributorsPage = ({
   pieData,
   pieLabels,
 }: ContributorsPageProps): React.ReactElement => (
-  <Page size="A4" style={styles.page}>
+  <Page size="A4" style={pdfStyles.page}>
     {/* 貢献者別コミット数グラフ */}
     <PieChart
       title="貢献者別コミット数"

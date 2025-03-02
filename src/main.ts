@@ -17,7 +17,6 @@ export type Result = {
   csv: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
   outlierCommits: CommitDetail[];
-  insertionsMean: number;
   insertionsThreshold: number;
 };
 
@@ -37,11 +36,7 @@ export const main = async (option: {
     allCommitDetails.push(...result.commitDetails);
   }
 
-  const {
-    outliers: outlierCommits,
-    insertionsMean,
-    insertionsThreshold,
-  } = findOutlierCommits(allCommitDetails);
+  const { outliers: outlierCommits, insertionsThreshold } = findOutlierCommits(allCommitDetails);
 
   const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
 
@@ -49,7 +44,6 @@ export const main = async (option: {
     filteredAuthorLog,
     option.periodMonths,
     outlierCommits,
-    insertionsMean,
     insertionsThreshold,
   );
 
@@ -59,8 +53,6 @@ export const main = async (option: {
     option.periodMonths,
     option.projectName ?? dirName,
     outlierCommits,
-    insertionsMean,
-    insertionsThreshold,
   );
 
   return {
@@ -69,7 +61,6 @@ export const main = async (option: {
     csv: { path: `${option.outputDir}/${dirName}.csv`, content: csvContent },
     pdf: { path: `${option.outputDir}/${dirName}.pdf`, content: pdfContent },
     outlierCommits,
-    insertionsMean,
     insertionsThreshold,
   };
 };

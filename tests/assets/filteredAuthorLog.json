@@ -6,7 +6,7 @@
       "deletions": 1
     },
     "2024-10": {
-      "commits": 3,
+      "commits": 2,
       "insertions": 123,
       "deletions": 8
     },
@@ -23,9 +23,9 @@
       "deletions": 1
     },
     "2024-10": {
-      "commits": 4,
+      "commits": 3,
       "insertions": 1340,
-      "deletions": 1352
+      "deletions": 1345
     }
   },
   "Tom Westrick": {
@@ -37,27 +37,27 @@
   },
   "barryvdh": {
     "2025-02": {
-      "commits": 2,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     },
     "2025-01": {
-      "commits": 5,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     },
     "2024-12": {
-      "commits": 2,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     },
     "2024-10": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     },
     "2024-02": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -97,27 +97,27 @@
       "deletions": 18
     },
     "2024-12": {
-      "commits": 20,
+      "commits": 17,
       "insertions": 1403,
       "deletions": 185
     },
     "2024-10": {
-      "commits": 13,
+      "commits": 8,
       "insertions": 221,
       "deletions": 29
     },
     "2024-07": {
-      "commits": 5,
+      "commits": 1,
       "insertions": 2,
       "deletions": 0
     },
     "2024-03": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     },
     "2024-02": {
-      "commits": 31,
+      "commits": 21,
       "insertions": 1463,
       "deletions": 1468
     }
@@ -141,14 +141,14 @@
       "deletions": 105
     },
     "2024-02": {
-      "commits": 3,
+      "commits": 2,
       "insertions": 19,
-      "deletions": 23
+      "deletions": 18
     }
   },
   "Jesper Noordsij": {
     "2025-01": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -169,14 +169,14 @@
   },
   "Martin Tillmann": {
     "2024-12": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
   },
   "hms5232": {
     "2024-12": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -211,7 +211,7 @@
   },
   "Bob Conan": {
     "2024-11": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -246,7 +246,7 @@
   },
   "erikn69": {
     "2024-09": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -260,7 +260,7 @@
   },
   "uno-sw": {
     "2024-08": {
-      "commits": 3,
+      "commits": 2,
       "insertions": 85,
       "deletions": 36
     }
@@ -302,7 +302,7 @@
   },
   "Markus Podar": {
     "2024-07": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     },
@@ -312,7 +312,7 @@
       "deletions": 5
     },
     "2024-02": {
-      "commits": 9,
+      "commits": 7,
       "insertions": 154,
       "deletions": 277
     }
@@ -403,7 +403,7 @@
   },
   "James Bhatta": {
     "2024-02": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -431,7 +431,7 @@
   },
   "Allan Laal": {
     "2024-02": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }
@@ -459,7 +459,7 @@
   },
   "Toby Twigger": {
     "2024-02": {
-      "commits": 1,
+      "commits": 0,
       "insertions": 0,
       "deletions": 0
     }

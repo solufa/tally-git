@@ -1,39 +1,39 @@
 ,2024-03,2024-04,2024-05,2024-06,2024-07,2024-08,2024-09,2024-10,2024-11,2024-12,2025-01,2025-02,2025-03
 コミット数
-Pieter Willekens,0,0,0,0,0,0,0,3,0,0,0,1,0
-KentarouTakeda,0,0,0,0,0,0,0,4,0,0,0,1,0
+Pieter Willekens,0,0,0,0,0,0,0,2,0,0,0,1,0
+KentarouTakeda,0,0,0,0,0,0,0,3,0,0,0,1,0
 Tom Westrick,0,0,0,0,0,0,0,0,0,0,0,1,0
-barryvdh,0,0,0,0,0,0,0,1,0,2,5,2,0
+barryvdh,0,0,0,0,0,0,0,0,0,0,0,0,0
 Jonny Nott,0,0,0,0,0,0,0,0,0,0,0,1,0
 yparitcher,0,0,0,0,0,0,0,0,0,0,0,1,0
 skyler544,0,0,0,0,0,0,0,0,0,0,1,0,0
 Kristijan,0,0,0,0,0,0,0,0,0,0,1,0,0
-Barry vd. Heuvel,1,0,0,0,5,0,0,13,0,20,12,0,0
+Barry vd. Heuvel,0,0,0,0,1,0,0,8,0,17,12,0,0
 Casper Bloemendaal,0,0,0,0,0,0,0,0,0,0,1,0,0
 laravel-ide-helper,0,0,0,0,0,0,0,0,0,6,4,0,0
-Jesper Noordsij,0,0,0,0,0,0,0,0,0,0,1,0,0
+Jesper Noordsij,0,0,0,0,0,0,0,0,0,0,0,0,0
 Mathieu TUDISCO,0,0,0,0,0,0,0,0,0,0,1,0,0
 Nereo Berardozzi,0,0,0,0,0,0,0,0,0,1,0,0,0
-Martin Tillmann,0,0,0,0,0,0,0,0,0,1,0,0,0
-hms5232,0,0,0,0,0,0,0,0,0,1,0,0,0
+Martin Tillmann,0,0,0,0,0,0,0,0,0,0,0,0,0
+hms5232,0,0,0,0,0,0,0,0,0,0,0,0,0
 Lau Ernebjerg Josefsen,0,0,0,0,0,0,0,0,0,1,0,0,0
 Yifans_Z,0,0,0,0,0,0,0,0,0,1,0,0,0
 Lito,0,0,0,0,0,0,0,0,0,2,0,0,0
 Jeppe Knockaert,0,0,0,0,0,0,0,0,0,1,0,0,0
-Bob Conan,0,0,0,0,0,0,0,0,1,0,0,0,0
+Bob Conan,0,0,0,0,0,0,0,0,0,0,0,0,0
 Carl-Philipp Jung,0,0,0,0,0,0,0,1,0,0,0,0,0
 Jeramy Hing,0,0,0,0,0,0,0,1,0,0,0,0,0
 Ramon Dantas,0,0,0,0,0,0,0,1,0,0,0,0,0
 Serhii Petrov,0,0,0,0,0,0,0,1,0,0,0,0,0
-erikn69,0,0,0,0,0,0,1,0,0,0,0,0,0
+erikn69,0,0,0,0,0,0,0,0,0,0,0,0,0
 khaled sadek,0,0,0,0,0,1,0,0,0,0,0,0,0
-uno-sw,0,0,0,0,0,3,0,0,0,0,0,0,0
+uno-sw,0,0,0,0,0,2,0,0,0,0,0,0,0
 schrosis,0,0,0,0,1,0,0,0,0,0,0,0,0
 Bram,0,0,0,0,1,0,0,0,0,0,0,0,0
 michal,0,0,0,0,1,0,0,0,0,0,0,0,0
 Braunson Yager,0,0,0,0,1,0,0,0,0,0,0,0,0
 Benedikt Franke,0,0,0,0,1,0,0,0,0,0,0,0,0
-Markus Podar,0,0,0,1,1,0,0,0,0,0,0,0,0
+Markus Podar,0,0,0,1,0,0,0,0,0,0,0,0,0
 stefanScrumble,0,0,0,0,1,0,0,0,0,0,0,0,0
 pb30,0,0,0,1,0,0,0,0,0,0,0,0,0
 sforward,0,1,0,0,0,0,0,0,0,0,0,0,0
@@ -119,7 +119,7 @@ Oleksandr Oliinyk,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 削除行数
 Pieter Willekens,0,0,0,0,0,0,0,8,0,0,0,1,0
-KentarouTakeda,0,0,0,0,0,0,0,1352,0,0,0,1,0
+KentarouTakeda,0,0,0,0,0,0,0,1345,0,0,0,1,0
 Tom Westrick,0,0,0,0,0,0,0,0,0,0,0,2,0
 barryvdh,0,0,0,0,0,0,0,0,0,0,0,0,0
 Jonny Nott,0,0,0,0,0,0,0,0,0,0,0,2,0
@@ -177,17 +177,65 @@ Oleksandr Oliinyk,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
 外れ値の判定基準
-追加行数の平均値,651
-追加行数の閾値（標準偏差×2）,9883
+追加行数の閾値,5000
 削除行数の閾値（追加行数の10倍以上）,追加行数 × 10
 
 
 外れ値のコミット
 著者,日付,コミットハッシュ,追加行数,削除行数
+barryvdh,2025-02-21,713a475,0,0
+barryvdh,2025-02-11,8d441ec,0,0
+barryvdh,2025-01-14,6b43ac6,0,0
+barryvdh,2025-01-08,06c1fab,0,0
+barryvdh,2025-01-06,088968c,0,0
+barryvdh,2025-01-06,c8d85a0,0,0
+barryvdh,2025-01-06,0fe9774,0,0
+Jesper Noordsij,2025-01-03,030f6f1,0,0
 Barry vd. Heuvel,2024-12-30,9c6380d,15,205
+Barry vd. Heuvel,2024-12-29,c324438,0,0
+barryvdh,2024-12-29,66ea6aa,0,0
+Barry vd. Heuvel,2024-12-29,2a41415,0,0
+Barry vd. Heuvel,2024-12-29,97e3b5e,0,0
+Martin Tillmann,2024-12-29,99554ae,0,0
+hms5232,2024-12-29,0b2eeb4,0,0
 Barry vd. Heuvel,2024-12-29,347483b,305,45343
 Barry vd. Heuvel,2024-12-28,14fdb57,45456,59
 Barry vd. Heuvel,2024-12-28,73b7c34,1,22670
 Barry vd. Heuvel,2024-12-28,5f7e2fd,45350,2
 Barry vd. Heuvel,2024-12-28,f5d940f,22778,58
+barryvdh,2024-12-18,59eb267,0,0
+Bob Conan,2024-11-13,788e72e,0,0
+barryvdh,2024-10-29,90e7c5a,0,0
+Pieter Willekens,2024-10-29,7c2fa01,0,0
+Barry vd. Heuvel,2024-10-28,be806dc,0,0
+Barry vd. Heuvel,2024-10-28,c7390f0,0,0
+Barry vd. Heuvel,2024-10-28,4ca8db2,0,0
+Barry vd. Heuvel,2024-10-17,7956ccb,0,0
+Barry vd. Heuvel,2024-10-17,eb6c189,0,0
+KentarouTakeda,2024-10-18,d3965aa,0,7
+erikn69,2024-09-20,4f588b9,0,0
+uno-sw,2024-08-02,0771901,0,0
+Barry vd. Heuvel,2024-07-12,591e7d6,0,0
+Barry vd. Heuvel,2024-07-12,160c12d,0,0
+Barry vd. Heuvel,2024-07-12,ccac27c,0,0
+Barry vd. Heuvel,2024-07-12,a157391,0,0
+Markus Podar,2024-07-12,0cf178a,0,0
+Barry vd. Heuvel,2024-03-01,bc1d67f,0,0
 Markus Podar,2024-02-19,49ac75d,1,16
+laravel-ide-helper,2024-02-19,391872b,0,5
+Barry vd. Heuvel,2024-02-17,f9ab4a6,0,0
+Barry vd. Heuvel,2024-02-17,8bfe918,0,0
+Barry vd. Heuvel,2024-02-17,ed39977,0,0
+Barry vd. Heuvel,2024-02-14,dca3ebe,0,0
+James Bhatta,2024-02-08,16548fc,0,0
+Barry vd. Heuvel,2024-02-07,872b470,0,0
+Barry vd. Heuvel,2024-02-07,b441594,0,0
+Allan Laal,2024-02-07,f3ad134,0,0
+Barry vd. Heuvel,2024-02-07,0fe86fd,0,0
+Barry vd. Heuvel,2024-02-07,964c964,0,0
+barryvdh,2024-02-07,eb28477,0,0
+Markus Podar,2024-02-07,512612f,0,0
+Toby Twigger,2024-02-07,115068e,0,0
+Barry vd. Heuvel,2024-02-05,485c756,0,0
+Barry vd. Heuvel,2024-02-05,d1d9d8e,0,0
+Markus Podar,2024-02-05,cf4687f,0,0

@@ -47,15 +47,9 @@ const styles = StyleSheet.create({
 
 type OutliersPageProps = {
   outlierCommits: CommitDetail[];
-  insertionsMean: number;
-  insertionsThreshold: number;
 };
 
-export const OutliersPage = ({
-  outlierCommits,
-  insertionsMean,
-  insertionsThreshold,
-}: OutliersPageProps): React.ReactElement => (
+export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.ReactElement => (
   <Page size="A4" style={styles.page}>
     <Text style={styles.title}>外れ値コミット分析</Text>
     <Text style={styles.subtitle}>検出された外れ値コミット</Text>
@@ -88,28 +82,7 @@ export const OutliersPage = ({
       これらは大規模なリファクタリング、ライブラリの更新、自動生成されたコードの追加などによって発生することがあります。
       外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：
     </Text>
-    <Text>1. 標準偏差の2倍以上の追加行数を持つコミット</Text>
+    <Text>1. 5000行以上の追加行数を持つコミット</Text>
     <Text>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
-    <View style={styles.table}>
-      <View style={[styles.tableRow, styles.tableHeader]}>
-        <Text style={[styles.tableCell, { width: '50%' }]}>指標</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>平均値</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>閾値</Text>
-      </View>
-      <View style={styles.tableRow}>
-        <Text style={[styles.tableCell, { width: '50%' }]}>追加行数</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>
-          {Math.round(insertionsMean)}
-        </Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>
-          {Math.round(insertionsThreshold)}
-        </Text>
-      </View>
-      <View style={styles.tableRow}>
-        <Text style={[styles.tableCell, { width: '50%' }]}>削除行数</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>-</Text>
-        <Text style={[styles.tableCell, { width: '25%', textAlign: 'right' }]}>追加行数 × 10</Text>
-      </View>
-    </View>
   </Page>
 );

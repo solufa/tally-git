@@ -27,32 +27,26 @@ const calculateStandardDeviation = (values: number[]): number => {
 
 export const findOutlierCommits = (
   commitDetails: CommitDetail[],
-  stdDevMultiplier = 2,
+  _stdDevMultiplier = 2, // 後方互換性のために残す
 ): {
   outliers: CommitDetail[];
-  insertionsMean: number;
   insertionsThreshold: number;
 } => {
   const insertions = commitDetails.map((commit) => commit.insertions);
 
-  const insertionsMean =
-    insertions.length > 0
-      ? insertions.reduce((sum, value) => sum + value, 0) / insertions.length
-      : 0;
+  // 現在は使用していないが、将来の拡張性のために計算は残しておく
+  const _insertionsStdDev = calculateStandardDeviation(insertions);
 
-  const insertionsStdDev = calculateStandardDeviation(insertions);
-
-  const insertionsThreshold = insertionsStdDev * stdDevMultiplier;
+  // 追加行数の閾値を固定値の5000行に設定
+  const insertionsThreshold = 5000;
 
   const outliers = commitDetails.filter(
     (commit) =>
-      commit.insertions > insertionsThreshold ||
-      (commit.insertions > 0 && commit.deletions >= commit.insertions * 10),
+      commit.insertions > insertionsThreshold || commit.deletions >= commit.insertions * 10,
   );
 
   return {
     outliers,
-    insertionsMean,
     insertionsThreshold,
   };
 };

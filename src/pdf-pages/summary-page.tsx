@@ -1,11 +1,8 @@
-import { Page, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
-import { PdfFooter, PdfHeader } from './layout';
 
 interface SummaryPageProps {
-  projectName: string;
-  monthColumns: string[];
   sortedAuthors: {
     author: string;
     totalCommits: number;
@@ -15,14 +12,8 @@ interface SummaryPageProps {
   }[];
 }
 
-export const SummaryPage = ({
-  projectName,
-  monthColumns,
-  sortedAuthors,
-}: SummaryPageProps): React.ReactElement => (
-  <Page size="A4" style={pdfStyles.page}>
-    <PdfHeader projectName={projectName} monthColumns={monthColumns} />
-
+export const SummaryPage = ({ sortedAuthors }: SummaryPageProps): React.ReactElement => (
+  <>
     <View style={pdfStyles.section}>
       <Text style={pdfStyles.text}>
         総コミット数: {sortedAuthors.reduce((sum, a) => sum + a.totalCommits, 0)}
@@ -35,7 +26,6 @@ export const SummaryPage = ({
       </Text>
       <Text style={pdfStyles.text}>作業者数: {sortedAuthors.length}</Text>
     </View>
-
     <View style={pdfStyles.section}>
       <Text style={pdfStyles.sectionTitle}>作業者別</Text>
       <View style={pdfStyles.table}>
@@ -104,6 +94,5 @@ export const SummaryPage = ({
         )}
       </View>
     </View>
-    <PdfFooter />
-  </Page>
+  </>
 );

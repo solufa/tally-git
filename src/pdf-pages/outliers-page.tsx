@@ -1,13 +1,10 @@
-import { Page, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import React from 'react';
 import type { CommitDetail } from '../stats';
 import { pdfStyles } from '../styles/pdf-styles';
-import { PdfFooter, PdfHeader } from './layout';
 
 type OutliersPageProps = {
-  projectName: string;
-  monthColumns: string[];
   outlierCommits: CommitDetail[];
 };
 
@@ -18,11 +15,7 @@ type MonthlyOutlierData = {
   deletions: number;
 };
 
-export const OutliersPage = ({
-  projectName,
-  monthColumns,
-  outlierCommits,
-}: OutliersPageProps): React.ReactElement => {
+export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.ReactElement => {
   // 月ごとにグループ化する
   const groupByMonth = (commits: CommitDetail[]): MonthlyOutlierData[] => {
     const monthlyData: Record<string, MonthlyOutlierData> = {};
@@ -32,12 +25,7 @@ export const OutliersPage = ({
       const month = commit.date.slice(0, 7);
 
       if (!monthlyData[month]) {
-        monthlyData[month] = {
-          month,
-          commits: 0,
-          insertions: 0,
-          deletions: 0,
-        };
+        monthlyData[month] = { month, commits: 0, insertions: 0, deletions: 0 };
       }
 
       monthlyData[month].commits += 1;
@@ -54,8 +42,7 @@ export const OutliersPage = ({
   );
 
   return (
-    <Page size="A4" style={pdfStyles.page}>
-      <PdfHeader projectName={projectName} monthColumns={monthColumns} />
+    <>
       <Text style={pdfStyles.sectionTitle}>月別外れ値コミット</Text>
 
       {monthlyOutliers.length > 0 ? (
@@ -106,7 +93,6 @@ export const OutliersPage = ({
       </Text>
       <Text style={pdfStyles.text}>1. 5000行以上の追加行数を持つコミット</Text>
       <Text style={pdfStyles.text}>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
-      <PdfFooter />
-    </Page>
+    </>
   );
 };

@@ -2,6 +2,7 @@ import { Document, renderToStream } from '@react-pdf/renderer';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
 import { ChartPage } from './pdf-pages/chart-page';
+import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { SummaryPage } from './pdf-pages/summary-page';
 import type { CommitDetail } from './stats';
@@ -86,31 +87,26 @@ export const toPdf = async (
 
   const MyDocument = (): React.ReactElement => (
     <Document>
-      <SummaryPage
-        projectName={projectName}
-        monthColumns={monthColumns}
-        sortedAuthors={sortedAuthors}
-      />
-      <ActivityPage
-        projectName={projectName}
-        monthColumns={monthColumns}
-        monthlyTotals={monthlyTotals}
-      />
-      <ChartPage
-        projectName={projectName}
-        monthColumns={monthColumns}
-        contributorCommitsData={contributorCommitsData}
-        contributorNames={contributorNames}
-        insertionsData={insertionsData}
-        deletionsData={deletionsData}
-        contributorInsertionsData={contributorInsertionsData}
-        contributorDeletionsData={contributorDeletionsData}
-      />
-      <OutliersPage
-        projectName={projectName}
-        monthColumns={monthColumns}
-        outlierCommits={outlierCommits}
-      />
+      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+        <SummaryPage sortedAuthors={sortedAuthors} />
+      </PdfLayout>
+      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+        <ActivityPage monthlyTotals={monthlyTotals} />
+      </PdfLayout>
+      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+        <ChartPage
+          monthColumns={monthColumns}
+          contributorCommitsData={contributorCommitsData}
+          contributorNames={contributorNames}
+          insertionsData={insertionsData}
+          deletionsData={deletionsData}
+          contributorInsertionsData={contributorInsertionsData}
+          contributorDeletionsData={contributorDeletionsData}
+        />
+      </PdfLayout>
+      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+        <OutliersPage outlierCommits={outlierCommits} />
+      </PdfLayout>
     </Document>
   );
 

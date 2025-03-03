@@ -6,7 +6,7 @@ const primaryColor = '#08c6d6';
 
 export const pdfStyles = StyleSheet.create({
   page: {
-    padding: '20mm 8mm 14mm',
+    padding: '20mm 8mm 16mm',
     fontFamily,
     fontSize: 12,
     color: '#333',

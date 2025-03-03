@@ -29,7 +29,7 @@ export const StackedBarChartSvg = ({
     const monthBars: React.ReactNode[] = [];
     let yOffset = 0;
 
-    // 各作業者（データ行）ごとに処理
+    // 各開発者（データ行）ごとに処理
     for (let contributorIndex = 0; contributorIndex < data.length; contributorIndex++) {
       const value = data[contributorIndex][monthIndex] || 0;
       if (value === 0) continue;

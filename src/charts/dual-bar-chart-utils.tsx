@@ -4,9 +4,9 @@ import React from 'react';
 export interface DualBarChartProps {
   title: string;
   data: [number[], number[]]; // [追加データ, 削除データ]
-  contributorData: [number[][], number[][]]; // [作業者ごとの追加データ, 作業者ごとの削除データ]
+  contributorData: [number[][], number[][]]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
   labels: string[];
-  contributors: string[]; // 作業者名
+  contributors: string[]; // 開発者名
   width?: number;
   height?: number;
   margin?: { top: number; right: number; bottom: number; left: number };

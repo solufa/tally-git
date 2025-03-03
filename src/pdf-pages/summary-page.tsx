@@ -24,14 +24,14 @@ export const SummaryPage = ({ sortedAuthors }: SummaryPageProps): React.ReactEle
       <Text style={pdfStyles.text}>
         総削除行数: {sortedAuthors.reduce((sum, a) => sum + a.totalDeletions, 0)}
       </Text>
-      <Text style={pdfStyles.text}>作業者数: {sortedAuthors.length}</Text>
+      <Text style={pdfStyles.text}>開発者数: {sortedAuthors.length}</Text>
     </View>
     <View style={pdfStyles.section}>
-      <Text style={pdfStyles.sectionTitle}>作業者別</Text>
+      <Text style={pdfStyles.sectionTitle}>開発者別</Text>
       <View style={pdfStyles.table}>
         <View style={pdfStyles.tableHeaderRow}>
           <View style={[pdfStyles.tableCol, { width: '35%' }]}>
-            <Text style={pdfStyles.tableHeader}>作業者</Text>
+            <Text style={pdfStyles.tableHeader}>開発者</Text>
           </View>
           <View style={[pdfStyles.tableCol, { width: '15%' }]}>
             <Text style={pdfStyles.tableHeader}>コミット数</Text>

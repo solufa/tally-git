@@ -30,7 +30,7 @@ export const DualBarChartSvg = ({
   // 月の左右の余白（月の幅の5%）
   const monthPadding = monthWidth * 0.05;
 
-  // 特定の月の作業者ごとの追加行数の積み上げ棒を描画
+  // 特定の月の開発者ごとの追加行数の積み上げ棒を描画
   const renderMonthInsertionBars = (monthIndex: number): React.ReactNode[] => {
     const bars: React.ReactNode[] = [];
     // 月の左端の位置
@@ -38,13 +38,13 @@ export const DualBarChartSvg = ({
     // 積み上げの高さを追跡
     let stackHeight = 0;
 
-    // 各作業者ごとに処理
+    // 各開発者ごとに処理
     for (
       let contributorIndex = 0;
       contributorIndex < contributorInsertionsData.length;
       contributorIndex++
     ) {
-      // 作業者の追加行数
+      // 開発者の追加行数
       const insertionValue = contributorInsertionsData[contributorIndex][monthIndex] || 0;
       if (insertionValue > 0) {
         const insertionHeight = (insertionValue / maxValue) * chartHeight;
@@ -65,7 +65,7 @@ export const DualBarChartSvg = ({
     return bars;
   };
 
-  // 作業者ごとの追加行数の積み上げ棒を描画
+  // 開発者ごとの追加行数の積み上げ棒を描画
   const renderInsertionBars = (): React.ReactNode[] => {
     const bars: React.ReactNode[] = [];
 
@@ -78,7 +78,7 @@ export const DualBarChartSvg = ({
     return bars;
   };
 
-  // 特定の月の作業者ごとの削除行数の積み上げ棒を描画
+  // 特定の月の開発者ごとの削除行数の積み上げ棒を描画
   const renderMonthDeletionBars = (monthIndex: number): React.ReactNode[] => {
     const bars: React.ReactNode[] = [];
     // 月の左端の位置
@@ -86,13 +86,13 @@ export const DualBarChartSvg = ({
     // 積み上げの高さを追跡
     let stackHeight = 0;
 
-    // 各作業者ごとに処理
+    // 各開発者ごとに処理
     for (
       let contributorIndex = 0;
       contributorIndex < contributorDeletionsData.length;
       contributorIndex++
     ) {
-      // 作業者の削除行数
+      // 開発者の削除行数
       const deletionValue = contributorDeletionsData[contributorIndex][monthIndex] || 0;
       if (deletionValue > 0) {
         const deletionHeight = (deletionValue / maxValue) * chartHeight;
@@ -113,7 +113,7 @@ export const DualBarChartSvg = ({
     return bars;
   };
 
-  // 作業者ごとの削除行数の積み上げ棒を描画
+  // 開発者ごとの削除行数の積み上げ棒を描画
   const renderDeletionBars = (): React.ReactNode[] => {
     const bars: React.ReactNode[] = [];
 

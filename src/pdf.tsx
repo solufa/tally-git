@@ -4,6 +4,7 @@ import { ActivityPage } from './pdf-pages/activity-page';
 import { ChartPage } from './pdf-pages/chart-page';
 import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
+import { PromptPage } from './pdf-pages/prompt-page';
 import { SummaryPage } from './pdf-pages/summary-page';
 import type { CommitDetail } from './stats';
 import { registerFonts } from './styles/pdf-styles';
@@ -59,24 +60,24 @@ export const toPdf = async (
   const insertionsData = monthlyTotals.map((m) => m.insertions);
   const deletionsData = monthlyTotals.map((m) => m.deletions);
 
-  // 作業者別コミット数データの準備
+  // 開発者別コミット数データの準備
   const topContributors = sortedAuthors.slice(0, 10);
 
-  // 作業者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
+  // 開発者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
   const contributorCommitsData = topContributors.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.commits ?? 0;
     });
   });
 
-  // 作業者別の月ごとの追加行数データを準備（積み上げ棒グラフ用）
+  // 開発者別の月ごとの追加行数データを準備（積み上げ棒グラフ用）
   const contributorInsertionsData = topContributors.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.insertions ?? 0;
     });
   });
 
-  // 作業者別の月ごとの削除行数データを準備（積み上げ棒グラフ用）
+  // 開発者別の月ごとの削除行数データを準備（積み上げ棒グラフ用）
   const contributorDeletionsData = topContributors.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.deletions ?? 0;
@@ -103,6 +104,9 @@ export const toPdf = async (
           contributorInsertionsData={contributorInsertionsData}
           contributorDeletionsData={contributorDeletionsData}
         />
+      </PdfLayout>
+      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+        <PromptPage authorLog={authorLog} monthColumns={monthColumns} />
       </PdfLayout>
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>
         <OutliersPage outlierCommits={outlierCommits} />

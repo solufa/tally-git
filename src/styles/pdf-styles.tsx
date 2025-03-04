@@ -113,4 +113,7 @@ export const registerFonts = (): void => {
     family: pdfStyles.page.fontFamily,
     fonts: [{ src: path.resolve('./src/fonts/NotoSansJP-Regular.ttf') }],
   });
+
+  // bug: https://github.com/diegomura/react-pdf/issues/419#issuecomment-1161308596
+  Font.registerHyphenationCallback((word) => Array.from(word).flatMap((char) => [char, '']));
 };

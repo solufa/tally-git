@@ -1,8 +1,8 @@
 import { Text, View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import React from 'react';
-import type { CommitDetail } from '../stats';
 import { pdfStyles } from '../styles/pdf-styles';
+import type { CommitDetail } from '../types';
 
 type OutliersPageProps = {
   outlierCommits: CommitDetail[];

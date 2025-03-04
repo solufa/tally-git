@@ -3,14 +3,9 @@ import dayjs from 'dayjs';
 import { promisify } from 'util';
 import { toCsv } from './csv';
 import { toPdf } from './pdf';
-import type { CommitDetail } from './stats';
-import {
-  createFilteredAuthorLog,
-  findOutlierCommits,
-  parseGitLogLine,
-  processStatLine,
-} from './stats';
-import type { AuthorLog } from './types';
+import { processLogLines } from './stats/commit-processor';
+import { createFilteredAuthorLog, findOutlierCommits } from './stats/outliers';
+import type { AuthorLog, CommitDetail } from './types';
 
 export type Result = {
   authorLog: AuthorLog;
@@ -87,74 +82,31 @@ export const getGitLog = async (dir: string, until: number): Promise<string> => 
   return stdout;
 };
 
-const parseGitLog = (
+/**
+ * Gitログを解析して開発者ごとの月別コミット情報を集計する
+ */
+export const parseGitLog = (
   authorLog: AuthorLog,
   logData: string,
   periodMonths: number,
 ): { authorLog: AuthorLog; lastHash: string | null; commitDetails: CommitDetail[] } => {
-  let current: {
-    hash: string;
-    author: string;
-    date: string;
-    YM: string;
-    insertions: number;
-    deletions: number;
-  } | null = null;
-  let lastHash: string | null = null;
+  const result = { ...authorLog };
   const commitDetails: CommitDetail[] = [];
 
-  const mergeIfExists = (): void => {
-    if (!current) return;
-
-    authorLog[current.author] = { ...authorLog[current.author] };
-    const commitData = authorLog[current.author][current.YM] ?? {
-      commits: 0,
-      insertions: 0,
-      deletions: 0,
-    };
-
-    authorLog[current.author][current.YM] = {
-      commits: commitData.commits + 1,
-      insertions: commitData.insertions + current.insertions,
-      deletions: commitData.deletions + current.deletions,
-    };
-
-    commitDetails.push({
-      hash: current.hash,
-      author: current.author,
-      date: current.date,
-      insertions: current.insertions,
-      deletions: current.deletions,
-    });
-  };
-
-  const lines = logData.split('\n');
   const currentMonth = dayjs().format('YYYY-MM');
   const ignoredMonth = dayjs()
     .subtract(periodMonths + 1, 'month')
     .format('YYYY-MM');
 
-  lines.forEach((line) => {
-    const commitInfo = parseGitLogLine(line);
+  const lines = logData.split('\n');
+  const lastHash = processLogLines(
+    lines,
+    result,
+    commitDetails,
+    currentMonth,
+    ignoredMonth,
+    excludedFiles,
+  );
 
-    if (commitInfo) {
-      if (commitInfo.YM === currentMonth || commitInfo.YM === ignoredMonth) return;
-
-      mergeIfExists();
-      const { hash, author, date, YM } = commitInfo;
-      current = { hash, author, date, YM, insertions: 0, deletions: 0 };
-      lastHash = hash;
-
-      return;
-    }
-
-    if (!line.match(/^\d+\t\d+\t.+/)) return;
-
-    const processedCurrent = processStatLine(line, current, excludedFiles);
-    current = processedCurrent;
-  });
-
-  mergeIfExists();
-
-  return { authorLog, lastHash, commitDetails };
+  return { authorLog: result, lastHash, commitDetails };
 };

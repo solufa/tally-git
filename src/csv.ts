@@ -1,5 +1,4 @@
-import type { CommitDetail } from './stats';
-import type { AuthorLog, CommitData } from './types';
+import type { AuthorLog, CommitData, CommitDetail } from './types';
 
 const formatDataRow = (
   author: string,

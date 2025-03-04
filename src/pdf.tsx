@@ -6,9 +6,8 @@ import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
 import { SummaryPage } from './pdf-pages/summary-page';
-import type { CommitDetail } from './stats';
 import { registerFonts } from './styles/pdf-styles';
-import type { AuthorLog } from './types';
+import type { AuthorLog, CommitDetail } from './types';
 
 registerFonts();
 

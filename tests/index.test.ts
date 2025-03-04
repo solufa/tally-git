@@ -1,12 +1,12 @@
+import dayjs from 'dayjs';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import simpleGit, { type SimpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { getGitLog, main } from '../src/main';
+import { getGitLog, main, parseGitLog } from '../src/main';
 import { anonymizeAuthors, generateCsvDataForPrompt } from '../src/pdf-pages/prompt-page';
-import type { CommitDetail } from '../src/stats';
-import { parseGitLogLine } from '../src/stats';
-import type { AuthorLog } from '../src/types';
+import { parseGitLogLine } from '../src/stats/git-log-parser';
+import type { AuthorLog, CommitDetail } from '../src/types';
 
 describe('getGitLog', () => {
   const testRepoPath = join('tests', 'projects', 'test-git-repo');
@@ -200,6 +200,192 @@ describe('getGitLog', () => {
 
     // 現在のコミットが含まれていないことを確認
     expect(twoMonthsAgoCommits.some((commit) => commit?.YM === currentYearMonth)).toBe(false);
+  });
+});
+
+// parseGitLogのテスト
+describe('parseGitLog', () => {
+  test('currentMonthとignoredMonthのコミットを除外する', () => {
+    // 現在の月と期間外の月を設定
+    const currentMonth = dayjs().format('YYYY-MM');
+    const periodMonths = 3;
+    const ignoredMonth = dayjs()
+      .subtract(periodMonths + 1, 'month')
+      .format('YYYY-MM');
+
+    // 異なる月のコミットを含むモックのGitログデータを作成
+    // 実際のGitログの形式に合わせる
+    const mockLogData = `abcd1234,Test User,${dayjs().format('YYYY-MM-DD')}
+10\t5\tfile1.txt
+a5b65678,Test User,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+20\t10\tfile2.txt
+a9b01234,Test User,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+30\t15\tfile3.txt
+a3b45678,Test User,${dayjs()
+      .subtract(periodMonths + 1, 'month')
+      .format('YYYY-MM-DD')}
+40\t20\tfile4.txt`;
+
+    // 空のauthorLogから開始
+    const authorLog = {};
+
+    // parseGitLog関数を呼び出す
+    const result = parseGitLog(authorLog, mockLogData, periodMonths);
+
+    // 結果を検証
+    const authors = Object.keys(result.authorLog);
+    expect(authors).toHaveLength(1);
+    expect(authors[0]).toBe('Test User');
+
+    // Test Userの月別データを取得
+    const monthData = result.authorLog['Test User'];
+    const months = Object.keys(monthData);
+
+    // 現在の月と期間外の月が除外されていることを確認
+    expect(months).not.toContain(currentMonth);
+    expect(months).not.toContain(ignoredMonth);
+
+    // 1ヶ月前と2ヶ月前のデータが含まれていることを確認
+    const oneMonthAgo = dayjs().subtract(1, 'month').format('YYYY-MM');
+    const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
+
+    expect(months).toContain(oneMonthAgo);
+    expect(months).toContain(twoMonthsAgo);
+
+    // 1ヶ月前のデータが正しいことを確認
+    expect(monthData[oneMonthAgo]).toEqual({
+      commits: 1,
+      insertions: 20,
+      deletions: 10,
+    });
+
+    // 2ヶ月前のデータが正しいことを確認
+    expect(monthData[twoMonthsAgo]).toEqual({
+      commits: 1,
+      insertions: 30,
+      deletions: 15,
+    });
+  });
+
+  test('除外ファイルのコミットは集計に含まれない', () => {
+    // 2ヶ月前の日付を設定
+    const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
+
+    // 除外ファイルを含むモックのGitログデータを作成
+    const mockLogData = `abcd1234,Test User,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+10\t5\tfile1.txt
+20\t10\tcityCodes.ts
+30\t15\tfile2.json
+40\t20\tfile3.md
+50\t25\tpackage-lock.json
+60\t30\tfile4.ts`;
+
+    // 空のauthorLogから開始
+    const authorLog = {};
+
+    // parseGitLog関数を呼び出す
+    const result = parseGitLog(authorLog, mockLogData, 3);
+
+    // 結果を検証
+    const authors = Object.keys(result.authorLog);
+    expect(authors).toHaveLength(1);
+    expect(authors[0]).toBe('Test User');
+
+    // Test Userの月別データを取得
+    const monthData = result.authorLog['Test User'];
+
+    // 2ヶ月前のデータが正しいことを確認
+    // 除外ファイルの変更は集計に含まれないため、insertionsは10+60=70、deletionsは5+30=35になるはず
+    expect(monthData[twoMonthsAgo]).toEqual({
+      commits: 1,
+      insertions: 70,
+      deletions: 35,
+    });
+  });
+
+  test('複数の開発者のコミットが正しく集計される', () => {
+    // 1ヶ月前と2ヶ月前の日付を設定
+    const oneMonthAgo = dayjs().subtract(1, 'month').format('YYYY-MM');
+    const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
+
+    // 複数の開発者のコミットを含むモックのGitログデータを作成
+    const mockLogData = `abcd1234,Developer1,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+10\t5\tfile1.txt
+a5b65678,Developer2,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+20\t10\tfile2.txt
+a9b01234,Developer1,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+30\t15\tfile3.txt
+a3b45678,Developer2,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+40\t20\tfile4.txt`;
+
+    // 空のauthorLogから開始
+    const authorLog = {};
+
+    // parseGitLog関数を呼び出す
+    const result = parseGitLog(authorLog, mockLogData, 3);
+
+    // 結果を検証
+    const authors = Object.keys(result.authorLog);
+    expect(authors).toHaveLength(2);
+    expect(authors).toContain('Developer1');
+    expect(authors).toContain('Developer2');
+
+    // 開発者1のデータが正しいことを確認
+    expect(result.authorLog['Developer1'][oneMonthAgo]).toEqual({
+      commits: 1,
+      insertions: 10,
+      deletions: 5,
+    });
+
+    expect(result.authorLog['Developer1'][twoMonthsAgo]).toEqual({
+      commits: 1,
+      insertions: 30,
+      deletions: 15,
+    });
+
+    // 開発者2のデータが正しいことを確認
+    expect(result.authorLog['Developer2'][oneMonthAgo]).toEqual({
+      commits: 1,
+      insertions: 20,
+      deletions: 10,
+    });
+
+    expect(result.authorLog['Developer2'][twoMonthsAgo]).toEqual({
+      commits: 1,
+      insertions: 40,
+      deletions: 20,
+    });
+  });
+
+  test('既存のauthorLogに新しいデータが追加される', () => {
+    // 1ヶ月前の日付を設定
+    const oneMonthAgo = dayjs().subtract(1, 'month').format('YYYY-MM');
+
+    // 既存のauthorLogを作成
+    const existingAuthorLog = {
+      Developer1: {
+        [oneMonthAgo]: {
+          commits: 2,
+          insertions: 50,
+          deletions: 25,
+        },
+      },
+    };
+
+    // 新しいコミットを含むモックのGitログデータを作成
+    const mockLogData = `abcd1234,Developer1,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+10\t5\tfile1.txt`;
+
+    // parseGitLog関数を呼び出す
+    const result = parseGitLog(existingAuthorLog, mockLogData, 3);
+
+    // 結果を検証
+    // 既存のデータに新しいコミットのデータが追加されていることを確認
+    expect(result.authorLog['Developer1'][oneMonthAgo]).toEqual({
+      commits: 3, // 2 + 1
+      insertions: 60, // 50 + 10
+      deletions: 30, // 25 + 5
+    });
   });
 });
 

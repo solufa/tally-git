@@ -28,7 +28,7 @@ export const ChartPage = ({
       labels={monthColumns}
       contributors={contributorNames}
       width={500}
-      height={300}
+      height={250}
     />
     <DualBarChart
       title="上位10人の追加（左グラフ）・削除（右グラフ）行数推移"
@@ -37,7 +37,7 @@ export const ChartPage = ({
       labels={monthColumns}
       contributors={contributorNames}
       width={500}
-      height={300}
+      height={350}
     />
   </>
 );

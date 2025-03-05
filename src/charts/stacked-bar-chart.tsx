@@ -9,7 +9,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = (props) => {
   const safeProps = {
     width: 500,
     height: 300,
-    margin: { top: 40, right: 120, bottom: 50, left: 50 },
+    margin: { top: 20, right: 120, bottom: 40, left: 50 },
     colors: [
       '#4285F4',
       '#DB4437',

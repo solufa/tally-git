@@ -1,5 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
+import { REFERENCE_LINES } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import { DualBarChartSvg } from './dual-bar-chart-svg';
 import type { DualBarChartProps } from './dual-bar-chart-utils';
@@ -9,7 +10,7 @@ export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
   const safeProps = {
     width: 500,
     height: 300,
-    margin: { top: 40, right: 120, bottom: 50, left: 50 },
+    margin: { top: 20, right: 120, bottom: 40, left: 50 },
     colors: [
       '#4285F4',
       '#DB4437',
@@ -28,9 +29,13 @@ export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
   const chartWidth = safeProps.width - safeProps.margin.left - safeProps.margin.right;
   const chartHeight = safeProps.height - safeProps.margin.top - safeProps.margin.bottom;
 
-  // 最大値を計算（追加と削除の両方を考慮）
+  // 最大値を計算（追加と削除の両方を考慮し、基準線の値も含める）
   const allValues = [...data[0], ...data[1]];
-  const maxValue = Math.max(...allValues) * 1.1; // 10%余裕を持たせる
+  const dataMaxValue = Math.max(...allValues);
+  const referenceMaxValue = Math.max(...REFERENCE_LINES.map((line) => line.value));
+
+  // データの最大値と基準線の最大値を比較し、大きい方を採用（さらに10%余裕を持たせる）
+  const maxValue = Math.max(dataMaxValue, referenceMaxValue) * 1.1;
 
   return (
     <View style={pdfStyles.chart}>

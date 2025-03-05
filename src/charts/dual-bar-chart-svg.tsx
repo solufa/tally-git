@@ -1,5 +1,7 @@
 import { Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
+import { REFERENCE_LINES } from '../constants';
+import { renderReferenceLines } from './dual-bar-chart-reference-lines';
 import {
   XAxis,
   YAxis,
@@ -139,10 +141,11 @@ export const DualBarChartSvg = ({
         barWidth,
         monthPadding,
       )}
-      {renderYAxisLabels(maxValue, margin, chartHeight)}
+      {renderYAxisLabels(maxValue, margin, chartHeight, chartWidth)}
+      {renderReferenceLines(REFERENCE_LINES, maxValue, margin, chartHeight, chartWidth)}
       {renderInsertionBars()}
       {renderDeletionBars()}
-      {renderLegend(contributors, colors, margin, chartWidth)}
+      {renderLegend(contributors, colors, margin, chartWidth, REFERENCE_LINES)}
     </Svg>
   );
 };

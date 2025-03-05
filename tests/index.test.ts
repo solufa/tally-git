@@ -31,261 +31,173 @@ describe('getGitLog', () => {
     await git.addConfig('user.name', 'Test User');
     await git.addConfig('user.email', 'test@example.com');
 
-    // 3ヶ月前の日付を計算
-    const threeMonthsAgoStr = toJSTString(dayjs().subtract(3, 'month'));
-    const threeMonthsAgoDayBeforeStr = toJSTString(dayjs().subtract(3, 'month').subtract(1, 'day'));
-    const threeMonthsAgoDayAfterStr = toJSTString(dayjs().subtract(3, 'month').add(1, 'day'));
-
-    // 2ヶ月前の日付を計算
-    const twoMonthsAgoStr = toJSTString(dayjs().subtract(2, 'month'));
-    const twoMonthsAgoDayBeforeStr = toJSTString(dayjs().subtract(2, 'month').subtract(1, 'day'));
-    const twoMonthsAgoDayAfterStr = toJSTString(dayjs().subtract(2, 'month').add(1, 'day'));
-
-    // 1ヶ月前の日付を計算
-    const oneMonthAgoStr = toJSTString(dayjs().subtract(1, 'month'));
-    const oneMonthAgoDayBeforeStr = toJSTString(dayjs().subtract(1, 'month').subtract(1, 'day'));
-    const oneMonthAgoDayAfterStr = toJSTString(dayjs().subtract(1, 'month').add(1, 'day'));
-
-    // 現在の1日前の日付を計算
-    const currentDayBeforeStr = toJSTString(dayjs().subtract(1, 'day'));
+    // 固定日付を設定（2024-11-30から2025-03-02まで）
+    const date20241130 = toJSTString(dayjs('2024-11-30T12:00:00+09:00'));
+    const date20241201 = toJSTString(dayjs('2024-12-01T12:00:00+09:00'));
+    const date20241202 = toJSTString(dayjs('2024-12-02T12:00:00+09:00'));
+    const date20241231 = toJSTString(dayjs('2024-12-31T12:00:00+09:00'));
+    const date20250101 = toJSTString(dayjs('2025-01-01T12:00:00+09:00'));
+    const date20250102 = toJSTString(dayjs('2025-01-02T12:00:00+09:00'));
+    const date20250131 = toJSTString(dayjs('2025-01-31T12:00:00+09:00'));
+    const date20250201 = toJSTString(dayjs('2025-02-01T12:00:00+09:00'));
+    const date20250202 = toJSTString(dayjs('2025-02-02T12:00:00+09:00'));
+    const date20250228 = toJSTString(dayjs('2025-02-28T12:00:00+09:00'));
+    const date20250301 = toJSTString(dayjs('2025-03-01T12:00:00+09:00'));
+    const date20250302 = toJSTString(dayjs('2025-03-02T12:00:00+09:00'));
 
     // テスト用ファイルを作成
     writeFileSync(join(testRepoPath, 'test.txt'), 'Initial content');
     await git.add('.');
 
-    // 3ヶ月前の1日前のコミットを作成
     await git
-      .env({
-        GIT_AUTHOR_DATE: threeMonthsAgoDayBeforeStr,
-        GIT_COMMITTER_DATE: threeMonthsAgoDayBeforeStr,
-      })
-      .commit('Commit from 3 months ago minus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20241130, GIT_COMMITTER_DATE: date20241130 })
+      .commit('Commit from 2024-11-30');
 
-    // 3ヶ月前のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 3 months ago');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2024-12-01');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: threeMonthsAgoStr,
-        GIT_COMMITTER_DATE: threeMonthsAgoStr,
-      })
-      .commit('Commit from 3 months ago');
+      .env({ GIT_AUTHOR_DATE: date20241201, GIT_COMMITTER_DATE: date20241201 })
+      .commit('Commit from 2024-12-01');
 
-    // 3ヶ月前の1日後のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 3 months ago plus 1 day');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2024-12-02');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: threeMonthsAgoDayAfterStr,
-        GIT_COMMITTER_DATE: threeMonthsAgoDayAfterStr,
-      })
-      .commit('Commit from 3 months ago plus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20241202, GIT_COMMITTER_DATE: date20241202 })
+      .commit('Commit from 2024-12-02');
 
-    // 2ヶ月前の1日前のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2 months ago minus 1 day');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2024-12-31');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: twoMonthsAgoDayBeforeStr,
-        GIT_COMMITTER_DATE: twoMonthsAgoDayBeforeStr,
-      })
-      .commit('Commit from 2 months ago minus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20241231, GIT_COMMITTER_DATE: date20241231 })
+      .commit('Commit from 2024-12-31');
 
-    // 2ヶ月前のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2 months ago');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-01-01');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: twoMonthsAgoStr,
-        GIT_COMMITTER_DATE: twoMonthsAgoStr,
-      })
-      .commit('Commit from 2 months ago');
+      .env({ GIT_AUTHOR_DATE: date20250101, GIT_COMMITTER_DATE: date20250101 })
+      .commit('Commit from 2025-01-01');
 
-    // 2ヶ月前の1日後のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2 months ago plus 1 day');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-01-02');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: twoMonthsAgoDayAfterStr,
-        GIT_COMMITTER_DATE: twoMonthsAgoDayAfterStr,
-      })
-      .commit('Commit from 2 months ago plus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20250102, GIT_COMMITTER_DATE: date20250102 })
+      .commit('Commit from 2025-01-02');
 
-    // 1ヶ月前の1日前のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 1 month ago minus 1 day');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-01-31');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: oneMonthAgoDayBeforeStr,
-        GIT_COMMITTER_DATE: oneMonthAgoDayBeforeStr,
-      })
-      .commit('Commit from 1 month ago minus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20250131, GIT_COMMITTER_DATE: date20250131 })
+      .commit('Commit from 2025-01-31');
 
-    // 1ヶ月前のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 1 month ago');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-02-01');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: oneMonthAgoStr,
-        GIT_COMMITTER_DATE: oneMonthAgoStr,
-      })
-      .commit('Commit from 1 month ago');
+      .env({ GIT_AUTHOR_DATE: date20250201, GIT_COMMITTER_DATE: date20250201 })
+      .commit('Commit from 2025-02-01');
 
-    // 1ヶ月前の1日後のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 1 month ago plus 1 day');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-02-02');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: oneMonthAgoDayAfterStr,
-        GIT_COMMITTER_DATE: oneMonthAgoDayAfterStr,
-      })
-      .commit('Commit from 1 month ago plus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20250202, GIT_COMMITTER_DATE: date20250202 })
+      .commit('Commit from 2025-02-02');
 
-    // 現在の1日前のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from current minus 1 day');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-02-28');
     await git.add('.');
     await git
-      .env({
-        GIT_AUTHOR_DATE: currentDayBeforeStr,
-        GIT_COMMITTER_DATE: currentDayBeforeStr,
-      })
-      .commit('Current commit minus 1 day');
+      .env({ GIT_AUTHOR_DATE: date20250228, GIT_COMMITTER_DATE: date20250228 })
+      .commit('Commit from 2025-02-28');
 
-    // 現在のコミットを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Current content');
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-03-01');
     await git.add('.');
-    await git.commit('Current commit');
+    await git
+      .env({ GIT_AUTHOR_DATE: date20250301, GIT_COMMITTER_DATE: date20250301 })
+      .commit('Commit from 2025-03-01');
+
+    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-03-02');
+    await git.add('.');
+    await git
+      .env({ GIT_AUTHOR_DATE: date20250302, GIT_COMMITTER_DATE: date20250302 })
+      .commit('Commit from 2025-03-02');
 
     // コミットログを確認
     const log = await git.log();
     console.log(
       'Git log:',
-      log.all.map((commit) => ({
-        hash: commit.hash,
-        date: commit.date,
-        message: commit.message,
-      })),
+      log.all.map((commit) => ({ hash: commit.hash, date: commit.date, message: commit.message })),
     );
   });
 
-  // テスト後に一時的なGitリポジトリを削除
   afterAll(() => {
     if (existsSync(testRepoPath)) {
       rmSync(testRepoPath, { recursive: true, force: true });
     }
   });
 
-  test('3か月前から2ヶ月前までのコミットを取得できる', async () => {
-    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month');
-    const threeMonthsAgoYearMonth = dayjs().subtract(3, 'month');
+  test('2024-12から2025-01までのコミットを取得できる', async () => {
+    const startDate = dayjs('2024-12-01').startOf('day');
+    const endDate = dayjs('2025-01-31').endOf('day');
 
-    const twoMonthsAgoLog = await getGitLog(
-      testRepoPath,
-      threeMonthsAgoYearMonth,
-      twoMonthsAgoYearMonth,
-    );
-    console.log('3か月前から2ヶ月前までのログ:', twoMonthsAgoLog);
+    const log = await getGitLog(testRepoPath, startDate, endDate);
+    console.log('2024-12から2025-01までのログ:', log);
 
-    const twoMonthsAgoCommits = twoMonthsAgoLog
+    const commits = log
       .split('\n')
       .map((line) => parseGitLogLine(line))
       .filter((commit) => commit !== null);
 
-    console.log('3か月前から2ヶ月前までのコミット:', twoMonthsAgoCommits);
+    console.log('2024-12から2025-01までのコミット:', commits);
 
-    expect(twoMonthsAgoCommits).toHaveLength(3);
-
-    // 日付が3か月前から2ヶ月前までであることを確認
-    expect(twoMonthsAgoCommits[0]!.YM).toBe(twoMonthsAgoYearMonth.format('YYYY-MM'));
+    expect(commits).toHaveLength(6);
+    expect(commits.every((commit) => commit.YM === '2024-12' || commit.YM === '2025-01')).toBe(
+      true,
+    );
   });
 
-  test('2か月前から1ヶ月前までのコミットを取得できる', async () => {
-    const oneMonthAgoYearMonth = dayjs().subtract(1, 'month');
-    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month');
+  test('2025-01から2025-02までのコミットを取得できる', async () => {
+    const startDate = dayjs('2025-01-01').startOf('day');
+    const endDate = dayjs('2025-02-28').endOf('day');
 
-    const oneMonthAgoLog = await getGitLog(
-      testRepoPath,
-      twoMonthsAgoYearMonth,
-      oneMonthAgoYearMonth,
-    );
-    console.log('2か月前から1ヶ月前までのログ:', oneMonthAgoLog);
+    const log = await getGitLog(testRepoPath, startDate, endDate);
+    console.log('2025-01から2025-02までのログ:', log);
 
-    const oneMonthAgoCommits = oneMonthAgoLog
+    const commits = log
       .split('\n')
       .map((line) => parseGitLogLine(line))
       .filter((commit) => commit !== null);
 
-    console.log('2か月前から1ヶ月前までのコミット:', oneMonthAgoCommits);
+    console.log('2025-01から2025-02までのコミット:', commits);
 
-    expect(oneMonthAgoCommits).toHaveLength(3);
-
-    // 日付が2か月前から1ヶ月前までであることを確認
-    expect(oneMonthAgoCommits[0]!.YM).toBe(oneMonthAgoYearMonth.format('YYYY-MM'));
+    expect(commits).toHaveLength(6);
+    expect(commits.every((commit) => commit.YM === '2025-01' || commit.YM === '2025-02')).toBe(
+      true,
+    );
   });
 
-  test('4か月前から3ヶ月前までのコミットを取得できる', async () => {
-    const threeMonthsAgoYearMonth = dayjs().subtract(3, 'month');
-    const fourMonthsAgoYearMonth = dayjs().subtract(4, 'month');
+  test('2024-11から2024-12までのコミットを取得できる', async () => {
+    const startDate = dayjs('2024-11-01').startOf('day');
+    const endDate = dayjs('2024-12-31').endOf('day');
 
-    const threeMonthsAgoLog = await getGitLog(
-      testRepoPath,
-      fourMonthsAgoYearMonth,
-      threeMonthsAgoYearMonth,
-    );
-    console.log('4か月前から3ヶ月前までのログ:', threeMonthsAgoLog);
+    const log = await getGitLog(testRepoPath, startDate, endDate);
+    console.log('2024-11から2024-12までのログ:', log);
 
-    const threeMonthsAgoCommits = threeMonthsAgoLog
+    const commits = log
       .split('\n')
       .map((line) => parseGitLogLine(line))
       .filter((commit) => commit !== null);
 
-    console.log('4か月前から3ヶ月前までのコミット:', threeMonthsAgoCommits);
+    console.log('2024-11から2024-12までのコミット:', commits);
 
-    expect(threeMonthsAgoCommits).toHaveLength(2);
-
-    // 日付が4か月前から3ヶ月前までであることを確認
-    expect(threeMonthsAgoCommits[0]!.YM).toBe(threeMonthsAgoYearMonth.format('YYYY-MM'));
-  });
-
-  test('期間外のコミットは含まれない', async () => {
-    // 2か月前から1ヶ月前までのコミットを取得
-    const oneMonthAgoYearMonth = dayjs().subtract(1, 'month');
-    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month');
-
-    const twoMonthsAgoLog = await getGitLog(
-      testRepoPath,
-      twoMonthsAgoYearMonth,
-      oneMonthAgoYearMonth,
+    expect(commits).toHaveLength(4);
+    expect(commits.every((commit) => commit.YM === '2024-11' || commit.YM === '2024-12')).toBe(
+      true,
     );
-    const twoMonthsAgoCommits = twoMonthsAgoLog
-      .split('\n')
-      .map((line) => parseGitLogLine(line))
-      .filter((commit) => commit !== null);
-
-    // 3ヶ月前の日付を計算
-    const threeMonthsAgoYearMonth = dayjs().subtract(3, 'month').format('YYYY-MM');
-
-    // 現在の日付を計算
-    const currentYearMonth = dayjs().format('YYYY-MM');
-
-    // 3ヶ月前のコミットが含まれていないことを確認
-    expect(twoMonthsAgoCommits.some((commit) => commit?.YM === threeMonthsAgoYearMonth)).toBe(
-      false,
-    );
-
-    // 現在のコミットが含まれていないことを確認
-    expect(twoMonthsAgoCommits.some((commit) => commit?.YM === currentYearMonth)).toBe(false);
   });
 });
 
-// parseGitLogのテスト
 describe('parseGitLog', () => {
   test('除外ファイルのコミットは集計に含まれない', () => {
-    // 2ヶ月前の日付を設定
-    const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
-
-    // 除外ファイルを含むモックのGitログデータを作成
-    const mockLogData = `abcd1234,Test User,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+    const date = '2025-01';
+    const mockLogData = `abcd1234,Test User,2025-01-15
 10\t5\tfile1.txt
 30\t15\tfile2.json
 40\t20\tfile3.md
@@ -293,68 +205,57 @@ describe('parseGitLog', () => {
 60\t30\tfile4.ts`;
 
     const result = processLogData(mockLogData, {});
-
-    // 結果を検証
     const authors = Object.keys(result.authorLog);
+
     expect(authors).toHaveLength(1);
     expect(authors[0]).toBe('Test User');
 
-    // Test Userの月別データを取得
     const monthData = result.authorLog['Test User']!;
 
-    // 2ヶ月前のデータが正しいことを確認
-    // 除外ファイルの変更は集計に含まれないため、insertionsは10+60=70、deletionsは5+30=35になるはず
-    expect(monthData[twoMonthsAgo]).toEqual({
+    expect(monthData[date]).toEqual({
       commits: 1,
-      insertions: 70,
-      deletions: 35,
+      insertions: 70, // 10 + 60
+      deletions: 35, // 5 + 30
     });
   });
 
   test('複数の開発者のコミットが正しく集計される', () => {
-    // 1ヶ月前と2ヶ月前の日付を設定
-    const oneMonthAgo = dayjs().subtract(1, 'month').format('YYYY-MM');
-    const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
-
-    // 複数の開発者のコミットを含むモックのGitログデータを作成
-    const mockLogData = `abcd1234,Developer1,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+    const date202501 = '2025-01';
+    const date202502 = '2025-02';
+    const mockLogData = `abcd1234,Developer1,2025-02-15
 10\t5\tfile1.txt
-a5b65678,Developer2,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+a5b65678,Developer2,2025-02-15
 20\t10\tfile2.txt
-a9b01234,Developer1,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+a9b01234,Developer1,2025-01-15
 30\t15\tfile3.txt
-a3b45678,Developer2,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
+a3b45678,Developer2,2025-01-15
 40\t20\tfile4.txt`;
 
     const result = processLogData(mockLogData, {});
-
-    // 結果を検証
     const authors = Object.keys(result.authorLog);
+
     expect(authors).toHaveLength(2);
     expect(authors).toContain('Developer1');
     expect(authors).toContain('Developer2');
-
-    // 開発者1のデータが正しいことを確認
-    expect(result.authorLog['Developer1']![oneMonthAgo]).toEqual({
+    expect(result.authorLog['Developer1']![date202502]).toEqual({
       commits: 1,
       insertions: 10,
       deletions: 5,
     });
 
-    expect(result.authorLog['Developer1']![twoMonthsAgo]).toEqual({
+    expect(result.authorLog['Developer1']![date202501]).toEqual({
       commits: 1,
       insertions: 30,
       deletions: 15,
     });
 
-    // 開発者2のデータが正しいことを確認
-    expect(result.authorLog['Developer2']![oneMonthAgo]).toEqual({
+    expect(result.authorLog['Developer2']![date202502]).toEqual({
       commits: 1,
       insertions: 20,
       deletions: 10,
     });
 
-    expect(result.authorLog['Developer2']![twoMonthsAgo]).toEqual({
+    expect(result.authorLog['Developer2']![date202501]).toEqual({
       commits: 1,
       insertions: 40,
       deletions: 20,
@@ -362,27 +263,17 @@ a3b45678,Developer2,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
   });
 
   test('既存のauthorLogに新しいデータが追加される', () => {
-    // 1ヶ月前の日付を設定
-    const oneMonthAgo = dayjs().subtract(1, 'month').format('YYYY-MM');
-
-    // 既存のauthorLogを作成
+    const date = '2025-01';
     const existingAuthorLog = {
-      Developer1: {
-        [oneMonthAgo]: {
-          commits: 2,
-          insertions: 50,
-          deletions: 25,
-        },
-      },
+      Developer1: { [date]: { commits: 2, insertions: 50, deletions: 25 } },
     };
 
-    // 新しいコミットを含むモックのGitログデータを作成
-    const mockLogData = `abcd1234,Developer1,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
+    const mockLogData = `abcd1234,Developer1,2025-01-15
 10\t5\tfile1.txt`;
 
     const result = processLogData(mockLogData, existingAuthorLog);
 
-    expect(result.authorLog['Developer1']![oneMonthAgo]).toEqual({
+    expect(result.authorLog['Developer1']![date]).toEqual({
       commits: 3, // 2 + 1
       insertions: 60, // 50 + 10
       deletions: 30, // 25 + 5
@@ -453,7 +344,6 @@ test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致す�
 });
 
 test('generateCsvDataForPromptが正しいCSVデータを生成する', async () => {
-  // テスト用のauthorLogデータを作成
   const authorLog: AuthorLog = {
     'John Doe': {
       '2023-01': { commits: 10, insertions: 100, deletions: 50 },
@@ -466,19 +356,14 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
   };
 
   const monthColumns = ['2023-01', '2023-02'];
-
-  // 開発者名を匿名化
   const anonymousMap = anonymizeAuthors(authorLog);
 
-  // 匿名化IDが正しく割り当てられていることを確認
   expect(Object.keys(anonymousMap).length).toBe(2);
   expect(anonymousMap['John Doe']).toBe('A');
   expect(anonymousMap['Jane Smith']).toBe('B');
 
-  // CSVデータを生成
   const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousMap);
 
-  // CSVデータの構造が正しいことを確認
   expect(csvData.header).toBe(',2023-01,2023-02');
   expect(csvData.csvList.length).toBe(3);
   expect(csvData.csvList[0]!.title).toBe('コミット数');

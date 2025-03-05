@@ -1,9 +1,6 @@
 import assert from 'assert';
 import type { CommitInfo } from '../types';
 
-/**
- * Gitログの行を解析する
- */
 export const parseGitLogLine = (
   line: string,
 ): { hash: string; author: string; date: string; YM: string } | null => {

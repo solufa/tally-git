@@ -4,10 +4,6 @@ import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { CommitDetail } from '../types';
 
-type OutliersPageProps = {
-  outlierCommits: CommitDetail[];
-};
-
 type MonthlyOutlierData = {
   month: string;
   commits: number;
@@ -15,7 +11,11 @@ type MonthlyOutlierData = {
   deletions: number;
 };
 
-export const OutliersPage = ({ outlierCommits }: OutliersPageProps): React.ReactElement => {
+export const OutliersPage = ({
+  outlierCommits,
+}: {
+  outlierCommits: CommitDetail[];
+}): React.ReactElement => {
   // 月ごとにグループ化する
   const groupByMonth = (commits: CommitDetail[]): MonthlyOutlierData[] => {
     const monthlyData: Record<string, MonthlyOutlierData> = {};

@@ -9,20 +9,11 @@ import { toCsv } from './csv';
 import { toPdf } from './pdf';
 import { processLogData } from './stats/commit-processor';
 import { createFilteredAuthorLog, findOutlierCommits } from './stats/outliers';
-import type { AuthorLog, CommitDetail, Period } from './types';
+import type { AuthorLog, CommitDetail, Period, Result } from './types';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
-
-export type Result = {
-  authorLog: AuthorLog;
-  filteredAuthorLog: AuthorLog;
-  csv: { path: string; content: string };
-  pdf: { path: string; content: NodeJS.ReadableStream };
-  outlierCommits: CommitDetail[];
-  insertionsThreshold: number;
-};
 
 export const PERIOD_FORMAT = 'YYMM';
 

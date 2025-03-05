@@ -4,12 +4,13 @@ import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { AuthorLog } from '../types';
 
-type PromptPageProps = {
+export const PromptPage = ({
+  authorLog,
+  monthColumns,
+}: {
   authorLog: AuthorLog;
   monthColumns: string[];
-};
-
-export const PromptPage = ({ authorLog, monthColumns }: PromptPageProps): React.ReactElement => {
+}): React.ReactElement => {
   const anonymousMap = anonymizeAuthors(authorLog);
   const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousMap);
   const promptTemplate = `# Git履歴分析: プロジェクト特有の深層的な問題と改善プラン

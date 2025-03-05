@@ -2,7 +2,9 @@ import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
 
-interface SummaryPageProps {
+export const SummaryPage = ({
+  sortedAuthors,
+}: {
   sortedAuthors: {
     author: string;
     totalCommits: number;
@@ -10,9 +12,7 @@ interface SummaryPageProps {
     totalDeletions: number;
     activeMonths: number;
   }[];
-}
-
-export const SummaryPage = ({ sortedAuthors }: SummaryPageProps): React.ReactElement => (
+}): React.ReactElement => (
   <>
     <View style={pdfStyles.section}>
       <Text style={pdfStyles.text}>

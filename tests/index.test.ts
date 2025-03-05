@@ -302,7 +302,7 @@ test('laravel', async () => {
   const sortByHash = (a: CommitDetail, b: CommitDetail): number =>
     parseInt(a.hash.slice(0, 10), 16) - parseInt(b.hash.slice(0, 10), 16);
 
-  expect(result.outlierCommits.sort(sortByHash)).toEqual(
+  expect([...result.outlierCommits].sort(sortByHash)).toEqual(
     JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')).sort(sortByHash),
   );
 
@@ -319,7 +319,12 @@ test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致す�
     sinceYYMM: '2403',
     untilYYMM: '2502',
   });
-  const mergedAuthorLog = structuredClone(result.filteredAuthorLog);
+
+  // 新しいオブジェクトを作成して変更を適用していく
+  let mergedAuthorLog = structuredClone(result.filteredAuthorLog) as Record<
+    string,
+    Record<string, { commits: number; insertions: number; deletions: number }>
+  >;
 
   result.outlierCommits.forEach((commit: CommitDetail) => {
     const { author, date, insertions, deletions } = commit;
@@ -327,17 +332,28 @@ test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致す�
 
     // 開発者のデータが存在しない場合は初期化
     if (!mergedAuthorLog[author]) {
-      mergedAuthorLog[author] = {};
+      mergedAuthorLog = { ...mergedAuthorLog, [author]: {} };
     }
 
     // 月のデータが存在しない場合は初期化
-    if (!mergedAuthorLog[author][YM]) {
-      mergedAuthorLog[author][YM] = { commits: 0, insertions: 0, deletions: 0 };
-    }
+    const authorData = mergedAuthorLog[author] || {};
+    const monthData = authorData[YM] ?? { commits: 0, insertions: 0, deletions: 0 };
 
-    mergedAuthorLog[author][YM].commits += 1;
-    mergedAuthorLog[author][YM].insertions += insertions;
-    mergedAuthorLog[author][YM].deletions += deletions;
+    // 新しいオブジェクトを作成して値を更新
+    const updatedMonthData = {
+      commits: monthData.commits + 1,
+      insertions: monthData.insertions + insertions,
+      deletions: monthData.deletions + deletions,
+    };
+
+    // 著者の月別データを更新
+    mergedAuthorLog = {
+      ...mergedAuthorLog,
+      [author]: {
+        ...mergedAuthorLog[author],
+        [YM]: updatedMonthData,
+      },
+    };
   });
 
   expect(mergedAuthorLog).toEqual(result.authorLog);

@@ -3,9 +3,8 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { createWriteStream } from 'fs';
 import { writeFile } from 'fs/promises';
-import type { Result } from './main';
 import { main, PERIOD_FORMAT } from './main';
-import type { Period } from './types';
+import type { Period, Result } from './types';
 
 dayjs.extend(customParseFormat);
 

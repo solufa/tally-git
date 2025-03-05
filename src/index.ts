@@ -8,7 +8,7 @@ const run = async (): Promise<void> => {
     const result = await main({
       targetDir: process.argv[2],
       outputDir: 'out',
-      periodMonths: +(process.argv[3] ?? '13'),
+      periodMonths: +(process.argv[3] ?? '12'),
     });
 
     await generateFiles(result);

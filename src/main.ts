@@ -74,7 +74,7 @@ const excludedFiles = [
 
 export const getGitLog = async (dir: string, until: number): Promise<string> => {
   const command = `
-    cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:'%Y-%m-%d'
+    cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:"%Y-%m-%d"
   `;
 
   const { stdout } = await execPromise(command);

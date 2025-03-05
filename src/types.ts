@@ -18,3 +18,11 @@ export type CommitInfo = {
   insertions: number;
   deletions: number;
 };
+
+export type Period = { sinceYYMM: string; untilYYMM: string };
+
+export type LogState = {
+  currentCommit: CommitInfo | null;
+  skipCurrentCommit: boolean;
+  lastHash: string | null;
+};

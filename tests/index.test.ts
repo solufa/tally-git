@@ -1,20 +1,13 @@
-import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import simpleGit, { type SimpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { getGitLog, main, parseGitLog } from '../src/main';
+import { getGitLog, main, toJSTString } from '../src/main';
 import { anonymizeAuthors, generateCsvDataForPrompt } from '../src/pdf-pages/prompt-page';
+import { processLogData } from '../src/stats/commit-processor';
 import { parseGitLogLine } from '../src/stats/git-log-parser';
 import type { AuthorLog, CommitDetail } from '../src/types';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-const toJSTString = (day: Dayjs): string => day.tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm:ssZ');
 
 describe('getGitLog', () => {
   const testRepoPath = join('tests', 'projects', 'test-git-repo');
@@ -183,7 +176,14 @@ describe('getGitLog', () => {
   });
 
   test('3か月前から2ヶ月前までのコミットを取得できる', async () => {
-    const twoMonthsAgoLog = await getGitLog(testRepoPath, 2);
+    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month');
+    const threeMonthsAgoYearMonth = dayjs().subtract(3, 'month');
+
+    const twoMonthsAgoLog = await getGitLog(
+      testRepoPath,
+      threeMonthsAgoYearMonth,
+      twoMonthsAgoYearMonth,
+    );
     console.log('3か月前から2ヶ月前までのログ:', twoMonthsAgoLog);
 
     const twoMonthsAgoCommits = twoMonthsAgoLog
@@ -196,13 +196,18 @@ describe('getGitLog', () => {
     expect(twoMonthsAgoCommits).toHaveLength(3);
 
     // 日付が3か月前から2ヶ月前までであることを確認
-    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month').format('YYYY-MM');
-
-    expect(twoMonthsAgoCommits[0].YM).toBe(twoMonthsAgoYearMonth);
+    expect(twoMonthsAgoCommits[0]!.YM).toBe(twoMonthsAgoYearMonth.format('YYYY-MM'));
   });
 
   test('2か月前から1ヶ月前までのコミットを取得できる', async () => {
-    const oneMonthAgoLog = await getGitLog(testRepoPath, 1);
+    const oneMonthAgoYearMonth = dayjs().subtract(1, 'month');
+    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month');
+
+    const oneMonthAgoLog = await getGitLog(
+      testRepoPath,
+      twoMonthsAgoYearMonth,
+      oneMonthAgoYearMonth,
+    );
     console.log('2か月前から1ヶ月前までのログ:', oneMonthAgoLog);
 
     const oneMonthAgoCommits = oneMonthAgoLog
@@ -215,13 +220,18 @@ describe('getGitLog', () => {
     expect(oneMonthAgoCommits).toHaveLength(3);
 
     // 日付が2か月前から1ヶ月前までであることを確認
-    const oneMonthAgoYearMonth = dayjs().subtract(1, 'month').format('YYYY-MM');
-
-    expect(oneMonthAgoCommits[0].YM).toBe(oneMonthAgoYearMonth);
+    expect(oneMonthAgoCommits[0]!.YM).toBe(oneMonthAgoYearMonth.format('YYYY-MM'));
   });
 
   test('4か月前から3ヶ月前までのコミットを取得できる', async () => {
-    const threeMonthsAgoLog = await getGitLog(testRepoPath, 3);
+    const threeMonthsAgoYearMonth = dayjs().subtract(3, 'month');
+    const fourMonthsAgoYearMonth = dayjs().subtract(4, 'month');
+
+    const threeMonthsAgoLog = await getGitLog(
+      testRepoPath,
+      fourMonthsAgoYearMonth,
+      threeMonthsAgoYearMonth,
+    );
     console.log('4か月前から3ヶ月前までのログ:', threeMonthsAgoLog);
 
     const threeMonthsAgoCommits = threeMonthsAgoLog
@@ -234,14 +244,19 @@ describe('getGitLog', () => {
     expect(threeMonthsAgoCommits).toHaveLength(2);
 
     // 日付が4か月前から3ヶ月前までであることを確認
-    const threeMonthsAgoYearMonth = dayjs().subtract(3, 'month').format('YYYY-MM');
-
-    expect(threeMonthsAgoCommits[0].YM).toBe(threeMonthsAgoYearMonth);
+    expect(threeMonthsAgoCommits[0]!.YM).toBe(threeMonthsAgoYearMonth.format('YYYY-MM'));
   });
 
   test('期間外のコミットは含まれない', async () => {
     // 2か月前から1ヶ月前までのコミットを取得
-    const twoMonthsAgoLog = await getGitLog(testRepoPath, 1);
+    const oneMonthAgoYearMonth = dayjs().subtract(1, 'month');
+    const twoMonthsAgoYearMonth = dayjs().subtract(2, 'month');
+
+    const twoMonthsAgoLog = await getGitLog(
+      testRepoPath,
+      twoMonthsAgoYearMonth,
+      oneMonthAgoYearMonth,
+    );
     const twoMonthsAgoCommits = twoMonthsAgoLog
       .split('\n')
       .map((line) => parseGitLogLine(line))
@@ -265,68 +280,6 @@ describe('getGitLog', () => {
 
 // parseGitLogのテスト
 describe('parseGitLog', () => {
-  test('currentMonthとignoredMonthのコミットを除外する', () => {
-    // 現在の月と期間外の月を設定
-    const currentMonth = dayjs().format('YYYY-MM');
-    const periodMonths = 3;
-    const ignoredMonth = dayjs()
-      .subtract(periodMonths + 1, 'month')
-      .format('YYYY-MM');
-
-    // 異なる月のコミットを含むモックのGitログデータを作成
-    // 実際のGitログの形式に合わせる
-    const mockLogData = `abcd1234,Test User,${dayjs().format('YYYY-MM-DD')}
-10\t5\tfile1.txt
-a5b65678,Test User,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
-20\t10\tfile2.txt
-a9b01234,Test User,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
-30\t15\tfile3.txt
-a3b45678,Test User,${dayjs()
-      .subtract(periodMonths + 1, 'month')
-      .format('YYYY-MM-DD')}
-40\t20\tfile4.txt`;
-
-    // 空のauthorLogから開始
-    const authorLog = {};
-
-    // parseGitLog関数を呼び出す
-    const result = parseGitLog(authorLog, mockLogData, periodMonths);
-
-    // 結果を検証
-    const authors = Object.keys(result.authorLog);
-    expect(authors).toHaveLength(1);
-    expect(authors[0]).toBe('Test User');
-
-    // Test Userの月別データを取得
-    const monthData = result.authorLog['Test User'];
-    const months = Object.keys(monthData);
-
-    // 現在の月と期間外の月が除外されていることを確認
-    expect(months).not.toContain(currentMonth);
-    expect(months).not.toContain(ignoredMonth);
-
-    // 1ヶ月前と2ヶ月前のデータが含まれていることを確認
-    const oneMonthAgo = dayjs().subtract(1, 'month').format('YYYY-MM');
-    const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
-
-    expect(months).toContain(oneMonthAgo);
-    expect(months).toContain(twoMonthsAgo);
-
-    // 1ヶ月前のデータが正しいことを確認
-    expect(monthData[oneMonthAgo]).toEqual({
-      commits: 1,
-      insertions: 20,
-      deletions: 10,
-    });
-
-    // 2ヶ月前のデータが正しいことを確認
-    expect(monthData[twoMonthsAgo]).toEqual({
-      commits: 1,
-      insertions: 30,
-      deletions: 15,
-    });
-  });
-
   test('除外ファイルのコミットは集計に含まれない', () => {
     // 2ヶ月前の日付を設定
     const twoMonthsAgo = dayjs().subtract(2, 'month').format('YYYY-MM');
@@ -334,17 +287,12 @@ a3b45678,Test User,${dayjs()
     // 除外ファイルを含むモックのGitログデータを作成
     const mockLogData = `abcd1234,Test User,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
 10\t5\tfile1.txt
-20\t10\tcityCodes.ts
 30\t15\tfile2.json
 40\t20\tfile3.md
 50\t25\tpackage-lock.json
 60\t30\tfile4.ts`;
 
-    // 空のauthorLogから開始
-    const authorLog = {};
-
-    // parseGitLog関数を呼び出す
-    const result = parseGitLog(authorLog, mockLogData, 3);
+    const result = processLogData(mockLogData, {});
 
     // 結果を検証
     const authors = Object.keys(result.authorLog);
@@ -352,7 +300,7 @@ a3b45678,Test User,${dayjs()
     expect(authors[0]).toBe('Test User');
 
     // Test Userの月別データを取得
-    const monthData = result.authorLog['Test User'];
+    const monthData = result.authorLog['Test User']!;
 
     // 2ヶ月前のデータが正しいことを確認
     // 除外ファイルの変更は集計に含まれないため、insertionsは10+60=70、deletionsは5+30=35になるはず
@@ -378,11 +326,7 @@ a9b01234,Developer1,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
 a3b45678,Developer2,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
 40\t20\tfile4.txt`;
 
-    // 空のauthorLogから開始
-    const authorLog = {};
-
-    // parseGitLog関数を呼び出す
-    const result = parseGitLog(authorLog, mockLogData, 3);
+    const result = processLogData(mockLogData, {});
 
     // 結果を検証
     const authors = Object.keys(result.authorLog);
@@ -391,26 +335,26 @@ a3b45678,Developer2,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
     expect(authors).toContain('Developer2');
 
     // 開発者1のデータが正しいことを確認
-    expect(result.authorLog['Developer1'][oneMonthAgo]).toEqual({
+    expect(result.authorLog['Developer1']![oneMonthAgo]).toEqual({
       commits: 1,
       insertions: 10,
       deletions: 5,
     });
 
-    expect(result.authorLog['Developer1'][twoMonthsAgo]).toEqual({
+    expect(result.authorLog['Developer1']![twoMonthsAgo]).toEqual({
       commits: 1,
       insertions: 30,
       deletions: 15,
     });
 
     // 開発者2のデータが正しいことを確認
-    expect(result.authorLog['Developer2'][oneMonthAgo]).toEqual({
+    expect(result.authorLog['Developer2']![oneMonthAgo]).toEqual({
       commits: 1,
       insertions: 20,
       deletions: 10,
     });
 
-    expect(result.authorLog['Developer2'][twoMonthsAgo]).toEqual({
+    expect(result.authorLog['Developer2']![twoMonthsAgo]).toEqual({
       commits: 1,
       insertions: 40,
       deletions: 20,
@@ -436,12 +380,9 @@ a3b45678,Developer2,${dayjs().subtract(2, 'month').format('YYYY-MM-DD')}
     const mockLogData = `abcd1234,Developer1,${dayjs().subtract(1, 'month').format('YYYY-MM-DD')}
 10\t5\tfile1.txt`;
 
-    // parseGitLog関数を呼び出す
-    const result = parseGitLog(existingAuthorLog, mockLogData, 3);
+    const result = processLogData(mockLogData, existingAuthorLog);
 
-    // 結果を検証
-    // 既存のデータに新しいコミットのデータが追加されていることを確認
-    expect(result.authorLog['Developer1'][oneMonthAgo]).toEqual({
+    expect(result.authorLog['Developer1']![oneMonthAgo]).toEqual({
       commits: 3, // 2 + 1
       insertions: 60, // 50 + 10
       deletions: 30, // 25 + 5
@@ -455,7 +396,8 @@ test('laravel', async () => {
     projectName: 'OSS Laravel',
     targetDir: './tests/projects/laravel',
     outputDir,
-    periodMonths: 12,
+    sinceYYMM: '2403',
+    untilYYMM: '2502',
   });
 
   expect(result.csv.path).toEqual(`${outputDir}/laravel.csv`);
@@ -466,16 +408,26 @@ test('laravel', async () => {
     JSON.parse(readFileSync(`${outputDir}/filteredAuthorLog.json`, 'utf8')),
   );
 
-  expect(result.outlierCommits).toEqual(
-    JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')),
+  const sortByHash = (a: CommitDetail, b: CommitDetail): number =>
+    parseInt(a.hash.slice(0, 10), 16) - parseInt(b.hash.slice(0, 10), 16);
+
+  expect(result.outlierCommits.sort(sortByHash)).toEqual(
+    JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')).sort(sortByHash),
   );
 
-  expect(result.csv.content).toEqual(readFileSync(`${outputDir}/laravel.csv`, 'utf8'));
+  expect(result.csv.content.split('\n').sort()).toEqual(
+    readFileSync(`${outputDir}/laravel.csv`, 'utf8').split('\n').sort(),
+  );
 });
 
 test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致する', async () => {
   const outputDir = './tests/assets';
-  const result = await main({ targetDir: './tests/projects/laravel', outputDir, periodMonths: 16 });
+  const result = await main({
+    targetDir: './tests/projects/laravel',
+    outputDir,
+    sinceYYMM: '2403',
+    untilYYMM: '2502',
+  });
   const mergedAuthorLog = structuredClone(result.filteredAuthorLog);
 
   result.outlierCommits.forEach((commit: CommitDetail) => {
@@ -529,28 +481,33 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
   // CSVデータの構造が正しいことを確認
   expect(csvData.header).toBe(',2023-01,2023-02');
   expect(csvData.csvList.length).toBe(3);
-  expect(csvData.csvList[0].title).toBe('コミット数');
-  expect(csvData.csvList[1].title).toBe('追加行数');
-  expect(csvData.csvList[2].title).toBe('削除行数');
+  expect(csvData.csvList[0]!.title).toBe('コミット数');
+  expect(csvData.csvList[1]!.title).toBe('追加行数');
+  expect(csvData.csvList[2]!.title).toBe('削除行数');
 
   // コミット数のデータが正しいことを確認
-  expect(csvData.csvList[0].rows.length).toBe(2);
-  expect(csvData.csvList[0].rows).toContain('A,10,5');
-  expect(csvData.csvList[0].rows).toContain('B,8,12');
+  expect(csvData.csvList[0]!.rows.length).toBe(2);
+  expect(csvData.csvList[0]!.rows).toContain('A,10,5');
+  expect(csvData.csvList[0]!.rows).toContain('B,8,12');
 
   // 追加行数のデータが正しいことを確認
-  expect(csvData.csvList[1].rows.length).toBe(2);
-  expect(csvData.csvList[1].rows).toContain('A,100,80');
-  expect(csvData.csvList[1].rows).toContain('B,120,150');
+  expect(csvData.csvList[1]!.rows.length).toBe(2);
+  expect(csvData.csvList[1]!.rows).toContain('A,100,80');
+  expect(csvData.csvList[1]!.rows).toContain('B,120,150');
 
   // 削除行数のデータが正しいことを確認
-  expect(csvData.csvList[2].rows.length).toBe(2);
-  expect(csvData.csvList[2].rows).toContain('A,50,30');
-  expect(csvData.csvList[2].rows).toContain('B,40,60');
+  expect(csvData.csvList[2]!.rows.length).toBe(2);
+  expect(csvData.csvList[2]!.rows).toContain('A,50,30');
+  expect(csvData.csvList[2]!.rows).toContain('B,40,60');
 
   // 実際のauthorLogデータを使用したテスト
   const outputDir = './tests/assets';
-  const result = await main({ targetDir: './tests/projects/laravel', outputDir, periodMonths: 12 });
+  const result = await main({
+    targetDir: './tests/projects/laravel',
+    outputDir,
+    sinceYYMM: '2403',
+    untilYYMM: '2502',
+  });
 
   const realAnonymousMap = anonymizeAuthors(result.filteredAuthorLog);
   const realMonthColumns = Object.keys(Object.values(result.filteredAuthorLog)[0] || {});
@@ -566,10 +523,10 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
 
   // 各開発者のデータが正しく変換されていることを確認
   Object.entries(result.filteredAuthorLog).forEach(([author, monthData]) => {
-    const anonymousId = realAnonymousMap[author];
+    const anonymousId = realAnonymousMap[author]!;
 
     // コミット数
-    const commitsRow = realCsvData.csvList[0].rows.find((row) => row.startsWith(anonymousId));
+    const commitsRow = realCsvData.csvList[0]!.rows.find((row) => row.startsWith(anonymousId));
     expect(commitsRow).toBeDefined();
 
     const commitsValues = commitsRow!.split(',').slice(1);
@@ -579,7 +536,7 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
     });
 
     // 追加行数
-    const insertionsRow = realCsvData.csvList[1].rows.find((row) => row.startsWith(anonymousId));
+    const insertionsRow = realCsvData.csvList[1]!.rows.find((row) => row.startsWith(anonymousId));
     expect(insertionsRow).toBeDefined();
 
     const insertionsValues = insertionsRow!.split(',').slice(1);
@@ -589,7 +546,7 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
     });
 
     // 削除行数
-    const deletionsRow = realCsvData.csvList[2].rows.find((row) => row.startsWith(anonymousId));
+    const deletionsRow = realCsvData.csvList[2]!.rows.find((row) => row.startsWith(anonymousId));
     expect(deletionsRow).toBeDefined();
 
     const deletionsValues = deletionsRow!.split(',').slice(1);

@@ -1,11 +1,19 @@
 import { exec } from 'child_process';
+import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { promisify } from 'util';
 import { toCsv } from './csv';
 import { toPdf } from './pdf';
-import { processLogLines } from './stats/commit-processor';
+import { processLogData } from './stats/commit-processor';
 import { createFilteredAuthorLog, findOutlierCommits } from './stats/outliers';
-import type { AuthorLog, CommitDetail } from './types';
+import type { AuthorLog, CommitDetail, Period } from './types';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
 
 export type Result = {
   authorLog: AuthorLog;
@@ -16,18 +24,24 @@ export type Result = {
   insertionsThreshold: number;
 };
 
-export const main = async (option: {
-  projectName?: string;
-  targetDir: string;
-  outputDir: string;
-  periodMonths: number;
-}): Promise<Result> => {
+export const PERIOD_FORMAT = 'YYMM';
+
+export const main = async (
+  option: Period & { projectName?: string; targetDir: string; outputDir: string },
+): Promise<Result> => {
   let authorLog: AuthorLog = {};
   const allCommitDetails: CommitDetail[] = [];
+  const startDate = dayjs(option.sinceYYMM, PERIOD_FORMAT).startOf('month');
+  const endDate = dayjs(option.untilYYMM, PERIOD_FORMAT).endOf('month');
+  const monthDiff = endDate.diff(startDate, 'month') + 1;
 
-  for (let month = 0; month <= option.periodMonths; month += 1) {
-    const gitLog = await getGitLog(option.targetDir, month);
-    const result = parseGitLog(authorLog, gitLog, option.periodMonths);
+  for (let n = 0; n < monthDiff; n += 1) {
+    const gitLog = await getGitLog(
+      option.targetDir,
+      startDate.add(n, 'month').startOf('month'),
+      startDate.add(n, 'month').endOf('month'),
+    );
+    const result = processLogData(gitLog, authorLog);
     authorLog = result.authorLog;
     allCommitDetails.push(...result.commitDetails);
   }
@@ -35,10 +49,9 @@ export const main = async (option: {
   const { outliers: outlierCommits, insertionsThreshold } = findOutlierCommits(allCommitDetails);
 
   const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
-  const monthColumns = [...Array(option.periodMonths)].map((_, i) =>
-    dayjs()
-      .subtract(option.periodMonths - i, 'month')
-      .format('YYYY-MM'),
+
+  const monthColumns = [...Array(monthDiff)].map((_, i) =>
+    startDate.add(i, 'month').format('YYYY-MM'),
   );
   const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits, insertionsThreshold);
 
@@ -62,51 +75,19 @@ export const main = async (option: {
 
 const execPromise = promisify(exec);
 
-const excludedFiles = [
-  'cityCodes.ts',
-  '.json',
-  '.csv',
-  '.md',
-  'package-lock.json',
-  'yarn.lock',
-  'composer.lock',
-];
+export const toJSTString = (day: Dayjs): string =>
+  day.tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm:ssZ');
 
-export const getGitLog = async (dir: string, until: number): Promise<string> => {
+export const getGitLog = async (
+  dir: string,
+  sinceDate: Dayjs,
+  untilDate: Dayjs,
+): Promise<string> => {
   const command = `
-    cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${until + 1} months ago" --until="${until} months ago" --pretty="%H,%an,%ad" --numstat --date=format:"%Y-%m-%d"
+    cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${toJSTString(sinceDate)}" --until="${toJSTString(untilDate)}" --pretty="%H,%an,%ad" --numstat --date=format:"%Y-%m-%d"
   `;
 
   const { stdout } = await execPromise(command);
 
   return stdout;
-};
-
-/**
- * Gitログを解析して開発者ごとの月別コミット情報を集計する
- */
-export const parseGitLog = (
-  authorLog: AuthorLog,
-  logData: string,
-  periodMonths: number,
-): { authorLog: AuthorLog; lastHash: string | null; commitDetails: CommitDetail[] } => {
-  const result = { ...authorLog };
-  const commitDetails: CommitDetail[] = [];
-
-  const currentMonth = dayjs().format('YYYY-MM');
-  const ignoredMonth = dayjs()
-    .subtract(periodMonths + 1, 'month')
-    .format('YYYY-MM');
-
-  const lines = logData.split('\n');
-  const lastHash = processLogLines(
-    lines,
-    result,
-    commitDetails,
-    currentMonth,
-    ignoredMonth,
-    excludedFiles,
-  );
-
-  return { authorLog: result, lastHash, commitDetails };
 };

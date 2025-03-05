@@ -1,3 +1,4 @@
+import assert from 'assert';
 import type { CommitInfo } from '../types';
 
 /**
@@ -9,21 +10,25 @@ export const parseGitLogLine = (
   if (!line.match(/^[a-f0-9]+,.+,\d{4}-\d{2}-\d{2}$/)) return null;
 
   const [hash, author, date] = line.split(',');
+
+  assert(hash);
+  assert(author);
+  assert(date);
+
   const YM = date.slice(0, 7);
   return { hash, author, date, YM };
 };
 
-/**
- * ファイル変更行を処理する
- */
-export const processStatLine = (
-  line: string,
-  current: CommitInfo | null,
-  excludedFiles: string[],
-): CommitInfo | null => {
+const excludedFiles = ['.json', '.csv', '.md', 'package-lock.json', 'yarn.lock', 'composer.lock'];
+
+export const processStatLine = (line: string, current: CommitInfo | null): CommitInfo | null => {
   if (!current) return null;
 
   const [insertions, deletions, file] = line.split('\t');
+
+  assert(insertions);
+  assert(deletions);
+  assert(file);
 
   // 除外ファイルの場合はそのまま返す
   if (excludedFiles.some((excludedFile) => file.endsWith(excludedFile))) {
@@ -52,41 +57,19 @@ export const isStatLine = (line: string): boolean => {
 };
 
 /**
- * コミットを処理対象とするかどうかを判定する
- */
-export const shouldSkipCommit = (
-  YM: string,
-  currentMonth: string,
-  ignoredMonth: string,
-): boolean => {
-  return YM === currentMonth || YM === ignoredMonth;
-};
-
-/**
  * コミット行を処理する
  */
 export const processCommitLine = (
   line: string,
-  currentMonth: string,
-  ignoredMonth: string,
 ): { commitInfo: CommitInfo | null; skipCommit: boolean } => {
   const commitInfo = parseGitLogLine(line);
+
   if (!commitInfo) {
     return { commitInfo: null, skipCommit: false };
   }
 
-  const skipCommit = shouldSkipCommit(commitInfo.YM, currentMonth, ignoredMonth);
-
-  if (skipCommit) {
-    return { commitInfo: null, skipCommit: true };
-  }
-
   return {
-    commitInfo: {
-      ...commitInfo,
-      insertions: 0,
-      deletions: 0,
-    },
+    commitInfo: { ...commitInfo, insertions: 0, deletions: 0 },
     skipCommit: false,
   };
 };

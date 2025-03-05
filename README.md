@@ -5,7 +5,7 @@ Gitリポジトリのコミット履歴から月別に個人のコーディン�
 ```sh
 $ npm run dev
 # or
-$ npm run dev <dir path> <months?># ex. npm run dev ../my-project 12
+$ npm run dev <dir path> <period?># ex. npm run dev ../my-project 2403-2502
 ```
 
 言語行数計算

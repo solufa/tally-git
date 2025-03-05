@@ -1,4 +1,5 @@
 import { Text, View } from '@react-pdf/renderer';
+import assert from 'assert';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { AuthorLog } from '../types';
@@ -140,6 +141,7 @@ export const anonymizeAuthors = (authorLog: AuthorLog): Record<string, string> =
   Object.keys(authorLog).forEach((author, index) => {
     // アルファベットの範囲内で置き換え、超える場合は複数文字で表現（AA, AB, ...）
     if (index < alphabet.length) {
+      assert(alphabet[index]);
       anonymousMap[author] = alphabet[index];
     } else {
       const firstChar = alphabet[Math.floor(index / alphabet.length) - 1];

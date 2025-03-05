@@ -1,14 +1,20 @@
+import assert from 'assert';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { createWriteStream } from 'fs';
 import { writeFile } from 'fs/promises';
 import type { Result } from './main';
-import { main } from './main';
+import { main, PERIOD_FORMAT } from './main';
+import type { Period } from './types';
+
+dayjs.extend(customParseFormat);
 
 const run = async (): Promise<void> => {
   if (process.argv[2]) {
     const result = await main({
       targetDir: process.argv[2],
       outputDir: 'out',
-      periodMonths: +(process.argv[3] ?? '12'),
+      ...parsePeriod(),
     });
 
     await generateFiles(result);
@@ -16,9 +22,14 @@ const run = async (): Promise<void> => {
     return;
   }
 
-  const targets: { projectName: string; dir: string; months: number }[] = [
-    { projectName: 'Laravel版法人請求', dir: '../yuso', months: 12 },
-    { projectName: 'ManabuFW版法人請求', dir: '../hojin-seikyu', months: 6 },
+  const targets: (Period & { projectName: string; dir: string })[] = [
+    { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2403', untilYYMM: '2502' },
+    {
+      projectName: 'ManabuFW版法人請求',
+      dir: '../hojin-seikyu',
+      sinceYYMM: '2409',
+      untilYYMM: '2502',
+    },
     // '../cashless',
     // '../manabufw',
     // '../blueboard',
@@ -31,12 +42,13 @@ const run = async (): Promise<void> => {
     // '../reserve',
   ];
 
-  for (const { projectName, dir, months } of targets) {
+  for (const { projectName, dir, sinceYYMM, untilYYMM } of targets) {
     const result = await main({
       projectName,
       targetDir: dir,
       outputDir: 'out',
-      periodMonths: months,
+      sinceYYMM,
+      untilYYMM,
     });
 
     await generateFiles(result);
@@ -46,7 +58,8 @@ const run = async (): Promise<void> => {
     projectName: 'OSS Laravel',
     targetDir: './tests/projects/laravel',
     outputDir: 'tests/assets',
-    periodMonths: 12,
+    sinceYYMM: '2403',
+    untilYYMM: '2502',
   });
 
   await generateFiles(laravelResult);
@@ -65,6 +78,21 @@ const run = async (): Promise<void> => {
     JSON.stringify(laravelResult.outlierCommits, null, 2),
     'utf8',
   );
+};
+
+const parsePeriod = (): Period => {
+  const period = process.argv[3]?.split('-');
+
+  if (!period)
+    return {
+      sinceYYMM: dayjs().subtract(12, 'month').format(PERIOD_FORMAT),
+      untilYYMM: dayjs().format(PERIOD_FORMAT),
+    };
+
+  assert(period[0]);
+  assert(period[1]);
+
+  return { sinceYYMM: period[0], untilYYMM: period[1] };
 };
 
 const generateFiles = async (result: Result): Promise<void> => {

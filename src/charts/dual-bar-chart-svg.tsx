@@ -45,7 +45,7 @@ export const DualBarChartSvg = ({
       contributorIndex++
     ) {
       // 開発者の追加行数
-      const insertionValue = contributorInsertionsData[contributorIndex][monthIndex] || 0;
+      const insertionValue = contributorInsertionsData[contributorIndex]?.[monthIndex] ?? 0;
       if (insertionValue > 0) {
         const insertionHeight = (insertionValue / maxValue) * chartHeight;
         bars.push(
@@ -93,7 +93,7 @@ export const DualBarChartSvg = ({
       contributorIndex++
     ) {
       // 開発者の削除行数
-      const deletionValue = contributorDeletionsData[contributorIndex][monthIndex] || 0;
+      const deletionValue = contributorDeletionsData[contributorIndex]?.[monthIndex] ?? 0;
       if (deletionValue > 0) {
         const deletionHeight = (deletionValue / maxValue) * chartHeight;
         bars.push(

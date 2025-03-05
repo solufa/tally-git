@@ -27,10 +27,10 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = (props) => {
 
   const chartWidth = safeProps.width - safeProps.margin.left - safeProps.margin.right;
   const chartHeight = safeProps.height - safeProps.margin.top - safeProps.margin.bottom;
-  const stackTotals = data[0].map((_: number, colIndex: number) =>
+  const stackTotals = data[0]?.map((_: number, colIndex: number) =>
     data.reduce((sum: number, row: number[]) => sum + (row[colIndex] || 0), 0),
   );
-  const maxValue = Math.max(...stackTotals) * 1.1; // 10%余裕を持たせる
+  const maxValue = Math.max(...(stackTotals ?? [])) * 1.1; // 10%余裕を持たせる
 
   return (
     <View style={pdfStyles.chart}>

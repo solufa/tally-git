@@ -31,7 +31,7 @@ export const StackedBarChartSvg = ({
 
     // 各開発者（データ行）ごとに処理
     for (let contributorIndex = 0; contributorIndex < data.length; contributorIndex++) {
-      const value = data[contributorIndex][monthIndex] || 0;
+      const value = data[contributorIndex]?.[monthIndex] ?? 0;
       if (value === 0) continue;
 
       // 値の高さを計算（値の割合 * チャートの高さ）

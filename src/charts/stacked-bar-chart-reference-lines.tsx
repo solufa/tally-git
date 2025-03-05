@@ -1,6 +1,6 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
+import { STACKED_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { ChartReferenceLine } from '../types';
 
@@ -12,7 +12,7 @@ export const renderChartReferenceLines = (
   chartWidth: number,
 ): React.ReactNode[] => {
   const roundedMaxValue =
-    Math.ceil(maxValue / DUAL_BAR_CHAT_Y_AXIS_STEP) * DUAL_BAR_CHAT_Y_AXIS_STEP;
+    Math.ceil(maxValue / STACKED_BAR_CHAT_Y_AXIS_STEP) * STACKED_BAR_CHAT_Y_AXIS_STEP;
 
   return referenceLines
     .map((line, i) => {
@@ -40,11 +40,12 @@ export const renderChartReferenceLines = (
 export const renderChartReferenceLineLegend = (
   referenceLines: Readonly<ChartReferenceLine[]>,
   margin: { top: number; right: number; bottom: number; left: number },
-  chartHeight: number,
+  chartWidth: number,
+  contributorsLength: number,
 ): React.ReactNode => {
   const legendItems = referenceLines.map((line, i) => {
-    const x = margin.left + 10;
-    const y = margin.top + chartHeight + 30 + i * 12;
+    const x = margin.left + chartWidth + 10;
+    const y = margin.top + contributorsLength * 15 + 10 + i * 12;
 
     return (
       <G key={`reference-legend-${i}`}>

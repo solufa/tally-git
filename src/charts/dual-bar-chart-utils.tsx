@@ -2,7 +2,7 @@ import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
 import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
-import type { ReferenceLine } from './dual-bar-chart-reference-lines';
+import type { ChartReferenceLine } from '../types';
 
 export interface DualBarChartProps {
   title: string;
@@ -14,7 +14,6 @@ export interface DualBarChartProps {
   height?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
   colors?: string[];
-  referenceLines?: ReferenceLine[]; // 基準線の情報
 }
 
 export interface DualBarChartSvgProps {
@@ -144,7 +143,7 @@ export const renderLegend = (
   colors: string[],
   margin: { top: number; right: number; bottom: number; left: number },
   chartWidth: number,
-  referenceLines?: ReferenceLine[],
+  referenceLines?: ChartReferenceLine[],
 ): React.ReactNode => {
   // 凡例をグラフの右側に配置
   const contributorLegendItems = contributors.map((contributor, i) => {

@@ -1,5 +1,10 @@
-import { Rect, Svg } from '@react-pdf/renderer';
+import { G, Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
+import { STACKED_BAR_CHART_REF_LINES } from '../constants';
+import {
+  renderChartReferenceLineLegend,
+  renderChartReferenceLines,
+} from './stacked-bar-chart-reference-lines';
 import {
   XAxis,
   YAxis,
@@ -81,9 +86,24 @@ export const StackedBarChartSvg = ({
       <XAxis margin={margin} chartHeight={chartHeight} chartWidth={chartWidth} />
       <YAxis margin={margin} chartHeight={chartHeight} />
       {renderXAxisLabels(labels, barWidth, margin, chartHeight, chartWidth)}
-      {renderYAxisLabels(maxValue, margin, chartHeight)}
+      {renderYAxisLabels(maxValue, margin, chartHeight, chartWidth)}
+      {renderChartReferenceLines(
+        STACKED_BAR_CHART_REF_LINES,
+        maxValue,
+        margin,
+        chartHeight,
+        chartWidth,
+      )}
       {renderBars()}
-      {renderLegend(contributors, colors, margin, chartWidth)}
+      <G>
+        {renderLegend(contributors, colors, margin, chartWidth)}
+        {renderChartReferenceLineLegend(
+          STACKED_BAR_CHART_REF_LINES,
+          margin,
+          chartWidth,
+          contributors.length,
+        )}
+      </G>
     </Svg>
   );
 };

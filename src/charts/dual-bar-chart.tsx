@@ -1,6 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
-import { DUAL_BAR_CHAT_Y_AXIS_STEP, REFERENCE_LINES } from '../constants';
+import { DUAL_BAR_CHART_REF_LINES, DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import { DualBarChartSvg } from './dual-bar-chart-svg';
 import type { DualBarChartProps } from './dual-bar-chart-utils';
@@ -32,7 +32,7 @@ export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
   // 最大値を計算（追加と削除の両方を考慮し、基準線の値も含める）
   const allValues = [...data[0], ...data[1]];
   const dataMaxValue = Math.max(...allValues);
-  const referenceMaxValue = Math.max(...REFERENCE_LINES.map((line) => line.value));
+  const referenceMaxValue = Math.max(...DUAL_BAR_CHART_REF_LINES.map((line) => line.value));
 
   // データの最大値と基準線の最大値を比較し、大きい方を採用
   const baseMaxValue = Math.max(dataMaxValue, referenceMaxValue) + 1;

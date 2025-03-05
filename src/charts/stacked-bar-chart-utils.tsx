@@ -1,5 +1,6 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
+import { STACKED_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 
 export interface StackedBarChartProps {
   title: string;
@@ -101,23 +102,40 @@ export const renderYAxisLabels = (
   maxValue: number,
   margin: { top: number; right: number; bottom: number; left: number },
   chartHeight: number,
+  chartWidth?: number,
 ): React.ReactNode[] => {
-  return [0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
-    const value = maxValue * ratio;
+  const labels: React.ReactNode[] = [];
+  const roundedMaxValue =
+    Math.ceil(maxValue / STACKED_BAR_CHAT_Y_AXIS_STEP) * STACKED_BAR_CHAT_Y_AXIS_STEP;
+
+  for (let value = 0; value <= roundedMaxValue; value += STACKED_BAR_CHAT_Y_AXIS_STEP) {
+    // 切り上げた最大値に対する比率を計算
+    const ratio = value / roundedMaxValue;
     const y = margin.top + chartHeight - chartHeight * ratio;
-    return (
-      <G key={`y-label-${i}`}>
+
+    labels.push(
+      <G key={`y-label-${value}`}>
         <Path
           d={`M ${margin.left - 5} ${y} L ${margin.left} ${y}`}
           stroke="#000000"
           strokeWidth={1}
         />
+        {chartWidth && (
+          <Path
+            d={`M ${margin.left} ${y} L ${margin.left + chartWidth} ${y}`}
+            stroke="#CCCCCC"
+            strokeWidth={0.5}
+            strokeDasharray="3,3"
+          />
+        )}
         <Text x={margin.left - 10} y={y + 3} style={{ fontSize: 8, textAnchor: 'end' }}>
-          {Math.round(value)}
+          {value}
         </Text>
-      </G>
+      </G>,
     );
-  });
+  }
+
+  return labels;
 };
 
 export const renderLegend = (
@@ -127,7 +145,7 @@ export const renderLegend = (
   chartWidth: number,
 ): React.ReactNode => {
   // 凡例をグラフの右側に配置
-  const legendItems = contributors.map((contributor, i) => {
+  const contributorLegendItems = contributors.map((contributor, i) => {
     // 右側の余白に配置
     const x = margin.left + chartWidth + 10;
     const y = margin.top + i * 15;
@@ -143,5 +161,5 @@ export const renderLegend = (
     );
   });
 
-  return <G>{legendItems}</G>;
+  return <G>{contributorLegendItems}</G>;
 };

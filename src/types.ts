@@ -34,3 +34,5 @@ export type Result = Readonly<{
   pdf: { path: string; content: NodeJS.ReadableStream };
   outlierCommits: Readonly<CommitDetail[]>;
 }>;
+
+export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;

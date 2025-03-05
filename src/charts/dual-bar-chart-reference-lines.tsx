@@ -1,5 +1,6 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
+import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 
 export interface ReferenceLine {
@@ -15,9 +16,8 @@ export const renderReferenceLines = (
   chartHeight: number,
   chartWidth: number,
 ): React.ReactNode[] => {
-  const step = 5000;
-  // 最大値を5000の倍数に切り上げる（Y軸のラベルと同じ計算方法）
-  const roundedMaxValue = Math.ceil(maxValue / step) * step;
+  const roundedMaxValue =
+    Math.ceil(maxValue / DUAL_BAR_CHAT_Y_AXIS_STEP) * DUAL_BAR_CHAT_Y_AXIS_STEP;
 
   return referenceLines
     .map((line, i) => {

@@ -1,3 +1,4 @@
+import { DUAL_BAR_CHAT_Y_AXIS_STEP } from './constants';
 import type { AuthorLog, CommitData, CommitDetail } from './types';
 
 const formatDataRow = (
@@ -22,8 +23,8 @@ const formatOutlierCommits = (outlierCommits: CommitDetail[]): string => {
     .join('\n');
 };
 
-const formatThresholdValues = (insertionsThreshold: number): string => {
-  return `追加行数の閾値,${Math.round(insertionsThreshold)}
+const formatThresholdValues = (): string => {
+  return `追加行数の閾値,${DUAL_BAR_CHAT_Y_AXIS_STEP}
 削除行数の閾値（追加行数の10倍以上）,追加行数 × 10`;
 };
 
@@ -76,14 +77,10 @@ export const toCsv = (
   authorLog: AuthorLog,
   monthColumns: string[],
   outlierCommits: CommitDetail[],
-  insertionsThreshold: number,
 ): string => {
   const header = `,${monthColumns.join(',')}`;
-
   const activityData = generateActivityRows(authorLog, monthColumns);
-
-  const thresholdInfo = formatThresholdValues(insertionsThreshold);
-
+  const thresholdInfo = formatThresholdValues();
   const outlierInfo = formatOutlierCommits(outlierCommits);
 
   return formatCsvContent(header, activityData, thresholdInfo, outlierInfo);

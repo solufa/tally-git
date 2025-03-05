@@ -1,15 +1,11 @@
+import { INSERTIONS_THRESHOLD } from '../constants';
 import type { AuthorLog, CommitDetail } from '../types';
 
-export const findOutlierCommits = (
-  commitDetails: Readonly<CommitDetail[]>,
-): { outliers: CommitDetail[]; insertionsThreshold: number } => {
-  const insertionsThreshold = 5000;
-  const outliers = commitDetails.filter(
+export const findOutlierCommits = (commitDetails: Readonly<CommitDetail[]>): CommitDetail[] => {
+  return commitDetails.filter(
     (commit) =>
-      commit.insertions > insertionsThreshold || commit.deletions >= commit.insertions * 10,
+      commit.insertions > INSERTIONS_THRESHOLD || commit.deletions >= commit.insertions * 10,
   );
-
-  return { outliers, insertionsThreshold };
 };
 
 export const createFilteredAuthorLog = (

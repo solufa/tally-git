@@ -37,14 +37,12 @@ export const main = async (
     allCommitDetails.push(...result.commitDetails);
   }
 
-  const { outliers: outlierCommits, insertionsThreshold } = findOutlierCommits(allCommitDetails);
-
+  const outlierCommits = findOutlierCommits(allCommitDetails);
   const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
-
   const monthColumns = [...Array(monthDiff)].map((_, i) =>
     startDate.add(i, 'month').format('YYYY-MM'),
   );
-  const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits, insertionsThreshold);
+  const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits);
 
   const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1) ?? '';
   const pdfContent = await toPdf(
@@ -60,7 +58,6 @@ export const main = async (
     csv: { path: `${option.outputDir}/${dirName}.csv`, content: csvContent },
     pdf: { path: `${option.outputDir}/${dirName}.pdf`, content: pdfContent },
     outlierCommits,
-    insertionsThreshold,
   };
 };
 

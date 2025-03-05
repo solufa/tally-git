@@ -33,5 +33,4 @@ export type Result = Readonly<{
   csv: { path: string; content: string };
   pdf: { path: string; content: NodeJS.ReadableStream };
   outlierCommits: Readonly<CommitDetail[]>;
-  insertionsThreshold: number;
 }>;

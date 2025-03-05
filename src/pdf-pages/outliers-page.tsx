@@ -1,6 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import React from 'react';
+import { INSERTIONS_THRESHOLD } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { CommitDetail } from '../types';
 
@@ -91,7 +92,7 @@ export const OutliersPage = ({
         これらはディレクトリ名の変更、自動生成されたコードの追加などによって発生することがあります。
         外れ値コミットは、以下のいずれかの条件を満たすコミットとして検出されています：
       </Text>
-      <Text style={pdfStyles.text}>1. 5000行以上の追加行数を持つコミット</Text>
+      <Text style={pdfStyles.text}>1. {INSERTIONS_THRESHOLD}行以上の追加行数を持つコミット</Text>
       <Text style={pdfStyles.text}>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
     </>
   );

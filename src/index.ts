@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { createWriteStream } from 'fs';
 import { writeFile } from 'fs/promises';
 import { z } from 'zod';
 import { main, PERIOD_FORMAT } from './main';
@@ -88,14 +87,7 @@ const parsePeriod = (): Period => {
 
 const generateFiles = async (result: Result): Promise<void> => {
   await writeFile(result.csv.path, result.csv.content, 'utf8');
-
-  const writeStream = createWriteStream(result.pdf.path);
-  result.pdf.content.pipe(writeStream);
-
-  await new Promise<void>((resolve, reject) => {
-    writeStream.on('finish', resolve);
-    writeStream.on('error', reject);
-  });
+  await writeFile(result.pdf.path, result.pdf.content);
 
   console.log('generated:', result.csv.path);
   console.log('generated:', result.pdf.path);

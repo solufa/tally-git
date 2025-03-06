@@ -1,4 +1,4 @@
-import { Document, renderToStream } from '@react-pdf/renderer';
+import { Document, renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
 import { ChartPage } from './pdf-pages/chart-page';
@@ -16,7 +16,7 @@ export const toPdf = async (
   monthColumns: string[],
   projectName: string,
   outlierCommits: CommitDetail[],
-): Promise<NodeJS.ReadableStream> => {
+): Promise<Buffer> => {
   const authorTotals = Object.entries(authorLog).map(([author, monthData]) => {
     const totalCommits = Object.values(monthData).reduce(
       (sum, data) => sum + (data?.commits ?? 0),
@@ -113,5 +113,5 @@ export const toPdf = async (
     </Document>
   );
 
-  return await renderToStream(React.createElement(MyDocument));
+  return await renderToBuffer(React.createElement(MyDocument));
 };

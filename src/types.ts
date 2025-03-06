@@ -31,7 +31,7 @@ export type Result = Readonly<{
   authorLog: AuthorLog;
   filteredAuthorLog: AuthorLog;
   csv: { path: string; content: string };
-  pdf: { path: string; content: NodeJS.ReadableStream };
+  pdf: { path: string; content: Buffer };
   outlierCommits: Readonly<CommitDetail[]>;
 }>;
 

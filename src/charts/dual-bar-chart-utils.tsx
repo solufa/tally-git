@@ -1,8 +1,9 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { COLORS, DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
+import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { ChartReferenceLine } from '../types';
+import { getContributorColor } from './color-utils';
 
 export interface DualBarChartProps {
   title: string;
@@ -147,7 +148,7 @@ export const renderLegend = (
     // 右側の余白に配置
     const x = margin.left + chartWidth + 10;
     const y = margin.top + i * 15;
-    const color = COLORS[i % COLORS.length];
+    const color = getContributorColor(contributor);
 
     return (
       <G key={`legend-${i}`}>

@@ -1,6 +1,7 @@
 import { Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
-import { COLORS, DUAL_BAR_CHART_REF_LINES } from '../constants';
+import { DUAL_BAR_CHART_REF_LINES } from '../constants';
+import { assertString, getContributorColor } from './color-utils';
 import { renderChartReferenceLines } from './dual-bar-chart-reference-lines';
 import {
   XAxis,
@@ -49,6 +50,8 @@ export const DualBarChartSvg = ({
       const insertionValue = contributorInsertionsData[contributorIndex]?.[monthIndex] ?? 0;
       if (insertionValue > 0) {
         const insertionHeight = (insertionValue / maxValue) * chartHeight;
+        const contributor = contributors[contributorIndex];
+        assertString(contributor);
         bars.push(
           <Rect
             key={`insertion-${monthIndex}-${contributorIndex}`}
@@ -56,7 +59,7 @@ export const DualBarChartSvg = ({
             y={margin.top + chartHeight - stackHeight - insertionHeight}
             width={barWidth}
             height={insertionHeight}
-            fill={COLORS[contributorIndex % COLORS.length]}
+            fill={getContributorColor(contributor)}
           />,
         );
         // 積み上げの高さを更新
@@ -97,6 +100,8 @@ export const DualBarChartSvg = ({
       const deletionValue = contributorDeletionsData[contributorIndex]?.[monthIndex] ?? 0;
       if (deletionValue > 0) {
         const deletionHeight = (deletionValue / maxValue) * chartHeight;
+        const contributor = contributors[contributorIndex];
+        assertString(contributor);
         bars.push(
           <Rect
             key={`deletion-${monthIndex}-${contributorIndex}`}
@@ -104,7 +109,7 @@ export const DualBarChartSvg = ({
             y={margin.top + chartHeight - stackHeight - deletionHeight}
             width={barWidth}
             height={deletionHeight}
-            fill={COLORS[contributorIndex % COLORS.length]}
+            fill={getContributorColor(contributor)}
           />,
         );
         // 積み上げの高さを更新

@@ -1,6 +1,7 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { COLORS, STACKED_BAR_CHAT_Y_AXIS_STEP } from '../constants';
+import { STACKED_BAR_CHAT_Y_AXIS_STEP } from '../constants';
+import { getContributorColor } from './color-utils';
 
 export interface StackedBarChartProps {
   title: string;
@@ -146,7 +147,7 @@ export const renderLegend = (
     // 右側の余白に配置
     const x = margin.left + chartWidth + 10;
     const y = margin.top + i * 15;
-    const color = COLORS[i % COLORS.length];
+    const color = getContributorColor(contributor);
 
     return (
       <G key={`legend-${i}`}>

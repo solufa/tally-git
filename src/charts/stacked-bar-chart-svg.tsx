@@ -1,6 +1,7 @@
 import { G, Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
-import { COLORS, STACKED_BAR_CHART_REF_LINES } from '../constants';
+import { STACKED_BAR_CHART_REF_LINES } from '../constants';
+import { assertString, getContributorColor } from './color-utils';
 import {
   renderChartReferenceLineLegend,
   renderChartReferenceLines,
@@ -49,6 +50,8 @@ export const StackedBarChartSvg = ({
       const y = margin.top + chartHeight - barHeight - yOffset;
 
       // 棒を描画
+      const contributor = contributors[contributorIndex];
+      assertString(contributor);
       monthBars.push(
         <Rect
           key={`bar-${monthIndex}-${contributorIndex}`}
@@ -56,7 +59,7 @@ export const StackedBarChartSvg = ({
           y={y}
           width={barWidth}
           height={barHeight}
-          fill={COLORS[contributorIndex % COLORS.length]}
+          fill={getContributorColor(contributor)}
         />,
       );
 

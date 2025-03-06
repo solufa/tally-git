@@ -11,18 +11,6 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = (props) => {
     width: 500,
     height: 300,
     margin: { top: 20, right: 120, bottom: 40, left: 50 },
-    colors: [
-      '#4285F4',
-      '#DB4437',
-      '#F4B400',
-      '#0F9D58',
-      '#9C27B0',
-      '#3F51B5',
-      '#FF5722',
-      '#607D8B',
-      '#795548',
-      '#E91E63',
-    ],
     ...restProps,
   };
 
@@ -58,7 +46,6 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = (props) => {
         data={data}
         labels={labels}
         contributors={contributors}
-        colors={safeProps.colors}
       />
     </View>
   );

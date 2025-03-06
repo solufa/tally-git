@@ -1,6 +1,6 @@
 import { Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
-import { DUAL_BAR_CHART_REF_LINES } from '../constants';
+import { COLORS, DUAL_BAR_CHART_REF_LINES } from '../constants';
 import { renderChartReferenceLines } from './dual-bar-chart-reference-lines';
 import {
   XAxis,
@@ -20,7 +20,6 @@ export const DualBarChartSvg = ({
   maxValue,
   contributorData,
   labels,
-  colors,
   contributors,
 }: DualBarChartSvgProps): React.ReactElement => {
   const [contributorInsertionsData, contributorDeletionsData] = contributorData;
@@ -57,7 +56,7 @@ export const DualBarChartSvg = ({
             y={margin.top + chartHeight - stackHeight - insertionHeight}
             width={barWidth}
             height={insertionHeight}
-            fill={colors[contributorIndex % colors.length]}
+            fill={COLORS[contributorIndex % COLORS.length]}
           />,
         );
         // 積み上げの高さを更新
@@ -105,7 +104,7 @@ export const DualBarChartSvg = ({
             y={margin.top + chartHeight - stackHeight - deletionHeight}
             width={barWidth}
             height={deletionHeight}
-            fill={colors[contributorIndex % colors.length]}
+            fill={COLORS[contributorIndex % COLORS.length]}
           />,
         );
         // 積み上げの高さを更新
@@ -151,7 +150,7 @@ export const DualBarChartSvg = ({
       )}
       {renderInsertionBars()}
       {renderDeletionBars()}
-      {renderLegend(contributors, colors, margin, chartWidth, DUAL_BAR_CHART_REF_LINES)}
+      {renderLegend(contributors, margin, chartWidth, DUAL_BAR_CHART_REF_LINES)}
     </Svg>
   );
 };

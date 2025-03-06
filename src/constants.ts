@@ -29,3 +29,15 @@ export const EXCLUDED_FILES = [
 ];
 
 export const EXCLUDED_AUTHORS = ['github-actions', 'codebuild-municipality-api-ci'];
+
+export const COLORS = [      '#4285F4',
+  '#DB4437',
+  '#F4B400',
+  '#0F9D58',
+  '#9C27B0',
+  '#3F51B5',
+  '#FF5722',
+  '#607D8B',
+  '#795548',
+  '#E91E63',
+]

@@ -1,6 +1,6 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
+import { COLORS, DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { ChartReferenceLine } from '../types';
 
@@ -13,7 +13,6 @@ export interface DualBarChartProps {
   width?: number;
   height?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
-  colors?: string[];
 }
 
 export interface DualBarChartSvgProps {
@@ -25,7 +24,6 @@ export interface DualBarChartSvgProps {
   maxValue: number;
   contributorData: [number[][], number[][]];
   labels: string[];
-  colors: string[];
   contributors: string[];
 }
 
@@ -140,7 +138,6 @@ export const renderYAxisLabels = (
 
 export const renderLegend = (
   contributors: string[],
-  colors: string[],
   margin: { top: number; right: number; bottom: number; left: number },
   chartWidth: number,
   referenceLines?: ChartReferenceLine[],
@@ -150,7 +147,7 @@ export const renderLegend = (
     // 右側の余白に配置
     const x = margin.left + chartWidth + 10;
     const y = margin.top + i * 15;
-    const color = colors[i % colors.length];
+    const color = COLORS[i % COLORS.length];
 
     return (
       <G key={`legend-${i}`}>

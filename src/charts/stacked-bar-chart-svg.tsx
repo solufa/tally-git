@@ -1,6 +1,6 @@
 import { G, Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
-import { STACKED_BAR_CHART_REF_LINES } from '../constants';
+import { COLORS, STACKED_BAR_CHART_REF_LINES } from '../constants';
 import {
   renderChartReferenceLineLegend,
   renderChartReferenceLines,
@@ -24,7 +24,6 @@ export const StackedBarChartSvg = ({
   data,
   labels,
   contributors,
-  colors,
 }: StackedBarChartSvgProps): React.ReactElement => {
   const barWidth = (chartWidth / labels.length) * 0.8;
   const barSpacing = (chartWidth / labels.length) * 0.2;
@@ -57,7 +56,7 @@ export const StackedBarChartSvg = ({
           y={y}
           width={barWidth}
           height={barHeight}
-          fill={colors[contributorIndex % colors.length]}
+          fill={COLORS[contributorIndex % COLORS.length]}
         />,
       );
 
@@ -96,7 +95,7 @@ export const StackedBarChartSvg = ({
       )}
       {renderBars()}
       <G>
-        {renderLegend(contributors, colors, margin, chartWidth)}
+        {renderLegend(contributors, margin, chartWidth)}
         {renderChartReferenceLineLegend(
           STACKED_BAR_CHART_REF_LINES,
           margin,

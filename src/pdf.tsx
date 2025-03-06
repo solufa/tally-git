@@ -59,31 +59,40 @@ export const toPdf = async (
   const insertionsData = monthlyTotals.map((m) => m.insertions);
   const deletionsData = monthlyTotals.map((m) => m.deletions);
 
-  // 開発者別コミット数データの準備
-  const topContributors = sortedAuthors.slice(0, 10);
+  // コミット数でソートされた開発者のトップ10（積み上げ棒グラフ用）
+  const topContributorsByCommits = sortedAuthors.slice(0, 10);
+
+  // 追加行数でソートされた開発者のリストを作成
+  const sortedAuthorsByInsertions = [...authorTotals]
+    .sort((a, b) => b.totalInsertions - a.totalInsertions)
+    .filter((a) => a.totalInsertions > 0);
+
+  // 追加行数でソートされた開発者のトップ10（DualBarChart用）
+  const topContributorsByInsertions = sortedAuthorsByInsertions.slice(0, 10);
 
   // 開発者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
-  const contributorCommitsData = topContributors.map((author) => {
+  const contributorCommitsData = topContributorsByCommits.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.commits ?? 0;
     });
   });
 
-  // 開発者別の月ごとの追加行数データを準備（積み上げ棒グラフ用）
-  const contributorInsertionsData = topContributors.map((author) => {
+  // 開発者別の月ごとの追加行数データを準備（DualBarChart用）
+  const contributorInsertionsData = topContributorsByInsertions.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.insertions ?? 0;
     });
   });
 
-  // 開発者別の月ごとの削除行数データを準備（積み上げ棒グラフ用）
-  const contributorDeletionsData = topContributors.map((author) => {
+  // 開発者別の月ごとの削除行数データを準備（DualBarChart用）
+  const contributorDeletionsData = topContributorsByInsertions.map((author) => {
     return monthColumns.map((month) => {
       return authorLog[author.author]?.[month]?.deletions ?? 0;
     });
   });
 
-  const contributorNames = topContributors.map((a) => a.author);
+  const contributorNamesByCommits = topContributorsByCommits.map((a) => a.author);
+  const contributorNamesByInsertions = topContributorsByInsertions.map((a) => a.author);
 
   const MyDocument = (): React.ReactElement => (
     <Document>
@@ -97,7 +106,8 @@ export const toPdf = async (
         <ChartPage
           monthColumns={monthColumns}
           contributorCommitsData={contributorCommitsData}
-          contributorNames={contributorNames}
+          contributorNamesByCommits={contributorNamesByCommits}
+          contributorNamesByInsertions={contributorNamesByInsertions}
           insertionsData={insertionsData}
           deletionsData={deletionsData}
           contributorInsertionsData={contributorInsertionsData}

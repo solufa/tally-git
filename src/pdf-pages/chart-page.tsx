@@ -5,7 +5,8 @@ import { StackedBarChart } from '../charts/stacked-bar-chart';
 interface ChartPageProps {
   monthColumns: string[];
   contributorCommitsData: number[][];
-  contributorNames: string[];
+  contributorNamesByCommits: string[];
+  contributorNamesByInsertions: string[];
   insertionsData: number[];
   deletionsData: number[];
   contributorInsertionsData: number[][];
@@ -15,7 +16,8 @@ interface ChartPageProps {
 export const ChartPage = ({
   monthColumns,
   contributorCommitsData,
-  contributorNames,
+  contributorNamesByCommits,
+  contributorNamesByInsertions,
   insertionsData,
   deletionsData,
   contributorInsertionsData,
@@ -26,7 +28,7 @@ export const ChartPage = ({
       title="上位10人のコミット数推移"
       data={contributorCommitsData}
       labels={monthColumns}
-      contributors={contributorNames}
+      contributors={contributorNamesByCommits}
       width={500}
       height={250}
     />
@@ -35,7 +37,7 @@ export const ChartPage = ({
       data={[insertionsData, deletionsData]}
       contributorData={[contributorInsertionsData, contributorDeletionsData]}
       labels={monthColumns}
-      contributors={contributorNames}
+      contributors={contributorNamesByInsertions}
       width={500}
       height={350}
     />

@@ -1,6 +1,5 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { ChartReferenceLine } from '../types';
 
@@ -11,16 +10,13 @@ export const renderChartReferenceLines = (
   chartHeight: number,
   chartWidth: number,
 ): React.ReactNode[] => {
-  const roundedMaxValue =
-    Math.ceil(maxValue / DUAL_BAR_CHAT_Y_AXIS_STEP) * DUAL_BAR_CHAT_Y_AXIS_STEP;
-
   return referenceLines
     .map((line, i) => {
       // maxValueを超える場合は描画しない
       if (line.value > maxValue) return null;
 
-      // 切り上げた最大値に対する比率を計算（Y軸のラベルと同じ計算方法）
-      const ratio = line.value / roundedMaxValue;
+      // 最大値に対する比率を計算（Y軸のラベルと同じ計算方法）
+      const ratio = line.value / maxValue;
       const y = margin.top + chartHeight - chartHeight * ratio;
 
       return (

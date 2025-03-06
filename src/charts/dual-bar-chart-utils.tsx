@@ -106,12 +106,11 @@ export const renderYAxisLabels = (
   chartWidth: number,
 ): React.ReactNode[] => {
   const labels: React.ReactNode[] = [];
-  const roundedMaxValue =
-    Math.ceil(maxValue / DUAL_BAR_CHAT_Y_AXIS_STEP) * DUAL_BAR_CHAT_Y_AXIS_STEP;
 
-  for (let value = 0; value <= roundedMaxValue; value += DUAL_BAR_CHAT_Y_AXIS_STEP) {
-    // 切り上げた最大値に対する比率を計算
-    const ratio = value / roundedMaxValue;
+  // maxValueはすでにDUAL_BAR_CHAT_Y_AXIS_STEPの倍数になっているので再計算不要
+  for (let value = 0; value <= maxValue; value += DUAL_BAR_CHAT_Y_AXIS_STEP) {
+    // 最大値に対する比率を計算
+    const ratio = value / maxValue;
     const y = margin.top + chartHeight - chartHeight * ratio;
 
     labels.push(

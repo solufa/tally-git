@@ -55,10 +55,6 @@ export const toPdf = async (
     return { month, commits, insertions, deletions };
   });
 
-  // グラフデータの準備
-  const insertionsData = monthlyTotals.map((m) => m.insertions);
-  const deletionsData = monthlyTotals.map((m) => m.deletions);
-
   // コミット数でソートされた開発者のトップ10（積み上げ棒グラフ用）
   const topContributorsByCommits = sortedAuthors.slice(0, 10);
 
@@ -69,6 +65,21 @@ export const toPdf = async (
 
   // 追加行数でソートされた開発者のトップ10（DualBarChart用）
   const topContributorsByInsertions = sortedAuthorsByInsertions.slice(0, 10);
+
+  // グラフデータの準備（トップ10の開発者の合計）
+  const insertionsData = monthColumns.map((month) => {
+    return topContributorsByInsertions.reduce(
+      (sum, author) => sum + (authorLog[author.author]?.[month]?.insertions ?? 0),
+      0,
+    );
+  });
+
+  const deletionsData = monthColumns.map((month) => {
+    return topContributorsByInsertions.reduce(
+      (sum, author) => sum + (authorLog[author.author]?.[month]?.deletions ?? 0),
+      0,
+    );
+  });
 
   // 開発者別の月ごとのコミット数データを準備（積み上げ棒グラフ用）
   const contributorCommitsData = topContributorsByCommits.map((author) => {

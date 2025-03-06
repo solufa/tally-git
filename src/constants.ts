@@ -17,3 +17,13 @@ export const INSERTIONS_THRESHOLD = 5000;
 export const DUAL_BAR_CHAT_Y_AXIS_STEP = 2500;
 
 export const STACKED_BAR_CHAT_Y_AXIS_STEP = 10;
+
+export const EXCLUDED_FILES = [
+  '.txt',
+  '.json',
+  '.csv',
+  '.md',
+  'package-lock.json',
+  'yarn.lock',
+  'composer.lock',
+];

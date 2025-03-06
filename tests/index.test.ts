@@ -46,74 +46,74 @@ describe('getGitLog', () => {
     const date20250302 = toJSTString(dayjs('2025-03-02T12:00:00+09:00'));
 
     // テスト用ファイルを作成
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Initial content');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Initial content');
     await git.add('.');
 
     await git
       .env({ GIT_AUTHOR_DATE: date20241130, GIT_COMMITTER_DATE: date20241130 })
       .commit('Commit from 2024-11-30');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2024-12-01');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2024-12-01');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20241201, GIT_COMMITTER_DATE: date20241201 })
       .commit('Commit from 2024-12-01');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2024-12-02');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2024-12-02');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20241202, GIT_COMMITTER_DATE: date20241202 })
       .commit('Commit from 2024-12-02');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2024-12-31');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2024-12-31');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20241231, GIT_COMMITTER_DATE: date20241231 })
       .commit('Commit from 2024-12-31');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-01-01');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-01-01');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250101, GIT_COMMITTER_DATE: date20250101 })
       .commit('Commit from 2025-01-01');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-01-02');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-01-02');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250102, GIT_COMMITTER_DATE: date20250102 })
       .commit('Commit from 2025-01-02');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-01-31');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-01-31');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250131, GIT_COMMITTER_DATE: date20250131 })
       .commit('Commit from 2025-01-31');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-02-01');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-02-01');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250201, GIT_COMMITTER_DATE: date20250201 })
       .commit('Commit from 2025-02-01');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-02-02');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-02-02');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250202, GIT_COMMITTER_DATE: date20250202 })
       .commit('Commit from 2025-02-02');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-02-28');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-02-28');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250228, GIT_COMMITTER_DATE: date20250228 })
       .commit('Commit from 2025-02-28');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-03-01');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-03-01');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250301, GIT_COMMITTER_DATE: date20250301 })
       .commit('Commit from 2025-03-01');
 
-    writeFileSync(join(testRepoPath, 'test.txt'), 'Content from 2025-03-02');
+    writeFileSync(join(testRepoPath, 'test.tsx'), 'Content from 2025-03-02');
     await git.add('.');
     await git
       .env({ GIT_AUTHOR_DATE: date20250302, GIT_COMMITTER_DATE: date20250302 })
@@ -198,7 +198,7 @@ describe('parseGitLog', () => {
   test('除外ファイルのコミットは集計に含まれない', () => {
     const date = '2025-01';
     const mockLogData = `abcd1234,Test User,2025-01-15
-10\t5\tfile1.txt
+10\t5\tfile1.tsx
 30\t15\tfile2.json
 40\t20\tfile3.md
 50\t25\tpackage-lock.json
@@ -223,13 +223,13 @@ describe('parseGitLog', () => {
     const date202501 = '2025-01';
     const date202502 = '2025-02';
     const mockLogData = `abcd1234,Developer1,2025-02-15
-10\t5\tfile1.txt
+10\t5\tfile1.tsx
 a5b65678,Developer2,2025-02-15
-20\t10\tfile2.txt
+20\t10\tfile2.tsx
 a9b01234,Developer1,2025-01-15
-30\t15\tfile3.txt
+30\t15\tfile3.tsx
 a3b45678,Developer2,2025-01-15
-40\t20\tfile4.txt`;
+40\t20\tfile4.tsx`;
 
     const result = processLogData(mockLogData, {});
     const authors = Object.keys(result.authorLog);
@@ -269,7 +269,7 @@ a3b45678,Developer2,2025-01-15
     };
 
     const mockLogData = `abcd1234,Developer1,2025-01-15
-10\t5\tfile1.txt`;
+10\t5\tfile1.tsx`;
 
     const result = processLogData(mockLogData, existingAuthorLog);
 

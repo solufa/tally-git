@@ -1,8 +1,8 @@
-import assert from 'assert';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { createWriteStream } from 'fs';
 import { writeFile } from 'fs/promises';
+import { z } from 'zod';
 import { main, PERIOD_FORMAT } from './main';
 import type { Period, Result } from './types';
 
@@ -10,11 +10,7 @@ dayjs.extend(customParseFormat);
 
 const run = async (): Promise<void> => {
   if (process.argv[2]) {
-    const result = await main({
-      targetDir: process.argv[2],
-      outputDir: 'out',
-      ...parsePeriod(),
-    });
+    const result = await main({ targetDir: process.argv[2], outputDir: 'out', ...parsePeriod() });
 
     await generateFiles(result);
 
@@ -80,18 +76,14 @@ const run = async (): Promise<void> => {
 };
 
 const parsePeriod = (): Period => {
-  const period = process.argv[3]?.split('-');
+  const period = z.tuple([z.string(), z.string()]).optional().parse(process.argv[3]?.split('-'));
 
-  if (!period)
-    return {
-      sinceYYMM: dayjs().subtract(12, 'month').format(PERIOD_FORMAT),
-      untilYYMM: dayjs().format(PERIOD_FORMAT),
-    };
-
-  assert(period[0]);
-  assert(period[1]);
-
-  return { sinceYYMM: period[0], untilYYMM: period[1] };
+  return period
+    ? { sinceYYMM: period[0], untilYYMM: period[1] }
+    : {
+        sinceYYMM: dayjs().subtract(12, 'month').format(PERIOD_FORMAT),
+        untilYYMM: dayjs().format(PERIOD_FORMAT),
+      };
 };
 
 const generateFiles = async (result: Result): Promise<void> => {

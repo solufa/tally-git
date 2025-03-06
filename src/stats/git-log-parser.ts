@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { EXCLUDED_FILES } from '../constants';
 import type { CommitInfo } from '../types';
 
 export const parseGitLogLine = (
@@ -16,8 +17,6 @@ export const parseGitLogLine = (
   return { hash, author, date, YM };
 };
 
-const excludedFiles = ['.json', '.csv', '.md', 'package-lock.json', 'yarn.lock', 'composer.lock'];
-
 export const processStatLine = (line: string, current: CommitInfo | null): CommitInfo | null => {
   if (!current) return null;
 
@@ -28,7 +27,7 @@ export const processStatLine = (line: string, current: CommitInfo | null): Commi
   assert(file);
 
   // 除外ファイルの場合はそのまま返す
-  if (excludedFiles.some((excludedFile) => file.endsWith(excludedFile))) {
+  if (EXCLUDED_FILES.some((excludedFile) => file.endsWith(excludedFile))) {
     return current;
   }
 

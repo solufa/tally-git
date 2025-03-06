@@ -27,3 +27,5 @@ export const EXCLUDED_FILES = [
   'yarn.lock',
   'composer.lock',
 ];
+
+export const EXCLUDED_AUTHORS = ['github-actions', 'codebuild-municipality-api-ci'];

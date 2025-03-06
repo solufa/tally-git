@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import simpleGit, { type SimpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { EXCLUDED_AUTHORS, EXCLUDED_FILES } from '../src/constants';
 import { getGitLog, main, toJSTString } from '../src/main';
 import { anonymizeAuthors, generateCsvDataForPrompt } from '../src/pdf-pages/prompt-page';
 import { processLogData } from '../src/stats/commit-processor';
@@ -197,11 +198,11 @@ describe('getGitLog', () => {
 describe('parseGitLog', () => {
   test('除外ファイルのコミットは集計に含まれない', () => {
     const date = '2025-01';
-    const mockLogData = `abcd1234,Test User,2025-01-15
+    const mockLogData = `abcd1234,Test User,${date}-15
 10\t5\tfile1.tsx
-30\t15\tfile2.json
-40\t20\tfile3.md
-50\t25\tpackage-lock.json
+30\t15\tfile2${EXCLUDED_FILES[1]}
+40\t20\tfile3${EXCLUDED_FILES[3]}
+50\t25\t${EXCLUDED_FILES[4]}
 60\t30\tfile4.ts`;
 
     const result = processLogData(mockLogData, {});
@@ -217,6 +218,23 @@ describe('parseGitLog', () => {
       insertions: 70, // 10 + 60
       deletions: 35, // 5 + 30
     });
+  });
+
+  test('除外開発者のコミットは集計に含まれない', () => {
+    const date = '2025-01';
+    const mockLogData = `4321dcab,${EXCLUDED_AUTHORS[0]},${date}-13
+10\t5\tfile1.tsx
+60\t30\tfile4.ts
+
+abcd1234,Test User,${date}-15
+10\t5\tfile1.tsx
+60\t30\tfile4.ts`;
+
+    const result = processLogData(mockLogData, {});
+    const authors = Object.keys(result.authorLog);
+
+    expect(authors).toHaveLength(1);
+    expect(authors[0]).toBe('Test User');
   });
 
   test('複数の開発者のコミットが正しく集計される', () => {

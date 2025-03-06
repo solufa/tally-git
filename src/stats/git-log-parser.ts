@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { EXCLUDED_FILES } from '../constants';
+import { EXCLUDED_AUTHORS, EXCLUDED_FILES } from '../constants';
 import type { CommitInfo } from '../types';
 
 export const parseGitLogLine = (
@@ -26,7 +26,6 @@ export const processStatLine = (line: string, current: CommitInfo | null): Commi
   assert(deletions);
   assert(file);
 
-  // 除外ファイルの場合はそのまま返す
   if (EXCLUDED_FILES.some((excludedFile) => file.endsWith(excludedFile))) {
     return current;
   }
@@ -52,9 +51,6 @@ export const isStatLine = (line: string): boolean => {
   return /^\d+\t\d+\t.+/.test(line);
 };
 
-/**
- * コミット行を処理する
- */
 export const processCommitLine = (
   line: string,
 ): { commitInfo: CommitInfo | null; skipCommit: boolean } => {
@@ -62,6 +58,10 @@ export const processCommitLine = (
 
   if (!commitInfo) {
     return { commitInfo: null, skipCommit: false };
+  }
+
+  if (EXCLUDED_AUTHORS.includes(commitInfo.author)) {
+    return { commitInfo: null, skipCommit: true };
   }
 
   return {

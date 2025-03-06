@@ -56,19 +56,11 @@ const handleCommitLine = (
   // 新しいコミット情報を取得
   const { commitInfo, skipCommit } = processCommitLine(line);
 
-  if (!commitInfo) {
-    return {
-      state: { currentCommit: null, skipCurrentCommit: skipCommit, lastHash: null },
-      authorLog: newAuthorLog,
-      commitDetail,
-    };
-  }
-
   return {
     state: {
       currentCommit: commitInfo,
       skipCurrentCommit: skipCommit,
-      lastHash: commitInfo.hash,
+      lastHash: commitInfo?.hash ?? null,
     },
     authorLog: newAuthorLog,
     commitDetail,

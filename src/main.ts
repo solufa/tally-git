@@ -72,7 +72,7 @@ export const getGitLog = async (
   untilDate: Dayjs,
 ): Promise<string> => {
   const command = `
-    cd ${dir} && git log --all --no-merges --grep='^Revert' --invert-grep --since="${toJSTString(sinceDate)}" --until="${toJSTString(untilDate)}" --pretty="%H,%an,%ad" --numstat --date=format:"%Y-%m-%d"
+    cd ${dir} && git log --no-merges --grep='^Revert' --invert-grep --since="${toJSTString(sinceDate)}" --until="${toJSTString(untilDate)}" --pretty="%H,%an,%ad" --numstat --date=format:"%Y-%m-%d"
   `;
 
   const { stdout } = await execPromise(command);

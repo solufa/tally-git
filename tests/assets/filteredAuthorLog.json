@@ -18,19 +18,19 @@
       "deletions": 0
     },
     "2024-10": {
-      "commits": 8,
-      "insertions": 221,
-      "deletions": 29
+      "commits": 4,
+      "insertions": 121,
+      "deletions": 23
     },
     "2024-12": {
-      "commits": 17,
-      "insertions": 1403,
-      "deletions": 185
+      "commits": 9,
+      "insertions": 836,
+      "deletions": 122
     },
     "2025-01": {
-      "commits": 12,
-      "insertions": 94,
-      "deletions": 18
+      "commits": 7,
+      "insertions": 58,
+      "deletions": 12
     }
   },
   "sforward": {
@@ -38,25 +38,6 @@
       "commits": 1,
       "insertions": 244,
       "deletions": 3
-    }
-  },
-  "pb30": {
-    "2024-06": {
-      "commits": 1,
-      "insertions": 2,
-      "deletions": 2
-    }
-  },
-  "Markus Podar": {
-    "2024-06": {
-      "commits": 1,
-      "insertions": 13,
-      "deletions": 5
-    },
-    "2024-07": {
-      "commits": 0,
-      "insertions": 0,
-      "deletions": 0
     }
   },
   "schrosis": {
@@ -92,6 +73,13 @@
       "commits": 1,
       "insertions": 25,
       "deletions": 25
+    }
+  },
+  "Markus Podar": {
+    "2024-07": {
+      "commits": 0,
+      "insertions": 0,
+      "deletions": 0
     }
   },
   "stefanScrumble": {
@@ -203,18 +191,6 @@
       "deletions": 0
     }
   },
-  "laravel-ide-helper": {
-    "2024-12": {
-      "commits": 6,
-      "insertions": 102,
-      "deletions": 105
-    },
-    "2025-01": {
-      "commits": 4,
-      "insertions": 6,
-      "deletions": 7
-    }
-  },
   "Martin Tillmann": {
     "2024-12": {
       "commits": 0,
@@ -255,6 +231,18 @@
       "commits": 1,
       "insertions": 4,
       "deletions": 4
+    }
+  },
+  "laravel-ide-helper": {
+    "2024-12": {
+      "commits": 1,
+      "insertions": 2,
+      "deletions": 2
+    },
+    "2025-01": {
+      "commits": 1,
+      "insertions": 2,
+      "deletions": 3
     }
   },
   "skyler544": {

@@ -52,25 +52,21 @@ export const CodeVsTestChartPage = ({
   codeVsTestData: [number[][], number[][]];
   codeVsTestLabels: string[];
 }): React.ReactElement => (
-  <>
-    {codeVsTestLabels.length > 0 && (
-      <DualBarChart
-        title="実装コード（左グラフ）・テストコード（右グラフ）行数推移"
-        data={[
-          monthColumns.map((_, i) =>
-            codeVsTestData[0].reduce((sum, typeData) => sum + (typeData[i] || 0), 0),
-          ),
-          monthColumns.map((_, i) =>
-            codeVsTestData[1].reduce((sum, typeData) => sum + (typeData[i] || 0), 0),
-          ),
-        ]}
-        contributorData={codeVsTestData}
-        labels={monthColumns}
-        contributors={codeVsTestLabels}
-        hasReferenceLines={false}
-        width={500}
-        height={350}
-      />
-    )}
-  </>
+  <DualBarChart
+    title="実装コード（左グラフ）・テストコード（右グラフ）行数推移"
+    data={[
+      monthColumns.map((_, i) =>
+        codeVsTestData[0].reduce((sum, typeData) => sum + (typeData[i] || 0), 0),
+      ),
+      monthColumns.map((_, i) =>
+        codeVsTestData[1].reduce((sum, typeData) => sum + (typeData[i] || 0), 0),
+      ),
+    ]}
+    contributorData={codeVsTestData}
+    labels={monthColumns}
+    contributors={codeVsTestLabels}
+    hasReferenceLines={false}
+    width={500}
+    height={250}
+  />
 );

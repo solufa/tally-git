@@ -178,13 +178,15 @@ export const toPdf = async (
           contributorDeletionsData={contributorDeletionsData}
         />
       </PdfLayout>
-      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
-        <CodeVsTestChartPage
-          monthColumns={monthColumns}
-          codeVsTestData={codeVsTestData}
-          codeVsTestLabels={codeVsTestLabels}
-        />
-      </PdfLayout>
+      {codeVsTestData[0].length > 0 && (
+        <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+          <CodeVsTestChartPage
+            monthColumns={monthColumns}
+            codeVsTestData={codeVsTestData}
+            codeVsTestLabels={codeVsTestLabels}
+          />
+        </PdfLayout>
+      )}
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>
         <PromptPage authorLog={authorLog} monthColumns={monthColumns} />
       </PdfLayout>

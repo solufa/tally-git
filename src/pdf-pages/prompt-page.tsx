@@ -10,7 +10,7 @@ export const PromptPage = ({
   monthColumns,
 }: {
   authorLog: AuthorLog;
-  monthColumns: string[];
+  monthColumns: Readonly<string[]>;
 }): React.ReactElement => {
   const anonymousMap = anonymizeAuthors(authorLog);
   const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousMap);
@@ -157,7 +157,7 @@ export const anonymizeAuthors = (authorLog: AuthorLog): Record<string, string> =
 
 export const generateCsvDataForPrompt = (
   authorLog: AuthorLog,
-  monthColumns: string[],
+  monthColumns: Readonly<string[]>,
   anonymousMap: Record<string, string>,
 ): { header: string; csvList: { title: string; rows: string[] }[] } => {
   const header = `,${monthColumns.join(',')}`;

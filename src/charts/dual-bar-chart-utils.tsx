@@ -9,7 +9,7 @@ export interface DualBarChartProps {
   title: string;
   data: [number[], number[]]; // [追加データ, 削除データ]
   contributorData: [number[][], number[][]]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
-  labels: string[];
+  labels: Readonly<string[]>;
   contributors: string[]; // 開発者名
   hasReferenceLines: boolean;
   width?: number;
@@ -25,7 +25,7 @@ export interface DualBarChartSvgProps {
   chartHeight: number;
   maxValue: number;
   contributorData: [number[][], number[][]];
-  labels: string[];
+  labels: Readonly<string[]>;
   contributors: string[];
   referenceLines: ChartReferenceLine[];
 }
@@ -61,7 +61,7 @@ export const YAxis = ({
 );
 
 export const renderXAxisLabels = (
-  labels: string[],
+  labels: Readonly<string[]>,
   margin: { top: number; right: number; bottom: number; left: number },
   chartHeight: number,
   chartWidth: number,

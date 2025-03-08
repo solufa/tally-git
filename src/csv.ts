@@ -6,7 +6,7 @@ const formatDataRow = (
   author: string,
   monthData: Record<string, CommitData | undefined>,
   key: keyof CommitData,
-  monthColumns: string[],
+  monthColumns: Readonly<string[]>,
 ): string => {
   if (key === 'insertions') {
     return `${author},${monthColumns
@@ -24,7 +24,7 @@ const formatOutlierCommits = (outlierCommits: CommitDetail[]): string => {
     return '外れ値のコミットはありません';
   }
   return outlierCommits
-    .map((commit: CommitDetail) => {
+    .map((commit) => {
       const totalInsertions = calculateTotalInsertions(commit.insertions);
       return `${commit.author},${commit.date},${commit.hash.substring(0, 7)},${totalInsertions},${commit.deletions}`;
     })
@@ -38,7 +38,7 @@ const formatThresholdValues = (): string => {
 
 const generateActivityRows = (
   authorLog: AuthorLog,
-  monthColumns: string[],
+  monthColumns: Readonly<string[]>,
 ): { commits: string[]; insertions: string[]; deletions: string[] } => {
   const commits = Object.entries(authorLog).map(([author, monthData]) =>
     formatDataRow(author, monthData, 'commits', monthColumns),
@@ -55,7 +55,7 @@ const generateActivityRows = (
 
 const formatCsvContent = (
   header: string,
-  activityData: { commits: string[]; insertions: string[]; deletions: string[] },
+  activityData: Readonly<{ commits: string[]; insertions: string[]; deletions: string[] }>,
   thresholdInfo: string,
   outlierInfo: string,
 ): string => {
@@ -83,7 +83,7 @@ ${outlierInfo}`;
 
 export const toCsv = (
   authorLog: AuthorLog,
-  monthColumns: string[],
+  monthColumns: Readonly<string[]>,
   outlierCommits: CommitDetail[],
 ): string => {
   const header = `,${monthColumns.join(',')}`;

@@ -35,7 +35,7 @@ export const readProjectConfig = (targetDir: string): ProjectConfig | null => {
 };
 
 export const main = async (
-  option: Period & { projectName?: string; targetDir: string; outputDir: string },
+  option: Readonly<Period & { projectName?: string; targetDir: string; outputDir: string }>,
 ): Promise<Result> => {
   let authorLog: AuthorLog = {};
   const allCommitDetails: CommitDetail[] = [];
@@ -44,7 +44,10 @@ export const main = async (
   const monthDiff = endDate.diff(startDate, 'month') + 1;
   const projectConfig = readProjectConfig(option.targetDir);
 
-  for (let n = 0; n < monthDiff; n += 1) {
+  const monthIndices = Array.from({ length: monthDiff }, (_, i) => i);
+
+  // getGitLogを並列処理するとメモリが不足するのでfor ofで直列処理する
+  for (const n of monthIndices) {
     const gitLog = await getGitLog(
       option.targetDir,
       startDate.add(n, 'month').startOf('month'),
@@ -57,9 +60,7 @@ export const main = async (
 
   const outlierCommits = findOutlierCommits(allCommitDetails);
   const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
-  const monthColumns = [...Array(monthDiff)].map((_, i) =>
-    startDate.add(i, 'month').format('YYYY-MM'),
-  );
+  const monthColumns = monthIndices.map((i) => startDate.add(i, 'month').format('YYYY-MM'));
   const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits);
 
   const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1) ?? '';

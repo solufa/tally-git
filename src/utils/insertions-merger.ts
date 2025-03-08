@@ -1,4 +1,4 @@
-import type { CommitInfo } from '../types';
+import type { Insertions } from '../types';
 
 export const mergeTestLines = (
   currentTest: number | undefined,
@@ -28,15 +28,7 @@ export const mergeTypeInsertions = (
   };
 };
 
-export const mergeInsertions = (
-  current: CommitInfo['insertions'],
-  categorized: {
-    frontend?: { code: number; test?: number };
-    backend?: { code: number; test?: number };
-    infra?: { code: number; test?: number };
-    others: number;
-  },
-): CommitInfo['insertions'] => {
+export const mergeInsertions = (current: Insertions, categorized: Insertions): Insertions => {
   return {
     frontend: mergeTypeInsertions(current.frontend, categorized.frontend),
     backend: mergeTypeInsertions(current.backend, categorized.backend),

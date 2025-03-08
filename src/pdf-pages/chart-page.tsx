@@ -12,7 +12,7 @@ export const Top10ChartPage = ({
   contributorInsertionsData,
   contributorDeletionsData,
 }: {
-  monthColumns: string[];
+  monthColumns: Readonly<string[]>;
   contributorCommitsData: number[][];
   contributorNamesByCommits: string[];
   contributorNamesByInsertions: string[];
@@ -48,7 +48,7 @@ export const CodeVsTestChartPage = ({
   codeVsTestData,
   codeVsTestLabels,
 }: {
-  monthColumns: string[];
+  monthColumns: Readonly<string[]>;
   codeVsTestData: [number[][], number[][]];
   codeVsTestLabels: string[];
 }): React.ReactElement => (

@@ -6,7 +6,7 @@ import { getContributorColor } from './color-utils';
 export interface StackedBarChartProps {
   title: string;
   data: number[][];
-  labels: string[];
+  labels: Readonly<string[]>;
   contributors: string[];
   width?: number;
   height?: number;
@@ -21,7 +21,7 @@ export interface StackedBarChartSvgProps {
   chartHeight: number;
   maxValue: number;
   data: number[][];
-  labels: string[];
+  labels: Readonly<string[]>;
   contributors: string[];
 }
 
@@ -56,7 +56,7 @@ export const YAxis = ({
 );
 
 export const renderXAxisLabels = (
-  labels: string[],
+  labels: Readonly<string[]>,
   barWidth: number,
   margin: { top: number; right: number; bottom: number; left: number },
   chartHeight: number,

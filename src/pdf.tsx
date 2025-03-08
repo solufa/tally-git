@@ -6,12 +6,12 @@ import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
 import { SummaryPage } from './pdf-pages/summary-page';
-import type { AuthorLog, CommitDetail, ProjectConfig } from './types';
+import type { AuthorLog, CommitDetail, ProjectConfig, ProjectDirType } from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 export const toPdf = async (
   authorLog: AuthorLog,
-  monthColumns: string[],
+  monthColumns: Readonly<string[]>,
   projectName: string,
   outlierCommits: CommitDetail[],
   projectConfig: ProjectConfig | null,
@@ -116,7 +116,7 @@ export const toPdf = async (
     // testsが存在するdirTypesを抽出
     const dirTypesWithTests = Object.entries(dirTypes)
       .filter(([_, config]) => config.tests && config.tests.length > 0)
-      .map(([type]) => type);
+      .map(([type]) => type as ProjectDirType);
 
     // 各dirTypeの実装コードとテストコードの月ごとの行数を計算
     if (dirTypesWithTests.length > 0) {
@@ -127,7 +127,7 @@ export const toPdf = async (
             const monthData = authorMonthData[month];
             if (!monthData) return sum;
 
-            const typeData = monthData.insertions[type as keyof typeof monthData.insertions];
+            const typeData = monthData.insertions[type];
             if (!typeData || typeof typeData === 'number') return sum;
 
             return sum + (typeData.code || 0);
@@ -142,7 +142,7 @@ export const toPdf = async (
             const monthData = authorMonthData[month];
             if (!monthData) return sum;
 
-            const typeData = monthData.insertions[type as keyof typeof monthData.insertions];
+            const typeData = monthData.insertions[type];
             if (!typeData || typeof typeData === 'number') return sum;
 
             return sum + (typeData.test || 0);

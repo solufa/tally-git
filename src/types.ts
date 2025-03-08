@@ -48,3 +48,5 @@ export type Result = Readonly<{
 export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;
 
 export type ProjectConfig = Readonly<z.infer<typeof projectConfigValidator>>;
+
+export type ProjectDirType = keyof ProjectConfig['dirTypes'];

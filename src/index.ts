@@ -16,7 +16,7 @@ const run = async (): Promise<void> => {
     return;
   }
 
-  const targets: (Period & { projectName: string; dir: string })[] = [
+  const targets: Readonly<(Period & { projectName: string; dir: string })[]> = [
     { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2403', untilYYMM: '2502' },
     {
       projectName: 'ManabuFW版法人請求',
@@ -36,17 +36,19 @@ const run = async (): Promise<void> => {
     // '../reserve',
   ];
 
-  for (const { projectName, dir, sinceYYMM, untilYYMM } of targets) {
-    const result = await main({
-      projectName,
-      targetDir: dir,
-      outputDir: 'out',
-      sinceYYMM,
-      untilYYMM,
-    });
+  await Promise.all(
+    targets.map(async ({ projectName, dir, sinceYYMM, untilYYMM }) => {
+      const result = await main({
+        projectName,
+        targetDir: dir,
+        outputDir: 'out',
+        sinceYYMM,
+        untilYYMM,
+      });
 
-    await generateFiles(result);
-  }
+      await generateFiles(result);
+    }),
+  );
 
   const laravelResult = await main({
     projectName: 'OSS Laravel',

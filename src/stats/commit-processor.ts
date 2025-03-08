@@ -107,27 +107,33 @@ export const processLogData = (
   projectConfig?: ProjectConfig | null,
 ): { authorLog: AuthorLog; commitDetails: CommitDetail[] } => {
   const lines = logData.split('\n');
-  const commitDetails: CommitDetail[] = [];
   let newAuthorLog = authorLog;
   let state: LogState = { currentCommit: null, skipCurrentCommit: false, lastHash: null };
 
-  lines.forEach((line) => {
+  const commitDetails = lines.reduce<CommitDetail[]>((details, line) => {
     const processed = processLogLine(line, state, newAuthorLog, projectConfig);
 
-    if (!processed) return;
+    if (!processed) return details;
 
     newAuthorLog = processed.authorLog;
     state = processed.state;
 
-    if (processed.commitDetail) commitDetails.push(processed.commitDetail);
-  });
+    if (processed.commitDetail) {
+      return [...details, processed.commitDetail];
+    }
+
+    return details;
+  }, []);
 
   // 最後のコミット情報を処理
   if (state.currentCommit && !state.skipCurrentCommit) {
     const updated = updateAuthorCommitData(newAuthorLog, state.currentCommit);
 
     newAuthorLog = updated.authorLog;
-    commitDetails.push(updated.commitDetail);
+    return {
+      authorLog: newAuthorLog,
+      commitDetails: [...commitDetails, updated.commitDetail],
+    };
   }
 
   return { authorLog: newAuthorLog, commitDetails };

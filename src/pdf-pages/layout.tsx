@@ -8,7 +8,7 @@ export const PdfLayout = ({
   children,
 }: {
   projectName: string;
-  monthColumns: string[];
+  monthColumns: Readonly<string[]>;
   children: React.ReactNode;
 }): React.ReactElement => {
   return (

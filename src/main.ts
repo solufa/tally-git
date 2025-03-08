@@ -4,18 +4,35 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import fs from 'fs';
+import path from 'path';
 import { promisify } from 'util';
 import { toCsv } from './csv';
 import { toPdf } from './pdf';
 import { processLogData } from './stats/commit-processor';
 import { createFilteredAuthorLog, findOutlierCommits } from './stats/outliers';
-import type { AuthorLog, CommitDetail, Period, Result } from './types';
+import type { AuthorLog, CommitDetail, Period, ProjectConfig, Result } from './types';
+import { projectConfigValidator } from './validators';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 
 export const PERIOD_FORMAT = 'YYMM';
+
+export const readProjectConfig = (targetDir: string): ProjectConfig | null => {
+  const configPath = path.join(targetDir, 'tally.config.json');
+
+  try {
+    const configData = fs.readFileSync(configPath, 'utf8');
+    const parsedConfig = JSON.parse(configData);
+    const result = projectConfigValidator.safeParse(parsedConfig);
+
+    return result.data ?? null;
+  } catch {
+    return null;
+  }
+};
 
 export const main = async (
   option: Period & { projectName?: string; targetDir: string; outputDir: string },
@@ -25,6 +42,7 @@ export const main = async (
   const startDate = dayjs(option.sinceYYMM, PERIOD_FORMAT).startOf('month');
   const endDate = dayjs(option.untilYYMM, PERIOD_FORMAT).endOf('month');
   const monthDiff = endDate.diff(startDate, 'month') + 1;
+  const projectConfig = readProjectConfig(option.targetDir);
 
   for (let n = 0; n < monthDiff; n += 1) {
     const gitLog = await getGitLog(
@@ -32,7 +50,7 @@ export const main = async (
       startDate.add(n, 'month').startOf('month'),
       startDate.add(n, 'month').endOf('month'),
     );
-    const result = processLogData(gitLog, authorLog);
+    const result = processLogData(gitLog, authorLog, projectConfig);
     authorLog = result.authorLog;
     allCommitDetails.push(...result.commitDetails);
   }

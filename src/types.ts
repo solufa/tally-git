@@ -1,4 +1,14 @@
-export type CommitData = Readonly<{ commits: number; insertions: number; deletions: number }>;
+import type { z } from 'zod';
+import type { projectConfigValidator } from './validators';
+
+export type Insertions = Readonly<{
+  frontend?: { code: number; test?: number };
+  backend?: { code: number; test?: number };
+  infra?: { code: number; test?: number };
+  others: number;
+}>;
+
+export type CommitData = Readonly<{ commits: number; insertions: Insertions; deletions: number }>;
 
 export type AuthorLog = Readonly<Record<string, Readonly<Record<string, CommitData | undefined>>>>;
 
@@ -6,7 +16,7 @@ export type CommitDetail = Readonly<{
   hash: string;
   author: string;
   date: string;
-  insertions: number;
+  insertions: Insertions;
   deletions: number;
 }>;
 
@@ -15,7 +25,7 @@ export type CommitInfo = Readonly<{
   author: string;
   date: string;
   YM: string;
-  insertions: number;
+  insertions: Insertions;
   deletions: number;
 }>;
 
@@ -36,3 +46,5 @@ export type Result = Readonly<{
 }>;
 
 export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;
+
+export type ProjectConfig = Readonly<z.infer<typeof projectConfigValidator>>;

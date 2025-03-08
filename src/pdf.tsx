@@ -8,6 +8,7 @@ import { PromptPage } from './pdf-pages/prompt-page';
 import { SummaryPage } from './pdf-pages/summary-page';
 import { registerFonts } from './styles/pdf-styles';
 import type { AuthorLog, CommitDetail } from './types';
+import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 registerFonts();
 
@@ -23,7 +24,7 @@ export const toPdf = async (
       0,
     );
     const totalInsertions = Object.values(monthData).reduce(
-      (sum, data) => sum + (data?.insertions ?? 0),
+      (sum, data) => sum + (data ? calculateTotalInsertions(data.insertions) : 0),
       0,
     );
     const totalDeletions = Object.values(monthData).reduce(
@@ -45,7 +46,8 @@ export const toPdf = async (
       0,
     );
     const insertions = Object.values(authorLog).reduce(
-      (sum, monthData) => sum + (monthData[month]?.insertions ?? 0),
+      (sum, monthData) =>
+        sum + (monthData[month] ? calculateTotalInsertions(monthData[month].insertions) : 0),
       0,
     );
     const deletions = Object.values(authorLog).reduce(
@@ -68,10 +70,10 @@ export const toPdf = async (
 
   // グラフデータの準備（トップ10の開発者の合計）
   const insertionsData = monthColumns.map((month) => {
-    return topContributorsByInsertions.reduce(
-      (sum, author) => sum + (authorLog[author.author]?.[month]?.insertions ?? 0),
-      0,
-    );
+    return topContributorsByInsertions.reduce((sum, author) => {
+      const monthData = authorLog[author.author]?.[month];
+      return sum + (monthData ? calculateTotalInsertions(monthData.insertions) : 0);
+    }, 0);
   });
 
   const deletionsData = monthColumns.map((month) => {
@@ -91,7 +93,8 @@ export const toPdf = async (
   // 開発者別の月ごとの追加行数データを準備（DualBarChart用）
   const contributorInsertionsData = topContributorsByInsertions.map((author) => {
     return monthColumns.map((month) => {
-      return authorLog[author.author]?.[month]?.insertions ?? 0;
+      const monthData = authorLog[author.author]?.[month];
+      return monthData ? calculateTotalInsertions(monthData.insertions) : 0;
     });
   });
 

@@ -1,6 +1,8 @@
 import assert from 'assert';
 import { EXCLUDED_AUTHORS, EXCLUDED_FILES } from '../constants';
-import type { CommitInfo } from '../types';
+import type { CommitInfo, ProjectConfig } from '../types';
+import { categorizeInsertions } from '../utils/insertions-classifier';
+import { mergeInsertions } from '../utils/insertions-merger';
 
 export const parseGitLogLine = (
   line: string,
@@ -17,7 +19,11 @@ export const parseGitLogLine = (
   return { hash, author, date, YM };
 };
 
-export const processStatLine = (line: string, current: CommitInfo | null): CommitInfo | null => {
+export const processStatLine = (
+  line: string,
+  current: CommitInfo | null,
+  projectConfig?: ProjectConfig | null,
+): CommitInfo | null => {
   if (!current) return null;
 
   const [insertions, deletions, file] = line.split('\t');
@@ -30,23 +36,23 @@ export const processStatLine = (line: string, current: CommitInfo | null): Commi
     return current;
   }
 
+  const insertionCount = +insertions;
+
+  // 挿入行数を分類
+  const categorizedInsertions = categorizeInsertions(file, insertionCount, projectConfig);
+  const newInsertions = mergeInsertions(current.insertions, categorizedInsertions);
+
   return {
     ...current,
-    insertions: current.insertions + +insertions,
+    insertions: newInsertions,
     deletions: current.deletions + +deletions,
   };
 };
 
-/**
- * コミット行かどうかを判定する
- */
 export const isCommitLine = (line: string): boolean => {
   return /^[a-f0-9]+,.+,\d{4}-\d{2}-\d{2}$/.test(line);
 };
 
-/**
- * ファイル変更行かどうかを判定する
- */
 export const isStatLine = (line: string): boolean => {
   return /^\d+\t\d+\t.+/.test(line);
 };
@@ -65,7 +71,7 @@ export const processCommitLine = (
   }
 
   return {
-    commitInfo: { ...commitInfo, insertions: 0, deletions: 0 },
+    commitInfo: { ...commitInfo, insertions: { others: 0 }, deletions: 0 },
     skipCommit: false,
   };
 };

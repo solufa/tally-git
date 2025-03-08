@@ -3,217 +3,295 @@
     "hash": "bc1d67f01ce8c77e3f97d48ba51fa1d81874f622",
     "author": "Barry vd. Heuvel",
     "date": "2024-03-01",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "591e7d665fbab8a3b682e451641706341573eb80",
     "author": "Barry vd. Heuvel",
     "date": "2024-07-12",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "ccac27c8cf65c2633452104ef588275eac06a51e",
     "author": "Barry vd. Heuvel",
     "date": "2024-07-12",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "a1573919c1b113a2be44fa3ab669ea41a0ad7768",
     "author": "Barry vd. Heuvel",
     "date": "2024-07-12",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "0cf178aca9654facf980cc74c107de45406d3803",
     "author": "Markus Podar",
     "date": "2024-07-12",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "07719015b3c4a647d1343c2d8897a965fefc53fc",
     "author": "uno-sw",
     "date": "2024-08-02",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "4f588b97824b5c542f65132296677a2a4a91f4a0",
     "author": "erikn69",
     "date": "2024-09-20",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "90e7c5ac479f0982d53afd00db4bc60460d30469",
     "author": "barryvdh",
     "date": "2024-10-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "7c2fa01d366ecbae04e5335cd57d8755cc8380a2",
     "author": "Pieter Willekens",
     "date": "2024-10-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "be806dc316f357d5ad52fae64440d1b92c2f6372",
     "author": "Barry vd. Heuvel",
     "date": "2024-10-28",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "7956ccb4943f8532d008c17a1094b34bb6394d56",
     "author": "Barry vd. Heuvel",
     "date": "2024-10-17",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "d3965aaab562c76dc60d2f6857328eca63a30158",
     "author": "KentarouTakeda",
     "date": "2024-10-18",
-    "insertions": 0,
+    "insertions": {
+      "backend": {
+        "code": 0,
+        "test": 0
+      },
+      "others": 0
+    },
     "deletions": 7
   },
   {
     "hash": "788e72e7dd6f7abda0f74fd6ae2cab348a2416a4",
     "author": "Bob Conan",
     "date": "2024-11-13",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "9c6380da4aa3319ec4d380e3f9ee206ff82ba02a",
     "author": "Barry vd. Heuvel",
     "date": "2024-12-30",
-    "insertions": 15,
+    "insertions": {
+      "backend": {
+        "code": 15,
+        "test": 0
+      },
+      "others": 0
+    },
     "deletions": 205
   },
   {
     "hash": "c32443873149206bddb5618379b908e4f44c264f",
     "author": "Barry vd. Heuvel",
     "date": "2024-12-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "66ea6aa57b0367ff9c6d931446f15140d402be73",
     "author": "barryvdh",
     "date": "2024-12-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "2a41415f01bf3c409d200f6cdd940c1e7d86cfd3",
     "author": "Barry vd. Heuvel",
     "date": "2024-12-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "97e3b5eaa0e0029aee893a5e339273445f39369f",
     "author": "Barry vd. Heuvel",
     "date": "2024-12-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "99554aef3c3a7a15e397846d668064c7f183fb9e",
     "author": "Martin Tillmann",
     "date": "2024-12-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "0b2eeb4627d554e259f16e55e501e2ac5fa1a040",
     "author": "hms5232",
     "date": "2024-12-29",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "347483be03fa069f06da6b6827e38bc517b2b817",
     "author": "Barry vd. Heuvel",
     "date": "2024-12-29",
-    "insertions": 305,
+    "insertions": {
+      "backend": {
+        "code": 75,
+        "test": 230
+      },
+      "others": 0
+    },
     "deletions": 45343
   },
   {
     "hash": "14fdb572bbb3ab2faf4b605c782e19e838118e56",
     "author": "Barry vd. Heuvel",
     "date": "2024-12-28",
-    "insertions": 45456,
+    "insertions": {
+      "backend": {
+        "code": 42,
+        "test": 45414
+      },
+      "others": 0
+    },
     "deletions": 59
   },
   {
     "hash": "59eb26742b387b0f6b5d3aa56ad961b747e68932",
     "author": "barryvdh",
     "date": "2024-12-18",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "6b43ac616d8d25ba5a4c194ab01f3e29fcec4fca",
     "author": "barryvdh",
     "date": "2025-01-14",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "06c1fab9b57816380e060e067b5bccd80c824d01",
     "author": "barryvdh",
     "date": "2025-01-08",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "088968c3fc6a382c3d8cf179ba7d12ca7f0de5c6",
     "author": "barryvdh",
     "date": "2025-01-06",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "c8d85a0d34dfeac90fca11a667127cee1e03874c",
     "author": "barryvdh",
     "date": "2025-01-06",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "0fe9774dfbfe58250594f7fca8fd5b34509d685f",
     "author": "barryvdh",
     "date": "2025-01-06",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "030f6f1f35d685db9d67571e873c3f0a65fc8a4a",
     "author": "Jesper Noordsij",
     "date": "2025-01-03",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "713a4758f9df5318e442e63847a6518f263341ef",
     "author": "barryvdh",
     "date": "2025-02-21",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   },
   {
     "hash": "8d441ec99f8612b942b55f5183151d91591b618a",
     "author": "barryvdh",
     "date": "2025-02-11",
-    "insertions": 0,
+    "insertions": {
+      "others": 0
+    },
     "deletions": 0
   }
 ]

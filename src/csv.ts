@@ -1,25 +1,33 @@
 import { DUAL_BAR_CHAT_Y_AXIS_STEP } from './constants';
 import type { AuthorLog, CommitData, CommitDetail } from './types';
+import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 const formatDataRow = (
   author: string,
   monthData: Record<string, CommitData | undefined>,
   key: keyof CommitData,
   monthColumns: string[],
-): string => `${author},${monthColumns.map((column) => monthData[column]?.[key] ?? 0).join(',')}`;
+): string => {
+  if (key === 'insertions') {
+    return `${author},${monthColumns
+      .map((column) => {
+        const insertions = monthData[column]?.insertions;
+        return insertions ? calculateTotalInsertions(insertions) : 0;
+      })
+      .join(',')}`;
+  }
+  return `${author},${monthColumns.map((column) => monthData[column]?.[key] ?? 0).join(',')}`;
+};
 
 const formatOutlierCommits = (outlierCommits: CommitDetail[]): string => {
   if (outlierCommits.length === 0) {
     return '外れ値のコミットはありません';
   }
-
   return outlierCommits
-    .map(
-      (commit: CommitDetail) =>
-        `${commit.author},${commit.date},${commit.hash.substring(0, 7)},${commit.insertions},${
-          commit.deletions
-        }`,
-    )
+    .map((commit: CommitDetail) => {
+      const totalInsertions = calculateTotalInsertions(commit.insertions);
+      return `${commit.author},${commit.date},${commit.hash.substring(0, 7)},${totalInsertions},${commit.deletions}`;
+    })
     .join('\n');
 };
 

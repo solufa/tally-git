@@ -2,309 +2,515 @@
   "dev2a": {
     "2024-03": {
       "commits": 1,
-      "insertions": 106,
+      "insertions": {
+        "backend": {
+          "code": 13,
+          "test": 93
+        },
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Barry vd. Heuvel": {
     "2024-03": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     },
     "2024-07": {
       "commits": 4,
-      "insertions": 2,
+      "insertions": {
+        "backend": {
+          "code": 0,
+          "test": 2
+        },
+        "others": 0
+      },
       "deletions": 0
     },
     "2024-10": {
       "commits": 6,
-      "insertions": 121,
+      "insertions": {
+        "backend": {
+          "code": 9,
+          "test": 33
+        },
+        "others": 79
+      },
       "deletions": 23
     },
     "2024-12": {
       "commits": 15,
-      "insertions": 46612,
+      "insertions": {
+        "backend": {
+          "code": 400,
+          "test": 45646
+        },
+        "others": 566
+      },
       "deletions": 45729
     },
     "2025-01": {
       "commits": 7,
-      "insertions": 58,
+      "insertions": {
+        "backend": {
+          "code": 55
+        },
+        "others": 3
+      },
       "deletions": 12
     }
   },
   "sforward": {
     "2024-04": {
       "commits": 1,
-      "insertions": 244,
+      "insertions": {
+        "backend": {
+          "code": 3,
+          "test": 241
+        },
+        "others": 0
+      },
       "deletions": 3
     }
   },
   "schrosis": {
     "2024-07": {
       "commits": 1,
-      "insertions": 1,
+      "insertions": {
+        "backend": {
+          "code": 1
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   },
   "Bram": {
     "2024-07": {
       "commits": 1,
-      "insertions": 25,
+      "insertions": {
+        "backend": {
+          "code": 1,
+          "test": 24
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   },
   "michal": {
     "2024-07": {
       "commits": 1,
-      "insertions": 131,
+      "insertions": {
+        "backend": {
+          "code": 29,
+          "test": 102
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   },
   "Braunson Yager": {
     "2024-07": {
       "commits": 1,
-      "insertions": 11,
+      "insertions": {
+        "backend": {
+          "code": 2,
+          "test": 9
+        },
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Benedikt Franke": {
     "2024-07": {
       "commits": 1,
-      "insertions": 25,
+      "insertions": {
+        "others": 25
+      },
       "deletions": 25
     }
   },
   "Markus Podar": {
     "2024-07": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "stefanScrumble": {
     "2024-07": {
       "commits": 1,
-      "insertions": 456,
+      "insertions": {
+        "backend": {
+          "code": 112,
+          "test": 344
+        },
+        "others": 0
+      },
       "deletions": 30
     }
   },
   "khaled sadek": {
     "2024-08": {
       "commits": 1,
-      "insertions": 3,
+      "insertions": {
+        "backend": {
+          "code": 1,
+          "test": 2
+        },
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "uno-sw": {
     "2024-08": {
       "commits": 3,
-      "insertions": 85,
+      "insertions": {
+        "backend": {
+          "code": 12,
+          "test": 73
+        },
+        "others": 0
+      },
       "deletions": 36
     }
   },
   "erikn69": {
     "2024-09": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Carl-Philipp Jung": {
     "2024-10": {
       "commits": 1,
-      "insertions": 135,
+      "insertions": {
+        "backend": {
+          "code": 67,
+          "test": 68
+        },
+        "others": 0
+      },
       "deletions": 23
     }
   },
   "Jeramy Hing": {
     "2024-10": {
       "commits": 1,
-      "insertions": 311,
+      "insertions": {
+        "backend": {
+          "code": 3,
+          "test": 285
+        },
+        "others": 23
+      },
       "deletions": 1
     }
   },
   "barryvdh": {
     "2024-10": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     },
     "2024-12": {
       "commits": 2,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     },
     "2025-01": {
       "commits": 5,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     },
     "2025-02": {
       "commits": 2,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Pieter Willekens": {
     "2024-10": {
       "commits": 3,
-      "insertions": 123,
+      "insertions": {
+        "backend": {
+          "code": 24,
+          "test": 99
+        },
+        "others": 0
+      },
       "deletions": 8
     },
     "2025-02": {
       "commits": 1,
-      "insertions": 10,
+      "insertions": {
+        "backend": {
+          "code": 10
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   },
   "Ramon Dantas": {
     "2024-10": {
       "commits": 1,
-      "insertions": 3,
+      "insertions": {
+        "backend": {
+          "code": 2,
+          "test": 1
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   },
   "KentarouTakeda": {
     "2024-10": {
       "commits": 4,
-      "insertions": 1340,
+      "insertions": {
+        "backend": {
+          "code": 9,
+          "test": 1327
+        },
+        "others": 4
+      },
       "deletions": 1352
     },
     "2025-02": {
       "commits": 1,
-      "insertions": 34,
+      "insertions": {
+        "backend": {
+          "code": 33
+        },
+        "others": 1
+      },
       "deletions": 1
     }
   },
   "Serhii Petrov": {
     "2024-10": {
       "commits": 1,
-      "insertions": 2,
+      "insertions": {
+        "others": 2
+      },
       "deletions": 2
     }
   },
   "Bob Conan": {
     "2024-11": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Martin Tillmann": {
     "2024-12": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "hms5232": {
     "2024-12": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Lau Ernebjerg Josefsen": {
     "2024-12": {
       "commits": 1,
-      "insertions": 13,
+      "insertions": {
+        "backend": {
+          "code": 3,
+          "test": 10
+        },
+        "others": 0
+      },
       "deletions": 13
     }
   },
   "Yifans_Z": {
     "2024-12": {
       "commits": 1,
-      "insertions": 6,
+      "insertions": {
+        "others": 6
+      },
       "deletions": 3
     }
   },
   "Lito": {
     "2024-12": {
       "commits": 2,
-      "insertions": 5,
+      "insertions": {
+        "backend": {
+          "code": 5
+        },
+        "others": 0
+      },
       "deletions": 3
     }
   },
   "Jeppe Knockaert": {
     "2024-12": {
       "commits": 1,
-      "insertions": 4,
+      "insertions": {
+        "backend": {
+          "code": 0,
+          "test": 4
+        },
+        "others": 0
+      },
       "deletions": 4
     }
   },
   "laravel-ide-helper": {
     "2024-12": {
       "commits": 1,
-      "insertions": 2,
+      "insertions": {
+        "others": 2
+      },
       "deletions": 2
     },
     "2025-01": {
       "commits": 1,
-      "insertions": 2,
+      "insertions": {
+        "backend": {
+          "code": 0,
+          "test": 0
+        },
+        "others": 2
+      },
       "deletions": 3
     }
   },
   "skyler544": {
     "2025-01": {
       "commits": 1,
-      "insertions": 4,
+      "insertions": {
+        "backend": {
+          "code": 4
+        },
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Kristijan": {
     "2025-01": {
       "commits": 1,
-      "insertions": 1,
+      "insertions": {
+        "others": 1
+      },
       "deletions": 1
     }
   },
   "Casper Bloemendaal": {
     "2025-01": {
       "commits": 1,
-      "insertions": 5,
+      "insertions": {
+        "backend": {
+          "code": 5
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   },
   "Jesper Noordsij": {
     "2025-01": {
       "commits": 1,
-      "insertions": 0,
+      "insertions": {
+        "others": 0
+      },
       "deletions": 0
     }
   },
   "Mathieu TUDISCO": {
     "2025-01": {
       "commits": 1,
-      "insertions": 34,
+      "insertions": {
+        "backend": {
+          "code": 19,
+          "test": 1
+        },
+        "others": 14
+      },
       "deletions": 32
     }
   },
   "Nereo Berardozzi": {
     "2024-12": {
       "commits": 1,
-      "insertions": 88,
+      "insertions": {
+        "backend": {
+          "code": 49,
+          "test": 39
+        },
+        "others": 0
+      },
       "deletions": 15
     }
   },
   "Tom Westrick": {
     "2025-02": {
       "commits": 1,
-      "insertions": 2,
+      "insertions": {
+        "backend": {
+          "code": 1,
+          "test": 1
+        },
+        "others": 0
+      },
       "deletions": 2
     }
   },
   "Jonny Nott": {
     "2025-02": {
       "commits": 1,
-      "insertions": 2,
+      "insertions": {
+        "others": 2
+      },
       "deletions": 2
     }
   },
   "yparitcher": {
     "2025-02": {
       "commits": 1,
-      "insertions": 1,
+      "insertions": {
+        "backend": {
+          "code": 1
+        },
+        "others": 0
+      },
       "deletions": 1
     }
   }

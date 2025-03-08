@@ -8,7 +8,7 @@ import { getGitLog, main, toJSTString } from '../src/main';
 import { anonymizeAuthors, generateCsvDataForPrompt } from '../src/pdf-pages/prompt-page';
 import { processLogData } from '../src/stats/commit-processor';
 import { parseGitLogLine } from '../src/stats/git-log-parser';
-import type { AuthorLog, CommitDetail } from '../src/types';
+import type { AuthorLog, CommitDetail, Insertions } from '../src/types';
 
 describe('getGitLog', () => {
   const testRepoPath = join('tests', 'projects', 'test-git-repo');
@@ -215,7 +215,7 @@ describe('parseGitLog', () => {
 
     expect(monthData[date]).toEqual({
       commits: 1,
-      insertions: 70, // 10 + 60
+      insertions: { others: 70 }, // 10 + 60
       deletions: 35, // 5 + 30
     });
   });
@@ -257,25 +257,25 @@ a3b45678,Developer2,2025-01-15
     expect(authors).toContain('Developer2');
     expect(result.authorLog['Developer1']![date202502]).toEqual({
       commits: 1,
-      insertions: 10,
+      insertions: { others: 10 },
       deletions: 5,
     });
 
     expect(result.authorLog['Developer1']![date202501]).toEqual({
       commits: 1,
-      insertions: 30,
+      insertions: { others: 30 },
       deletions: 15,
     });
 
     expect(result.authorLog['Developer2']![date202502]).toEqual({
       commits: 1,
-      insertions: 20,
+      insertions: { others: 20 },
       deletions: 10,
     });
 
     expect(result.authorLog['Developer2']![date202501]).toEqual({
       commits: 1,
-      insertions: 40,
+      insertions: { others: 40 },
       deletions: 20,
     });
   });
@@ -283,7 +283,7 @@ a3b45678,Developer2,2025-01-15
   test('既存のauthorLogに新しいデータが追加される', () => {
     const date = '2025-01';
     const existingAuthorLog = {
-      Developer1: { [date]: { commits: 2, insertions: 50, deletions: 25 } },
+      Developer1: { [date]: { commits: 2, insertions: { others: 50 }, deletions: 25 } },
     };
 
     const mockLogData = `abcd1234,Developer1,2025-01-15
@@ -293,7 +293,7 @@ a3b45678,Developer2,2025-01-15
 
     expect(result.authorLog['Developer1']![date]).toEqual({
       commits: 3, // 2 + 1
-      insertions: 60, // 50 + 10
+      insertions: { others: 60 }, // 50 + 10
       deletions: 30, // 25 + 5
     });
   });
@@ -339,39 +339,108 @@ test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致す�
   });
 
   // 新しいオブジェクトを作成して変更を適用していく
-  let mergedAuthorLog = structuredClone(result.filteredAuthorLog) as Record<
-    string,
-    Record<string, { commits: number; insertions: number; deletions: number }>
-  >;
+  let mergedAuthorLog = structuredClone(result.filteredAuthorLog);
 
-  result.outlierCommits.forEach((commit: CommitDetail) => {
-    const { author, date, insertions, deletions } = commit;
-    const YM = date.slice(0, 7);
+  // コード部分の挿入行数を合算する関数
+  const mergeCodeInsertions = (a = 0, b = 0): number => a + b;
 
-    // 開発者のデータが存在しない場合は初期化
-    if (!mergedAuthorLog[author]) {
-      mergedAuthorLog = { ...mergedAuthorLog, [author]: {} };
-    }
+  // テスト部分の挿入行数を合算する関数
+  const mergeTestInsertions = (a = 0, b = 0): number => a + b;
 
-    // 月のデータが存在しない場合は初期化
-    const authorData = mergedAuthorLog[author] || {};
-    const monthData = authorData[YM] ?? { commits: 0, insertions: 0, deletions: 0 };
+  // ベースがない場合の処理
+  const handleNoBase = (add?: {
+    code?: number;
+    test?: number;
+  }): { code: number; test?: number } | undefined => {
+    if (!add) return undefined;
+    return { code: add.code || 0, test: add.test };
+  };
 
-    // 新しいオブジェクトを作成して値を更新
-    const updatedMonthData = {
+  // 追加がない場合の処理
+  const handleNoAdd = (base?: {
+    code?: number;
+    test?: number;
+  }): { code: number; test?: number } | undefined => {
+    if (!base) return undefined;
+    return { code: base.code || 0, test: base.test };
+  };
+
+  // 両方ある場合の処理
+  const handleBothExist = (
+    base: { code?: number; test?: number },
+    add: { code?: number; test?: number },
+  ): { code: number; test?: number } => ({
+    code: mergeCodeInsertions(base.code, add.code),
+    test: mergeTestInsertions(base.test, add.test),
+  });
+
+  // 特定タイプの挿入行数を合算する関数
+  const mergeTypeInsertions = (
+    base?: { code?: number; test?: number },
+    add?: { code?: number; test?: number },
+  ): { code: number; test?: number } | undefined => {
+    if (!add && !base) return undefined;
+    if (!add) return handleNoAdd(base);
+    if (!base) return handleNoBase(add);
+    return handleBothExist(base, add);
+  };
+
+  // 挿入行数を合算する関数
+  const mergeInsertions = (base: Insertions, add: Insertions): Insertions => ({
+    frontend: mergeTypeInsertions(base.frontend, add.frontend),
+    backend: mergeTypeInsertions(base.backend, add.backend),
+    infra: mergeTypeInsertions(base.infra, add.infra),
+    others: (base.others || 0) + (add.others || 0),
+  });
+
+  // 月のデータを取得する関数
+  const getMonthData = (
+    authorData: AuthorLog[string] | undefined,
+    YM: string,
+  ): { commits: number; insertions: Insertions; deletions: number } => {
+    return authorData?.[YM] ?? { commits: 0, insertions: { others: 0 }, deletions: 0 };
+  };
+
+  // 更新された月データを作成する関数
+  const createUpdatedMonthData = (
+    monthData: { commits: number; insertions: Insertions; deletions: number },
+    insertions: Insertions,
+    deletions: number,
+  ): { commits: number; insertions: Insertions; deletions: number } => {
+    return {
       commits: monthData.commits + 1,
-      insertions: monthData.insertions + insertions,
+      insertions: mergeInsertions(monthData.insertions, insertions),
       deletions: monthData.deletions + deletions,
     };
+  };
 
-    // 著者の月別データを更新
-    mergedAuthorLog = {
-      ...mergedAuthorLog,
+  // 著者の月別データを更新する関数
+  const updateAuthorMonthData = (
+    log: AuthorLog | undefined,
+    author: string,
+    YM: string,
+    updatedMonthData: { commits: number; insertions: Insertions; deletions: number },
+  ): AuthorLog => {
+    return {
+      ...log,
       [author]: {
-        ...mergedAuthorLog[author],
+        ...log?.[author],
         [YM]: updatedMonthData,
       },
     };
+  };
+
+  const updateCommitData = (log: AuthorLog, commit: CommitDetail): AuthorLog => {
+    const { author, date, insertions, deletions } = commit;
+    const YM = date.slice(0, 7);
+    const monthData = getMonthData(log[author], YM);
+    const updatedMonthData = createUpdatedMonthData(monthData, insertions, deletions);
+
+    return updateAuthorMonthData(log, author, YM, updatedMonthData);
+  };
+
+  result.outlierCommits.forEach((commit: CommitDetail) => {
+    mergedAuthorLog = updateCommitData(mergedAuthorLog, commit);
   });
 
   expect(mergedAuthorLog).toEqual(result.authorLog);
@@ -380,12 +449,12 @@ test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致す�
 test('generateCsvDataForPromptが正しいCSVデータを生成する', async () => {
   const authorLog: AuthorLog = {
     'John Doe': {
-      '2023-01': { commits: 10, insertions: 100, deletions: 50 },
-      '2023-02': { commits: 5, insertions: 80, deletions: 30 },
+      '2023-01': { commits: 10, insertions: { others: 100 }, deletions: 50 },
+      '2023-02': { commits: 5, insertions: { others: 80 }, deletions: 30 },
     },
     'Jane Smith': {
-      '2023-01': { commits: 8, insertions: 120, deletions: 40 },
-      '2023-02': { commits: 12, insertions: 150, deletions: 60 },
+      '2023-01': { commits: 8, insertions: { others: 120 }, deletions: 40 },
+      '2023-02': { commits: 12, insertions: { others: 150 }, deletions: 60 },
     },
   };
 
@@ -459,8 +528,45 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
     expect(insertionsRow).toBeDefined();
 
     const insertionsValues = insertionsRow!.split(',').slice(1);
+    // フロントエンドの挿入行数を計算
+    const calculateFrontend = (frontend?: { code?: number; test?: number }): number => {
+      if (!frontend) return 0;
+      return (frontend.code || 0) + (frontend.test || 0);
+    };
+
+    // バックエンドの挿入行数を計算
+    const calculateBackend = (backend?: { code?: number; test?: number }): number => {
+      if (!backend) return 0;
+      return (backend.code || 0) + (backend.test || 0);
+    };
+
+    // インフラの挿入行数を計算
+    const calculateInfra = (infra?: { code?: number; test?: number }): number => {
+      if (!infra) return 0;
+      return (infra.code || 0) + (infra.test || 0);
+    };
+
+    // 挿入行数の合計を計算する関数
+    const calculateTotalInsertions = (insertions?: {
+      frontend?: { code?: number; test?: number };
+      backend?: { code?: number; test?: number };
+      infra?: { code?: number; test?: number };
+      others?: number;
+    }): number => {
+      if (!insertions) return 0;
+
+      // 各タイプの挿入行数を合計
+      return (
+        (insertions.others || 0) +
+        calculateFrontend(insertions.frontend) +
+        calculateBackend(insertions.backend) +
+        calculateInfra(insertions.infra)
+      );
+    };
+
+    // 各月の挿入行数を検証
     realMonthColumns.forEach((month, index) => {
-      const expectedValue = monthData[month]?.insertions ?? 0;
+      const expectedValue = calculateTotalInsertions(monthData[month]?.insertions);
       expect(Number(insertionsValues[index])).toBe(expectedValue);
     });
 

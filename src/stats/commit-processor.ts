@@ -1,4 +1,5 @@
-import type { AuthorLog, CommitDetail, CommitInfo, LogState } from '../types';
+import type { AuthorLog, CommitDetail, CommitInfo, LogState, ProjectConfig } from '../types';
+import { mergeInsertions } from '../utils/insertions-merger';
 import { isCommitLine, isStatLine, processCommitLine, processStatLine } from './git-log-parser';
 
 const updateAuthorCommitData = (
@@ -6,12 +7,15 @@ const updateAuthorCommitData = (
   commit: CommitInfo,
 ): { authorLog: AuthorLog; commitDetail: CommitDetail } => {
   const authorData = authorLog[commit.author] ?? {};
-  const commitData = authorData[commit.YM] ?? { commits: 0, insertions: 0, deletions: 0 };
+  const commitData = authorData[commit.YM] ?? {
+    commits: 0,
+    insertions: { others: 0 },
+    deletions: 0,
+  };
 
-  // 新しいオブジェクトを作成して変更を適用
   const updatedMonthData = {
     commits: commitData.commits + 1,
-    insertions: commitData.insertions + commit.insertions,
+    insertions: mergeInsertions(commitData.insertions, commit.insertions),
     deletions: commitData.deletions + commit.deletions,
   };
 
@@ -67,12 +71,16 @@ const handleCommitLine = (
   };
 };
 
-const processStatLogLine = (line: string, state: LogState): LogState => {
+const processStatLogLine = (
+  line: string,
+  state: LogState,
+  projectConfig?: ProjectConfig | null,
+): LogState => {
   if (!state.currentCommit || state.skipCurrentCommit) return state;
 
   return {
     ...state,
-    currentCommit: processStatLine(line, state.currentCommit) ?? state.currentCommit,
+    currentCommit: processStatLine(line, state.currentCommit, projectConfig) ?? state.currentCommit,
   };
 };
 
@@ -80,13 +88,14 @@ const processLogLine = (
   line: string,
   state: LogState,
   authorLog: AuthorLog,
+  projectConfig?: ProjectConfig | null,
 ): { state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null } | null => {
   if (isCommitLine(line)) {
     return handleCommitLine(line, state, authorLog);
   }
 
   if (isStatLine(line)) {
-    return { authorLog, state: processStatLogLine(line, state), commitDetail: null };
+    return { authorLog, state: processStatLogLine(line, state, projectConfig), commitDetail: null };
   }
 
   return null;
@@ -95,6 +104,7 @@ const processLogLine = (
 export const processLogData = (
   logData: string,
   authorLog: AuthorLog,
+  projectConfig?: ProjectConfig | null,
 ): { authorLog: AuthorLog; commitDetails: CommitDetail[] } => {
   const lines = logData.split('\n');
   const commitDetails: CommitDetail[] = [];
@@ -102,7 +112,7 @@ export const processLogData = (
   let state: LogState = { currentCommit: null, skipCurrentCommit: false, lastHash: null };
 
   lines.forEach((line) => {
-    const processed = processLogLine(line, state, newAuthorLog);
+    const processed = processLogLine(line, state, newAuthorLog, projectConfig);
 
     if (!processed) return;
 

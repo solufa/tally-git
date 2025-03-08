@@ -4,6 +4,7 @@ import React from 'react';
 import { INSERTIONS_THRESHOLD } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { CommitDetail } from '../types';
+import { calculateTotalInsertions } from '../utils/insertions-calculator';
 
 type MonthlyOutlierData = {
   month: string;
@@ -30,7 +31,7 @@ export const OutliersPage = ({
       }
 
       monthlyData[month].commits += 1;
-      monthlyData[month].insertions += commit.insertions;
+      monthlyData[month].insertions += calculateTotalInsertions(commit.insertions);
       monthlyData[month].deletions += commit.deletions;
     });
 

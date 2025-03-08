@@ -3,6 +3,7 @@ import assert from 'assert';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { AuthorLog } from '../types';
+import { calculateTotalInsertions } from '../utils/insertions-calculator';
 
 export const PromptPage = ({
   authorLog,
@@ -169,7 +170,9 @@ export const generateCsvDataForPrompt = (
 
   const insertionsRows = Object.entries(authorLog).map(([author, monthData]) => {
     const anonymousAuthor = anonymousMap[author];
-    const values = monthColumns.map((month) => monthData[month]?.insertions ?? 0).join(',');
+    const values = monthColumns
+      .map((month) => calculateTotalInsertions(monthData[month]?.insertions))
+      .join(',');
     return `${anonymousAuthor},${values}`;
   });
 

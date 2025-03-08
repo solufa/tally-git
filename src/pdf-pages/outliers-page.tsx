@@ -83,7 +83,7 @@ export const OutliersPage = ({
         </View>
       ) : (
         <View style={{ marginTop: 20, marginBottom: 20, alignItems: 'center' }}>
-          <Text style={{ fontSize: 14, fontStyle: 'italic' }}>外れ値コミットはありません</Text>
+          <Text style={{ fontSize: 14 }}>外れ値コミットはありません</Text>
         </View>
       )}
 

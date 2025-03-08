@@ -6,7 +6,8 @@ import { DualBarChartSvg } from './dual-bar-chart-svg';
 import type { DualBarChartProps } from './dual-bar-chart-utils';
 
 export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
-  const { title, data, contributorData, labels, contributors, ...restProps } = props;
+  const { title, data, contributorData, labels, contributors, hasReferenceLines, ...restProps } =
+    props;
   const safeProps = {
     width: 500,
     height: 300,
@@ -20,7 +21,11 @@ export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
   // 最大値を計算（追加と削除の両方を考慮し、基準線の値も含める）
   const allValues = [...data[0], ...data[1]];
   const dataMaxValue = Math.max(...allValues);
-  const referenceMaxValue = Math.max(...DUAL_BAR_CHART_REF_LINES.map((line) => line.value));
+  const actualReferenceLines = hasReferenceLines ? DUAL_BAR_CHART_REF_LINES : [];
+  const referenceMaxValue =
+    actualReferenceLines.length > 0
+      ? Math.max(...actualReferenceLines.map((line) => line.value))
+      : 0;
 
   // データの最大値と基準線の最大値を比較し、大きい方を採用
   const baseMaxValue = Math.max(dataMaxValue, referenceMaxValue) + 1;
@@ -40,6 +45,7 @@ export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
         contributorData={contributorData}
         labels={labels}
         contributors={contributors}
+        referenceLines={actualReferenceLines}
       />
     </View>
   );

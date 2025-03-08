@@ -1,22 +1,20 @@
 import { Document, renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
-import { ChartPage } from './pdf-pages/chart-page';
+import { CodeVsTestChartPage, Top10ChartPage } from './pdf-pages/chart-page';
 import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
 import { SummaryPage } from './pdf-pages/summary-page';
-import { registerFonts } from './styles/pdf-styles';
-import type { AuthorLog, CommitDetail } from './types';
+import type { AuthorLog, CommitDetail, ProjectConfig } from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
-
-registerFonts();
 
 export const toPdf = async (
   authorLog: AuthorLog,
   monthColumns: string[],
   projectName: string,
   outlierCommits: CommitDetail[],
+  projectConfig: ProjectConfig | null,
 ): Promise<Buffer> => {
   const authorTotals = Object.entries(authorLog).map(([author, monthData]) => {
     const totalCommits = Object.values(monthData).reduce(
@@ -108,6 +106,58 @@ export const toPdf = async (
   const contributorNamesByCommits = topContributorsByCommits.map((a) => a.author);
   const contributorNamesByInsertions = topContributorsByInsertions.map((a) => a.author);
 
+  // 実装コードとテストコードの量を計算
+  const codeVsTestData: [number[][], number[][]] = [[], []];
+  let codeVsTestLabels: string[] = [];
+
+  if (projectConfig) {
+    const { dirTypes } = projectConfig;
+
+    // testsが存在するdirTypesを抽出
+    const dirTypesWithTests = Object.entries(dirTypes)
+      .filter(([_, config]) => config.tests && config.tests.length > 0)
+      .map(([type]) => type);
+
+    // 各dirTypeの実装コードとテストコードの月ごとの行数を計算
+    if (dirTypesWithTests.length > 0) {
+      // 実装コードの月ごとの行数
+      const codeData = dirTypesWithTests.map((type) => {
+        return monthColumns.map((month) => {
+          return Object.values(authorLog).reduce((sum, authorMonthData) => {
+            const monthData = authorMonthData[month];
+            if (!monthData) return sum;
+
+            const typeData = monthData.insertions[type as keyof typeof monthData.insertions];
+            if (!typeData || typeof typeData === 'number') return sum;
+
+            return sum + (typeData.code || 0);
+          }, 0);
+        });
+      });
+
+      // テストコードの月ごとの行数
+      const testData = dirTypesWithTests.map((type) => {
+        return monthColumns.map((month) => {
+          return Object.values(authorLog).reduce((sum, authorMonthData) => {
+            const monthData = authorMonthData[month];
+            if (!monthData) return sum;
+
+            const typeData = monthData.insertions[type as keyof typeof monthData.insertions];
+            if (!typeData || typeof typeData === 'number') return sum;
+
+            return sum + (typeData.test || 0);
+          }, 0);
+        });
+      });
+
+      codeVsTestData[0] = codeData;
+      codeVsTestData[1] = testData;
+      codeVsTestLabels = dirTypesWithTests.map(
+        (type) => type.charAt(0).toUpperCase() + type.slice(1),
+      );
+    }
+  }
+
   const MyDocument = (): React.ReactElement => (
     <Document>
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>
@@ -117,7 +167,7 @@ export const toPdf = async (
         <ActivityPage monthlyTotals={monthlyTotals} />
       </PdfLayout>
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>
-        <ChartPage
+        <Top10ChartPage
           monthColumns={monthColumns}
           contributorCommitsData={contributorCommitsData}
           contributorNamesByCommits={contributorNamesByCommits}
@@ -126,6 +176,13 @@ export const toPdf = async (
           deletionsData={deletionsData}
           contributorInsertionsData={contributorInsertionsData}
           contributorDeletionsData={contributorDeletionsData}
+        />
+      </PdfLayout>
+      <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+        <CodeVsTestChartPage
+          monthColumns={monthColumns}
+          codeVsTestData={codeVsTestData}
+          codeVsTestLabels={codeVsTestLabels}
         />
       </PdfLayout>
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>

@@ -11,6 +11,7 @@ export interface DualBarChartProps {
   contributorData: [number[][], number[][]]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
   labels: string[];
   contributors: string[]; // 開発者名
+  hasReferenceLines: boolean;
   width?: number;
   height?: number;
   margin?: { top: number; right: number; bottom: number; left: number };
@@ -26,6 +27,7 @@ export interface DualBarChartSvgProps {
   contributorData: [number[][], number[][]];
   labels: string[];
   contributors: string[];
+  referenceLines: ChartReferenceLine[];
 }
 
 export const XAxis = ({

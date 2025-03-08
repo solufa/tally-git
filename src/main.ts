@@ -68,6 +68,7 @@ export const main = async (
     monthColumns,
     option.projectName ?? dirName,
     outlierCommits,
+    projectConfig,
   );
 
   return {

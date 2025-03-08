@@ -2,18 +2,7 @@ import React from 'react';
 import { DualBarChart } from '../charts/dual-bar-chart';
 import { StackedBarChart } from '../charts/stacked-bar-chart';
 
-interface ChartPageProps {
-  monthColumns: string[];
-  contributorCommitsData: number[][];
-  contributorNamesByCommits: string[];
-  contributorNamesByInsertions: string[];
-  insertionsData: number[];
-  deletionsData: number[];
-  contributorInsertionsData: number[][];
-  contributorDeletionsData: number[][];
-}
-
-export const ChartPage = ({
+export const Top10ChartPage = ({
   monthColumns,
   contributorCommitsData,
   contributorNamesByCommits,
@@ -22,7 +11,16 @@ export const ChartPage = ({
   deletionsData,
   contributorInsertionsData,
   contributorDeletionsData,
-}: ChartPageProps): React.ReactElement => (
+}: {
+  monthColumns: string[];
+  contributorCommitsData: number[][];
+  contributorNamesByCommits: string[];
+  contributorNamesByInsertions: string[];
+  insertionsData: number[];
+  deletionsData: number[];
+  contributorInsertionsData: number[][];
+  contributorDeletionsData: number[][];
+}): React.ReactElement => (
   <>
     <StackedBarChart
       title="上位10人のコミット数推移"
@@ -38,8 +36,41 @@ export const ChartPage = ({
       contributorData={[contributorInsertionsData, contributorDeletionsData]}
       labels={monthColumns}
       contributors={contributorNamesByInsertions}
+      hasReferenceLines
       width={500}
       height={350}
     />
+  </>
+);
+
+export const CodeVsTestChartPage = ({
+  monthColumns,
+  codeVsTestData,
+  codeVsTestLabels,
+}: {
+  monthColumns: string[];
+  codeVsTestData: [number[][], number[][]];
+  codeVsTestLabels: string[];
+}): React.ReactElement => (
+  <>
+    {codeVsTestLabels.length > 0 && (
+      <DualBarChart
+        title="実装コード（左グラフ）・テストコード（右グラフ）行数推移"
+        data={[
+          monthColumns.map((_, i) =>
+            codeVsTestData[0].reduce((sum, typeData) => sum + (typeData[i] || 0), 0),
+          ),
+          monthColumns.map((_, i) =>
+            codeVsTestData[1].reduce((sum, typeData) => sum + (typeData[i] || 0), 0),
+          ),
+        ]}
+        contributorData={codeVsTestData}
+        labels={monthColumns}
+        contributors={codeVsTestLabels}
+        hasReferenceLines={false}
+        width={500}
+        height={350}
+      />
+    )}
   </>
 );

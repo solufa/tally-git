@@ -4,6 +4,14 @@ import path from 'path';
 const fontFamily = 'NotoSansJP';
 const primaryColor = '#08c6d6';
 
+Font.register({
+  family: fontFamily,
+  fonts: [{ src: path.resolve('./src/fonts/NotoSansJP-Regular.ttf') }],
+});
+
+// bug: https://github.com/diegomura/react-pdf/issues/419#issuecomment-1161308596
+Font.registerHyphenationCallback((word) => Array.from(word).flatMap((char) => [char, '']));
+
 export const pdfStyles = StyleSheet.create({
   page: {
     padding: '20mm 8mm 16mm',
@@ -107,13 +115,3 @@ export const pdfStyles = StyleSheet.create({
     fontFamily,
   },
 });
-
-export const registerFonts = (): void => {
-  Font.register({
-    family: pdfStyles.page.fontFamily,
-    fonts: [{ src: path.resolve('./src/fonts/NotoSansJP-Regular.ttf') }],
-  });
-
-  // bug: https://github.com/diegomura/react-pdf/issues/419#issuecomment-1161308596
-  Font.registerHyphenationCallback((word) => Array.from(word).flatMap((char) => [char, '']));
-};

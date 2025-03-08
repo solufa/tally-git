@@ -205,7 +205,7 @@ describe('parseGitLog', () => {
 50\t25\t${EXCLUDED_FILES[4]}
 60\t30\tfile4.ts`;
 
-    const result = processLogData(mockLogData, {});
+    const result = processLogData(mockLogData, {}, { dirTypes: {} });
     const authors = Object.keys(result.authorLog);
 
     expect(authors).toHaveLength(1);
@@ -230,7 +230,7 @@ abcd1234,Test User,${date}-15
 10\t5\tfile1.tsx
 60\t30\tfile4.ts`;
 
-    const result = processLogData(mockLogData, {});
+    const result = processLogData(mockLogData, {}, { dirTypes: {} });
     const authors = Object.keys(result.authorLog);
 
     expect(authors).toHaveLength(1);
@@ -249,7 +249,7 @@ a9b01234,Developer1,2025-01-15
 a3b45678,Developer2,2025-01-15
 40\t20\tfile4.tsx`;
 
-    const result = processLogData(mockLogData, {});
+    const result = processLogData(mockLogData, {}, { dirTypes: {} });
     const authors = Object.keys(result.authorLog);
 
     expect(authors).toHaveLength(2);
@@ -289,7 +289,7 @@ a3b45678,Developer2,2025-01-15
     const mockLogData = `abcd1234,Developer1,2025-01-15
 10\t5\tfile1.tsx`;
 
-    const result = processLogData(mockLogData, existingAuthorLog);
+    const result = processLogData(mockLogData, existingAuthorLog, { dirTypes: {} });
 
     expect(result.authorLog['Developer1']![date]).toEqual({
       commits: 3, // 2 + 1

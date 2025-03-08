@@ -20,18 +20,12 @@ dayjs.extend(customParseFormat);
 
 export const PERIOD_FORMAT = 'YYMM';
 
-export const readProjectConfig = (targetDir: string): ProjectConfig | null => {
+export const readProjectConfig = (targetDir: string): ProjectConfig => {
   const configPath = path.join(targetDir, 'tally.config.json');
 
-  try {
-    const configData = fs.readFileSync(configPath, 'utf8');
-    const parsedConfig = JSON.parse(configData);
-    const result = projectConfigValidator.safeParse(parsedConfig);
+  if (!fs.existsSync(configPath)) return { dirTypes: {} };
 
-    return result.data ?? null;
-  } catch {
-    return null;
-  }
+  return projectConfigValidator.parse(JSON.parse(fs.readFileSync(configPath, 'utf8')));
 };
 
 export const main = async (

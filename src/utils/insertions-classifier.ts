@@ -41,17 +41,13 @@ export const checkTypePath = <T extends ProjectDirType>(
 export const categorizeInsertions = (
   file: string,
   insertionCount: number,
-  projectConfig: ProjectConfig | null | undefined,
+  projectConfig: ProjectConfig,
 ): {
   frontend?: { code: number; test?: number };
   backend?: { code: number; test?: number };
   infra?: { code: number; test?: number };
   others: number;
 } => {
-  if (!projectConfig) {
-    return { others: insertionCount };
-  }
-
   const { dirTypes } = projectConfig;
 
   // 各カテゴリを順番にチェック

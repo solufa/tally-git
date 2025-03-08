@@ -74,7 +74,7 @@ const handleCommitLine = (
 const processStatLogLine = (
   line: string,
   state: LogState,
-  projectConfig?: ProjectConfig | null,
+  projectConfig: ProjectConfig,
 ): LogState => {
   if (!state.currentCommit || state.skipCurrentCommit) return state;
 
@@ -88,7 +88,7 @@ const processLogLine = (
   line: string,
   state: LogState,
   authorLog: AuthorLog,
-  projectConfig?: ProjectConfig | null,
+  projectConfig: ProjectConfig,
 ): { state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null } | null => {
   if (isCommitLine(line)) {
     return handleCommitLine(line, state, authorLog);
@@ -104,7 +104,7 @@ const processLogLine = (
 export const processLogData = (
   logData: string,
   authorLog: AuthorLog,
-  projectConfig?: ProjectConfig | null,
+  projectConfig: ProjectConfig,
 ): { authorLog: AuthorLog; commitDetails: CommitDetail[] } => {
   const lines = logData.split('\n');
   let newAuthorLog = authorLog;

@@ -14,7 +14,7 @@ export const toPdf = async (
   monthColumns: Readonly<string[]>,
   projectName: string,
   outlierCommits: CommitDetail[],
-  projectConfig: ProjectConfig | null,
+  projectConfig: ProjectConfig,
 ): Promise<Buffer> => {
   const authorTotals = Object.entries(authorLog).map(([author, monthData]) => {
     const totalCommits = Object.values(monthData).reduce(
@@ -110,52 +110,50 @@ export const toPdf = async (
   const codeVsTestData: [number[][], number[][]] = [[], []];
   let codeVsTestLabels: string[] = [];
 
-  if (projectConfig) {
-    const { dirTypes } = projectConfig;
+  const { dirTypes } = projectConfig;
 
-    // testsが存在するdirTypesを抽出
-    const dirTypesWithTests = Object.entries(dirTypes)
-      .filter(([_, config]) => config.tests && config.tests.length > 0)
-      .map(([type]) => type as ProjectDirType);
+  // testsが存在するdirTypesを抽出
+  const dirTypesWithTests = Object.entries(dirTypes)
+    .filter(([_, config]) => config.tests && config.tests.length > 0)
+    .map(([type]) => type as ProjectDirType);
 
-    // 各dirTypeの実装コードとテストコードの月ごとの行数を計算
-    if (dirTypesWithTests.length > 0) {
-      // 実装コードの月ごとの行数
-      const codeData = dirTypesWithTests.map((type) => {
-        return monthColumns.map((month) => {
-          return Object.values(authorLog).reduce((sum, authorMonthData) => {
-            const monthData = authorMonthData[month];
-            if (!monthData) return sum;
+  // 各dirTypeの実装コードとテストコードの月ごとの行数を計算
+  if (dirTypesWithTests.length > 0) {
+    // 実装コードの月ごとの行数
+    const codeData = dirTypesWithTests.map((type) => {
+      return monthColumns.map((month) => {
+        return Object.values(authorLog).reduce((sum, authorMonthData) => {
+          const monthData = authorMonthData[month];
+          if (!monthData) return sum;
 
-            const typeData = monthData.insertions[type];
-            if (!typeData || typeof typeData === 'number') return sum;
+          const typeData = monthData.insertions[type];
+          if (!typeData || typeof typeData === 'number') return sum;
 
-            return sum + (typeData.code || 0);
-          }, 0);
-        });
+          return sum + (typeData.code || 0);
+        }, 0);
       });
+    });
 
-      // テストコードの月ごとの行数
-      const testData = dirTypesWithTests.map((type) => {
-        return monthColumns.map((month) => {
-          return Object.values(authorLog).reduce((sum, authorMonthData) => {
-            const monthData = authorMonthData[month];
-            if (!monthData) return sum;
+    // テストコードの月ごとの行数
+    const testData = dirTypesWithTests.map((type) => {
+      return monthColumns.map((month) => {
+        return Object.values(authorLog).reduce((sum, authorMonthData) => {
+          const monthData = authorMonthData[month];
+          if (!monthData) return sum;
 
-            const typeData = monthData.insertions[type];
-            if (!typeData || typeof typeData === 'number') return sum;
+          const typeData = monthData.insertions[type];
+          if (!typeData || typeof typeData === 'number') return sum;
 
-            return sum + (typeData.test || 0);
-          }, 0);
-        });
+          return sum + (typeData.test || 0);
+        }, 0);
       });
+    });
 
-      codeVsTestData[0] = codeData;
-      codeVsTestData[1] = testData;
-      codeVsTestLabels = dirTypesWithTests.map(
-        (type) => type.charAt(0).toUpperCase() + type.slice(1),
-      );
-    }
+    codeVsTestData[0] = codeData;
+    codeVsTestData[1] = testData;
+    codeVsTestLabels = dirTypesWithTests.map(
+      (type) => type.charAt(0).toUpperCase() + type.slice(1),
+    );
   }
 
   const MyDocument = (): React.ReactElement => (

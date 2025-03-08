@@ -22,7 +22,7 @@ export const parseGitLogLine = (
 export const processStatLine = (
   line: string,
   current: CommitInfo | null,
-  projectConfig?: ProjectConfig | null,
+  projectConfig: ProjectConfig,
 ): CommitInfo | null => {
   if (!current) return null;
 

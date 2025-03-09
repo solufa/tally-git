@@ -297,6 +297,55 @@ a3b45678,Developer2,2025-01-15
       deletions: 30, // 25 + 5
     });
   });
+
+  test('dirTypesがテストコードを持つケースで行数が正しく計算される', () => {
+    const date = '2025-01';
+    const mockLogData = `abcd1234,Developer1,2025-01-15
+10\t5\tsrc/components/Button.tsx
+20\t10\ttests/components/Button.test.tsx
+30\t15\tsrc/api/users.ts
+40\t20\ttests/api/users.test.ts
+50\t25\tsrc/infra/config.ts
+60\t30\ttests/infra/config.test.ts
+70\t35\teslint.config.js`;
+
+    // テストパスを含むdirTypesを設定
+    const projectConfig = {
+      dirTypes: {
+        frontend: {
+          paths: ['src/components'],
+          tests: ['tests/components'],
+        },
+        backend: {
+          paths: ['src/api'],
+          tests: ['tests/api'],
+        },
+        infra: {
+          paths: ['src/infra'],
+          tests: ['tests/infra'],
+        },
+      },
+    };
+
+    const result = processLogData(mockLogData, {}, projectConfig);
+    const authors = Object.keys(result.authorLog);
+
+    expect(authors).toHaveLength(1);
+    expect(authors[0]).toBe('Developer1');
+
+    const monthData = result.authorLog['Developer1']![date];
+
+    expect(monthData).toEqual({
+      commits: 1,
+      insertions: {
+        frontend: { code: 10, test: 20 },
+        backend: { code: 30, test: 40 },
+        infra: { code: 50, test: 60 },
+        others: 70,
+      },
+      deletions: 140, // 5 + 10 + 15 + 20 + 25 + 30 + 35
+    });
+  });
 });
 
 test('laravel', async () => {

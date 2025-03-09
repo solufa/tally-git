@@ -17,6 +17,7 @@ const run = async (): Promise<void> => {
   }
 
   const targets: Readonly<(Period & { projectName: string; dir: string })[]> = [
+    { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2303', untilYYMM: '2402' },
     { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2403', untilYYMM: '2502' },
     {
       projectName: 'ManabuFW版法人請求',

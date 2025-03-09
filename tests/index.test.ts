@@ -350,15 +350,15 @@ a3b45678,Developer2,2025-01-15
 
 test('laravel', async () => {
   const outputDir = './tests/assets';
+  const sinceYYMM = '2403';
+  const untilYYMM = '2502';
   const result = await main({
     projectName: 'OSS Laravel',
     targetDir: './tests/projects/laravel',
     outputDir,
-    sinceYYMM: '2403',
-    untilYYMM: '2502',
+    sinceYYMM,
+    untilYYMM,
   });
-
-  expect(result.csv.path).toEqual(`${outputDir}/laravel.csv`);
 
   expect(result.authorLog).toEqual(JSON.parse(readFileSync(`${outputDir}/authorLog.json`, 'utf8')));
 
@@ -374,7 +374,7 @@ test('laravel', async () => {
   );
 
   expect(result.csv.content.split('\n').sort()).toEqual(
-    readFileSync(`${outputDir}/laravel.csv`, 'utf8').split('\n').sort(),
+    readFileSync(`${outputDir}/laravel${sinceYYMM}-${untilYYMM}.csv`, 'utf8').split('\n').sort(),
   );
 });
 

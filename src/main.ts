@@ -69,8 +69,14 @@ export const main = async (
   return {
     authorLog,
     filteredAuthorLog,
-    csv: { path: `${option.outputDir}/${dirName}.csv`, content: csvContent },
-    pdf: { path: `${option.outputDir}/${dirName}.pdf`, content: pdfContent },
+    csv: {
+      path: `${option.outputDir}/${dirName}${option.sinceYYMM}-${option.untilYYMM}.csv`,
+      content: csvContent,
+    },
+    pdf: {
+      path: `${option.outputDir}/${dirName}${option.sinceYYMM}-${option.untilYYMM}.pdf`,
+      content: pdfContent,
+    },
     outlierCommits,
   };
 };

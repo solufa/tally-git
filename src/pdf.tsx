@@ -1,7 +1,7 @@
 import { Document, renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
 import { ActivityPage } from './pdf-pages/activity-page';
-import { CodeVsTestChartPage, Top10ChartPage } from './pdf-pages/chart-page';
+import { ActivityChartPage, CodeVsTestChartPage } from './pdf-pages/chart-page';
 import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
@@ -106,55 +106,12 @@ export const toPdf = async (
   const contributorNamesByCommits = topContributorsByCommits.map((a) => a.author);
   const contributorNamesByInsertions = topContributorsByInsertions.map((a) => a.author);
 
-  // 実装コードとテストコードの量を計算
-  const codeVsTestData: [number[][], number[][]] = [[], []];
-  let codeVsTestLabels: string[] = [];
-
   const { dirTypes } = projectConfig;
 
   // testsが存在するdirTypesを抽出
   const dirTypesWithTests = Object.entries(dirTypes)
     .filter(([_, config]) => config.tests && config.tests.length > 0)
     .map(([type]) => type as ProjectDirType);
-
-  // 各dirTypeの実装コードとテストコードの月ごとの行数を計算
-  if (dirTypesWithTests.length > 0) {
-    // 実装コードの月ごとの行数
-    const codeData = dirTypesWithTests.map((type) => {
-      return monthColumns.map((month) => {
-        return Object.values(authorLog).reduce((sum, authorMonthData) => {
-          const monthData = authorMonthData[month];
-          if (!monthData) return sum;
-
-          const typeData = monthData.insertions[type];
-          if (!typeData || typeof typeData === 'number') return sum;
-
-          return sum + (typeData.code || 0);
-        }, 0);
-      });
-    });
-
-    // テストコードの月ごとの行数
-    const testData = dirTypesWithTests.map((type) => {
-      return monthColumns.map((month) => {
-        return Object.values(authorLog).reduce((sum, authorMonthData) => {
-          const monthData = authorMonthData[month];
-          if (!monthData) return sum;
-
-          const typeData = monthData.insertions[type];
-          if (!typeData || typeof typeData === 'number') return sum;
-
-          return sum + (typeData.test || 0);
-        }, 0);
-      });
-    });
-
-    codeVsTestData[0] = codeData;
-    codeVsTestData[1] = testData;
-    codeVsTestLabels = dirTypesWithTests.map(
-      (type) => type.charAt(0).toUpperCase() + type.slice(1),
-    );
-  }
 
   const MyDocument = (): React.ReactElement => (
     <Document>
@@ -165,7 +122,7 @@ export const toPdf = async (
         <ActivityPage monthlyTotals={monthlyTotals} />
       </PdfLayout>
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>
-        <Top10ChartPage
+        <ActivityChartPage
           monthColumns={monthColumns}
           contributorCommitsData={contributorCommitsData}
           contributorNamesByCommits={contributorNamesByCommits}
@@ -176,13 +133,9 @@ export const toPdf = async (
           contributorDeletionsData={contributorDeletionsData}
         />
       </PdfLayout>
-      {codeVsTestData[0].length > 0 && (
+      {dirTypesWithTests.includes('backend') && (
         <PdfLayout projectName={projectName} monthColumns={monthColumns}>
-          <CodeVsTestChartPage
-            monthColumns={monthColumns}
-            codeVsTestData={codeVsTestData}
-            codeVsTestLabels={codeVsTestLabels}
-          />
+          <CodeVsTestChartPage monthColumns={monthColumns} authorLog={authorLog} />
         </PdfLayout>
       )}
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>

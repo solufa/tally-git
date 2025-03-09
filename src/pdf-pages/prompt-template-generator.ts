@@ -7,6 +7,16 @@ export const generatePromptTemplate = (
   anonymousAuthors: AnonymousAuthors,
 ): string => {
   const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousAuthors);
+  const csvText = csvData.csvList
+    .map(
+      (csv) => `## ${csv.title}
+\`\`\`csv
+${csvData.header}
+${csv.rows.join('\n')}
+\`\`\`
+`,
+    )
+    .join('\n');
 
   return `# Git履歴分析: プロジェクト特有の深層的な問題と改善プラン
 
@@ -46,19 +56,9 @@ Excelなどで単純な数値比較やグラフ化は既に行っているため
 
 ## CSVデータ
 
-開発者はプライバシー保護のためA-Zのアルファベットで匿名化されています。
-各セクションは「コミット数」「追加行数」「削除行数」の3つの指標を示しています。行は開発者、列は月を表しています。
+開発者はプライバシー保護のためA-Zのアルファベットで匿名化されています。行は開発者、列は月を表しています。
 
-${csvData.csvList
-  .map(
-    (csv) => `## ${csv.title}
-\`\`\`csv
-${csvData.header}
-${csv.rows.join('\n')}
-\`\`\`
-`,
-  )
-  .join('\n')}
+${csvText}
 上記を踏まえ、見ればわかる集計結果・単純な数値比較を避け、
 
 - 開発プロジェクトの抱える根本的な問題点
@@ -96,12 +96,30 @@ export const generateCsvDataForPrompt = (
     return `${anonymousAuthor},${values}`;
   });
 
+  const backendCodeRows = Object.entries(authorLog).map(([author, monthData]) => {
+    const anonymousAuthor = anonymousMap[author];
+    const values = monthColumns
+      .map((month) => monthData[month]?.insertions?.backend?.code ?? 0)
+      .join(',');
+    return `${anonymousAuthor},${values}`;
+  });
+
+  const backendTestRows = Object.entries(authorLog).map(([author, monthData]) => {
+    const anonymousAuthor = anonymousMap[author];
+    const values = monthColumns
+      .map((month) => monthData[month]?.insertions?.backend?.test ?? 0)
+      .join(',');
+    return `${anonymousAuthor},${values}`;
+  });
+
   return {
     header,
     csvList: [
       { title: 'コミット数', rows: commitsRows },
       { title: '追加行数', rows: insertionsRows },
       { title: '削除行数', rows: deletionsRows },
+      { title: 'バックエンド実装コード行数', rows: backendCodeRows },
+      { title: 'バックエンドテストコード行数', rows: backendTestRows },
     ],
   };
 };

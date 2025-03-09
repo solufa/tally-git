@@ -37,19 +37,18 @@ const run = async (): Promise<void> => {
     // '../reserve',
   ];
 
-  await Promise.all(
-    targets.map(async ({ projectName, dir, sinceYYMM, untilYYMM }) => {
-      const result = await main({
-        projectName,
-        targetDir: dir,
-        outputDir: 'out',
-        sinceYYMM,
-        untilYYMM,
-      });
+  // mainを並列処理するとメモリが不足するのでfor ofで直列処理する
+  for (const { projectName, dir, sinceYYMM, untilYYMM } of targets) {
+    const result = await main({
+      projectName,
+      targetDir: dir,
+      outputDir: 'out',
+      sinceYYMM,
+      untilYYMM,
+    });
 
-      await generateFiles(result);
-    }),
-  );
+    await generateFiles(result);
+  }
 
   const laravelResult = await main({
     projectName: 'OSS Laravel',

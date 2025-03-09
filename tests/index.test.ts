@@ -515,13 +515,43 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
   expect(anonymousMap['John Doe']).toBe('A');
   expect(anonymousMap['Jane Smith']).toBe('B');
 
-  const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousMap);
+  // バックエンドのコード行数とテスト行数を追加
+  const authorLogWithBackend: AuthorLog = {
+    'John Doe': {
+      '2023-01': {
+        commits: 10,
+        insertions: { others: 100, backend: { code: 30, test: 20 } },
+        deletions: 50,
+      },
+      '2023-02': {
+        commits: 5,
+        insertions: { others: 80, backend: { code: 25, test: 15 } },
+        deletions: 30,
+      },
+    },
+    'Jane Smith': {
+      '2023-01': {
+        commits: 8,
+        insertions: { others: 120, backend: { code: 40, test: 30 } },
+        deletions: 40,
+      },
+      '2023-02': {
+        commits: 12,
+        insertions: { others: 150, backend: { code: 45, test: 35 } },
+        deletions: 60,
+      },
+    },
+  };
+
+  const csvData = generateCsvDataForPrompt(authorLogWithBackend, monthColumns, anonymousMap);
 
   expect(csvData.header).toBe(',2023-01,2023-02');
-  expect(csvData.csvList.length).toBe(3);
+  expect(csvData.csvList.length).toBe(5);
   expect(csvData.csvList[0]!.title).toBe('コミット数');
   expect(csvData.csvList[1]!.title).toBe('追加行数');
   expect(csvData.csvList[2]!.title).toBe('削除行数');
+  expect(csvData.csvList[3]!.title).toBe('バックエンド実装コード行数');
+  expect(csvData.csvList[4]!.title).toBe('バックエンドテストコード行数');
 
   // コミット数のデータが正しいことを確認
   expect(csvData.csvList[0]!.rows.length).toBe(2);
@@ -530,13 +560,23 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
 
   // 追加行数のデータが正しいことを確認
   expect(csvData.csvList[1]!.rows.length).toBe(2);
-  expect(csvData.csvList[1]!.rows).toContain('A,100,80');
-  expect(csvData.csvList[1]!.rows).toContain('B,120,150');
+  expect(csvData.csvList[1]!.rows).toContain('A,150,120'); // 100+30+20, 80+25+15
+  expect(csvData.csvList[1]!.rows).toContain('B,190,230'); // 120+40+30, 150+45+35
 
   // 削除行数のデータが正しいことを確認
   expect(csvData.csvList[2]!.rows.length).toBe(2);
   expect(csvData.csvList[2]!.rows).toContain('A,50,30');
   expect(csvData.csvList[2]!.rows).toContain('B,40,60');
+
+  // バックエンド実装コード行数のデータが正しいことを確認
+  expect(csvData.csvList[3]!.rows.length).toBe(2);
+  expect(csvData.csvList[3]!.rows).toContain('A,30,25');
+  expect(csvData.csvList[3]!.rows).toContain('B,40,45');
+
+  // バックエンドテストコード行数のデータが正しいことを確認
+  expect(csvData.csvList[4]!.rows.length).toBe(2);
+  expect(csvData.csvList[4]!.rows).toContain('A,20,15');
+  expect(csvData.csvList[4]!.rows).toContain('B,30,35');
 
   // 実際のauthorLogデータを使用したテスト
   const outputDir = './tests/assets';
@@ -557,7 +597,7 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
 
   // 実際のデータでCSVが正しく生成されることを確認
   expect(realCsvData.header).toBe(`,${realMonthColumns.join(',')}`);
-  expect(realCsvData.csvList.length).toBe(3);
+  expect(realCsvData.csvList.length).toBe(5);
 
   // 各開発者のデータが正しく変換されていることを確認
   Object.entries(result.filteredAuthorLog).forEach(([author, monthData]) => {

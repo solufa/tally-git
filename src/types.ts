@@ -52,3 +52,5 @@ export type ProjectConfig = Readonly<z.infer<typeof projectConfigValidator>>;
 export type ProjectDirType = keyof ProjectConfig['dirTypes'];
 
 export type AnonymousAuthors = Readonly<Record<string, string>>;
+
+export type MonthColumns = Readonly<string[]>;

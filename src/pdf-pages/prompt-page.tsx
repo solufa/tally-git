@@ -2,7 +2,7 @@ import { Text, View } from '@react-pdf/renderer';
 import assert from 'assert';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
-import type { AnonymousAuthors, AuthorLog } from '../types';
+import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../types';
 import { generatePromptTemplate } from './prompt-template-generator';
 
 export const PromptPage = ({
@@ -10,7 +10,7 @@ export const PromptPage = ({
   monthColumns,
 }: {
   authorLog: AuthorLog;
-  monthColumns: Readonly<string[]>;
+  monthColumns: MonthColumns;
 }): React.ReactElement => {
   const anonymousMap = anonymizeAuthors(authorLog);
   const promptTemplate = generatePromptTemplate(authorLog, monthColumns, anonymousMap);

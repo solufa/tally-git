@@ -1,7 +1,7 @@
 import React from 'react';
 import { DualBarChart } from '../charts/dual-bar-chart';
 import { StackedBarChart } from '../charts/stacked-bar-chart';
-import type { AuthorLog } from '../types';
+import type { AuthorLog, MonthColumns } from '../types';
 
 export const ActivityChartPage = ({
   monthColumns,
@@ -13,7 +13,7 @@ export const ActivityChartPage = ({
   contributorInsertionsData,
   contributorDeletionsData,
 }: {
-  monthColumns: Readonly<string[]>;
+  monthColumns: MonthColumns;
   contributorCommitsData: number[][];
   contributorNamesByCommits: string[];
   contributorNamesByInsertions: string[];
@@ -44,97 +44,96 @@ export const ActivityChartPage = ({
   </>
 );
 
+type DataByAuthor = Readonly<Record<string, number[]>>;
+
+const calculateBackendDataByAuthor = (
+  authorLog: AuthorLog,
+  monthColumns: MonthColumns,
+): { backendCodeByAuthor: DataByAuthor; backendTestByAuthor: DataByAuthor } => {
+  return Object.entries(authorLog).reduce<{
+    backendCodeByAuthor: DataByAuthor;
+    backendTestByAuthor: DataByAuthor;
+  }>(
+    (dict, [author, monthData]) => {
+      return {
+        backendCodeByAuthor: {
+          ...dict.backendCodeByAuthor,
+          [author]: monthColumns.map((month) => monthData[month]?.insertions.backend?.code ?? 0),
+        },
+        backendTestByAuthor: {
+          ...dict.backendTestByAuthor,
+          [author]: monthColumns.map((month) => monthData[month]?.insertions.backend?.test ?? 0),
+        },
+      };
+    },
+    { backendCodeByAuthor: {}, backendTestByAuthor: {} },
+  );
+};
+
+const calculateAuthorTotals = (dataByAuthor: DataByAuthor): { author: string; total: number }[] => {
+  return Object.entries(dataByAuthor).map(([author, data]) => ({
+    author,
+    total: data.reduce((sum, value) => sum + value, 0),
+  }));
+};
+
+const getTopAuthors = (
+  authorTotals: { author: string; total: number }[],
+  limit: number,
+): { author: string; total: number }[] => {
+  return authorTotals
+    .filter((item) => item.total > 0)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+};
+
+const calculateTotalData = (topData: number[][], monthColumns: MonthColumns): number[] => {
+  return monthColumns.map((_, i) =>
+    topData.reduce((sum, authorData) => sum + (authorData[i] ?? 0), 0),
+  );
+};
+
+const extractContributorData = (contributors: string[], dataByAuthor: DataByAuthor): number[][] => {
+  return contributors.map((author) => dataByAuthor[author]).filter((data) => data !== undefined);
+};
+
 export const CodeVsTestChartPage = ({
   monthColumns,
   authorLog,
 }: {
-  monthColumns: Readonly<string[]>;
+  monthColumns: MonthColumns;
   authorLog: AuthorLog;
 }): React.ReactElement => {
-  // バックエンドの実装コードとテストコードの開発者ごとのデータを計算
-  const backendCodeByAuthor: Record<string, number[]> = {};
-  const backendTestByAuthor: Record<string, number[]> = {};
-
-  // 各開発者の月ごとのバックエンドコード行数を集計
-  Object.entries(authorLog).forEach(([author, monthData]) => {
-    backendCodeByAuthor[author] = monthColumns.map((month) => {
-      const data = monthData[month];
-      if (!data) return 0;
-      const backendData = data.insertions.backend;
-      if (!backendData || typeof backendData === 'number') return 0;
-      return backendData.code || 0;
-    });
-
-    backendTestByAuthor[author] = monthColumns.map((month) => {
-      const data = monthData[month];
-      if (!data) return 0;
-      const backendData = data.insertions.backend;
-      if (!backendData || typeof backendData === 'number') return 0;
-      return backendData.test || 0;
-    });
-  });
-
-  // 開発者ごとの合計行数を計算
-  const authorTotalCode = Object.entries(backendCodeByAuthor).map(([author, data]) => ({
-    author,
-    total: data.reduce((sum, value) => sum + value, 0),
-  }));
-
-  const authorTotalTest = Object.entries(backendTestByAuthor).map(([author, data]) => ({
-    author,
-    total: data.reduce((sum, value) => sum + value, 0),
-  }));
-
-  // 実装コードとテストコードでそれぞれ上位10人を抽出
-  const topCodeAuthors = authorTotalCode
-    .filter((item) => item.total > 0)
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 10);
-
-  const topTestAuthors = authorTotalTest
-    .filter((item) => item.total > 0)
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 10);
-
-  // 上位開発者のデータを抽出
-  const topCodeData = topCodeAuthors.map(({ author }) => backendCodeByAuthor[author]);
-  const topTestData = topTestAuthors.map(({ author }) => backendTestByAuthor[author]);
-
-  // 合計データを計算
-  const totalCodeData = monthColumns.map((_, i) =>
-    topCodeData.reduce((sum, authorData) => {
-      const value = authorData ? authorData[i] || 0 : 0;
-      return sum + value;
-    }, 0),
+  const { backendCodeByAuthor, backendTestByAuthor } = calculateBackendDataByAuthor(
+    authorLog,
+    monthColumns,
   );
 
-  const totalTestData = monthColumns.map((_, i) =>
-    topTestData.reduce((sum, authorData) => {
-      const value = authorData ? authorData[i] || 0 : 0;
-      return sum + value;
-    }, 0),
-  );
+  const authorTotalCode = calculateAuthorTotals(backendCodeByAuthor);
+  const authorTotalTest = calculateAuthorTotals(backendTestByAuthor);
+
+  const topCodeAuthors = getTopAuthors(authorTotalCode, 10);
+  const topTestAuthors = getTopAuthors(authorTotalTest, 10);
+
+  const topCodeData = topCodeAuthors
+    .map(({ author }) => backendCodeByAuthor[author])
+    .filter((data): data is number[] => data !== undefined);
+
+  const topTestData = topTestAuthors
+    .map(({ author }) => backendTestByAuthor[author])
+    .filter((data): data is number[] => data !== undefined);
+
+  const totalCodeData = calculateTotalData(topCodeData, monthColumns);
+  const totalTestData = calculateTotalData(topTestData, monthColumns);
 
   // 実装コードとテストコードの開発者を統合（重複を排除）
   const allAuthors = Array.from(
     new Set([...topCodeAuthors.map((a) => a.author), ...topTestAuthors.map((a) => a.author)]),
   );
 
-  // 凡例用の開発者リスト（最大20名）
   const contributors = allAuthors.slice(0, 20);
-
-  // contributorDataの作成（実装コードとテストコードの両方）
-  const contributorCodeData: number[][] = [];
-  const contributorTestData: number[][] = [];
-
-  contributors.forEach((author) => {
-    if (backendCodeByAuthor[author]) {
-      contributorCodeData.push(backendCodeByAuthor[author]);
-    }
-    if (backendTestByAuthor[author]) {
-      contributorTestData.push(backendTestByAuthor[author]);
-    }
-  });
+  const contributorCodeData = extractContributorData(contributors, backendCodeByAuthor);
+  const contributorTestData = extractContributorData(contributors, backendTestByAuthor);
 
   return (
     <DualBarChart

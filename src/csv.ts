@@ -1,12 +1,12 @@
 import { DUAL_BAR_CHAT_Y_AXIS_STEP } from './constants';
-import type { AuthorLog, CommitData, CommitDetail } from './types';
+import type { AuthorLog, CommitData, CommitDetail, MonthColumns } from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 const formatDataRow = (
   author: string,
   monthData: Record<string, CommitData | undefined>,
   key: keyof CommitData,
-  monthColumns: Readonly<string[]>,
+  monthColumns: MonthColumns,
 ): string => {
   if (key === 'insertions') {
     return `${author},${monthColumns
@@ -38,7 +38,7 @@ const formatThresholdValues = (): string => {
 
 const generateActivityRows = (
   authorLog: AuthorLog,
-  monthColumns: Readonly<string[]>,
+  monthColumns: MonthColumns,
 ): { commits: string[]; insertions: string[]; deletions: string[] } => {
   const commits = Object.entries(authorLog).map(([author, monthData]) =>
     formatDataRow(author, monthData, 'commits', monthColumns),
@@ -83,7 +83,7 @@ ${outlierInfo}`;
 
 export const toCsv = (
   authorLog: AuthorLog,
-  monthColumns: Readonly<string[]>,
+  monthColumns: MonthColumns,
   outlierCommits: CommitDetail[],
 ): string => {
   const header = `,${monthColumns.join(',')}`;

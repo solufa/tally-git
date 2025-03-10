@@ -1,9 +1,9 @@
-import type { AnonymousAuthors, AuthorLog } from '../types';
+import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../types';
 import { calculateTotalInsertions } from '../utils/insertions-calculator';
 
 export const generatePromptTemplate = (
   authorLog: AuthorLog,
-  monthColumns: Readonly<string[]>,
+  monthColumns: MonthColumns,
   anonymousAuthors: AnonymousAuthors,
 ): string => {
   const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousAuthors);
@@ -71,7 +71,7 @@ ${csvText}
 
 export const generateCsvDataForPrompt = (
   authorLog: AuthorLog,
-  monthColumns: Readonly<string[]>,
+  monthColumns: MonthColumns,
   anonymousMap: AnonymousAuthors,
 ): { header: string; csvList: { title: string; rows: string[] }[] } => {
   const header = `,${monthColumns.join(',')}`;

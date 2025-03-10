@@ -6,12 +6,12 @@ import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
 import { SummaryPage } from './pdf-pages/summary-page';
-import type { AuthorLog, CommitDetail, ProjectConfig, ProjectDirType } from './types';
+import type { AuthorLog, CommitDetail, MonthColumns, ProjectConfig, ProjectDirType } from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 export const toPdf = async (
   authorLog: AuthorLog,
-  monthColumns: Readonly<string[]>,
+  monthColumns: MonthColumns,
   projectName: string,
   outlierCommits: CommitDetail[],
   projectConfig: ProjectConfig,

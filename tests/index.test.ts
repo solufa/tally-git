@@ -1,15 +1,15 @@
-import dayjs from 'dayjs';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import simpleGit, { type SimpleGit } from 'simple-git';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { EXCLUDED_AUTHORS, EXCLUDED_FILES } from '../src/constants';
-import { getGitLog, main, toJSTString } from '../src/main';
+import { getGitLog, main } from '../src/main';
 import { anonymizeAuthors } from '../src/pdf-pages/prompt-page';
 import { generateCsvDataForPrompt } from '../src/pdf-pages/prompt-template-generator';
 import { processLogData } from '../src/stats/commit-processor';
 import { parseGitLogLine } from '../src/stats/git-log-parser';
 import type { AuthorLog, CommitDetail, Insertions } from '../src/types';
+import { parseDate, toJSTString } from '../src/utils/date-utils';
 
 describe('getGitLog', () => {
   const testRepoPath = join('tests', 'projects', 'test-git-repo');
@@ -34,18 +34,18 @@ describe('getGitLog', () => {
     await git.addConfig('user.email', 'test@example.com');
 
     // 固定日付を設定（2024-11-30から2025-03-02まで）
-    const date20241130 = toJSTString(dayjs('2024-11-30T12:00:00+09:00'));
-    const date20241201 = toJSTString(dayjs('2024-12-01T12:00:00+09:00'));
-    const date20241202 = toJSTString(dayjs('2024-12-02T12:00:00+09:00'));
-    const date20241231 = toJSTString(dayjs('2024-12-31T12:00:00+09:00'));
-    const date20250101 = toJSTString(dayjs('2025-01-01T12:00:00+09:00'));
-    const date20250102 = toJSTString(dayjs('2025-01-02T12:00:00+09:00'));
-    const date20250131 = toJSTString(dayjs('2025-01-31T12:00:00+09:00'));
-    const date20250201 = toJSTString(dayjs('2025-02-01T12:00:00+09:00'));
-    const date20250202 = toJSTString(dayjs('2025-02-02T12:00:00+09:00'));
-    const date20250228 = toJSTString(dayjs('2025-02-28T12:00:00+09:00'));
-    const date20250301 = toJSTString(dayjs('2025-03-01T12:00:00+09:00'));
-    const date20250302 = toJSTString(dayjs('2025-03-02T12:00:00+09:00'));
+    const date20241130 = toJSTString(parseDate('2024-11-30T12:00:00+09:00'));
+    const date20241201 = toJSTString(parseDate('2024-12-01T12:00:00+09:00'));
+    const date20241202 = toJSTString(parseDate('2024-12-02T12:00:00+09:00'));
+    const date20241231 = toJSTString(parseDate('2024-12-31T12:00:00+09:00'));
+    const date20250101 = toJSTString(parseDate('2025-01-01T12:00:00+09:00'));
+    const date20250102 = toJSTString(parseDate('2025-01-02T12:00:00+09:00'));
+    const date20250131 = toJSTString(parseDate('2025-01-31T12:00:00+09:00'));
+    const date20250201 = toJSTString(parseDate('2025-02-01T12:00:00+09:00'));
+    const date20250202 = toJSTString(parseDate('2025-02-02T12:00:00+09:00'));
+    const date20250228 = toJSTString(parseDate('2025-02-28T12:00:00+09:00'));
+    const date20250301 = toJSTString(parseDate('2025-03-01T12:00:00+09:00'));
+    const date20250302 = toJSTString(parseDate('2025-03-02T12:00:00+09:00'));
 
     // テスト用ファイルを作成
     writeFileSync(join(testRepoPath, 'test.tsx'), 'Initial content');
@@ -136,8 +136,8 @@ describe('getGitLog', () => {
   });
 
   test('2024-12から2025-01までのコミットを取得できる', async () => {
-    const startDate = dayjs('2024-12-01').startOf('day');
-    const endDate = dayjs('2025-01-31').endOf('day');
+    const startDate = parseDate('2024-12-01').startOf('day');
+    const endDate = parseDate('2025-01-31').endOf('day');
 
     const log = await getGitLog(testRepoPath, startDate, endDate);
     console.log('2024-12から2025-01までのログ:', log);
@@ -156,8 +156,8 @@ describe('getGitLog', () => {
   });
 
   test('2025-01から2025-02までのコミットを取得できる', async () => {
-    const startDate = dayjs('2025-01-01').startOf('day');
-    const endDate = dayjs('2025-02-28').endOf('day');
+    const startDate = parseDate('2025-01-01').startOf('day');
+    const endDate = parseDate('2025-02-28').endOf('day');
 
     const log = await getGitLog(testRepoPath, startDate, endDate);
     console.log('2025-01から2025-02までのログ:', log);
@@ -176,8 +176,8 @@ describe('getGitLog', () => {
   });
 
   test('2024-11から2024-12までのコミットを取得できる', async () => {
-    const startDate = dayjs('2024-11-01').startOf('day');
-    const endDate = dayjs('2024-12-31').endOf('day');
+    const startDate = parseDate('2024-11-01').startOf('day');
+    const endDate = parseDate('2024-12-31').endOf('day');
 
     const log = await getGitLog(testRepoPath, startDate, endDate);
     console.log('2024-11から2024-12までのログ:', log);

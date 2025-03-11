@@ -1,9 +1,9 @@
 import { Text, View } from '@react-pdf/renderer';
-import dayjs from 'dayjs';
 import React from 'react';
 import { INSERTIONS_THRESHOLD } from '../constants';
 import { pdfStyles } from '../styles/pdf-styles';
 import type { CommitDetail } from '../types';
+import { compareDatesDesc, MONTH_FORMAT } from '../utils/date-utils';
 import { calculateTotalInsertions } from '../utils/insertions-calculator';
 
 type MonthlyOutlierData = {
@@ -40,7 +40,7 @@ export const OutliersPage = ({
 
   // 月別データを作成し、降順にソート
   const monthlyOutliers = groupByMonth(outlierCommits).sort((a, b) =>
-    dayjs(b.month, 'YYYY-MM').diff(dayjs(a.month, 'YYYY-MM')),
+    compareDatesDesc(a.month, b.month, MONTH_FORMAT),
   );
 
   return (

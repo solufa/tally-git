@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
-import dayjs from 'dayjs';
 import React from 'react';
 import { pdfStyles } from '../styles/pdf-styles';
+import { compareDatesDesc, MONTH_FORMAT } from '../utils/date-utils';
 
 interface ActivityPageProps {
   monthlyTotals: {
@@ -14,7 +14,7 @@ interface ActivityPageProps {
 
 export const ActivityPage = ({ monthlyTotals }: ActivityPageProps): React.ReactElement => {
   const descSortedMonthlyTotals = monthlyTotals.sort((a, b) =>
-    dayjs(b.month, 'YYYY-MM').diff(dayjs(a.month, 'YYYY-MM')),
+    compareDatesDesc(a.month, b.month, MONTH_FORMAT),
   );
 
   return (

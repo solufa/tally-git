@@ -1,7 +1,14 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { STACKED_BAR_CHAT_Y_AXIS_STEP } from '../constants';
-import { pdfStyles } from '../styles/pdf-styles';
+import type {
+  ReferenceLineData,
+  ReferenceLineLegendItemData,
+} from '../logic/charts/stacked-bar-chart-reference-lines-logic';
+import {
+  calculateReferenceLineLegendItems,
+  calculateReferenceLines,
+} from '../logic/charts/stacked-bar-chart-reference-lines-logic';
+import { pdfStyles } from '../pdf-pages/pdf-styles';
 import type { ChartReferenceLine } from '../types';
 
 export const renderChartReferenceLines = (
@@ -11,30 +18,18 @@ export const renderChartReferenceLines = (
   chartHeight: number,
   chartWidth: number,
 ): React.ReactNode[] => {
-  const roundedMaxValue =
-    Math.ceil(maxValue / STACKED_BAR_CHAT_Y_AXIS_STEP) * STACKED_BAR_CHAT_Y_AXIS_STEP;
+  const lines = calculateReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth);
 
-  return referenceLines
-    .map((line, i) => {
-      // maxValueを超える場合は描画しない
-      if (line.value > maxValue) return null;
-
-      // 切り上げた最大値に対する比率を計算（Y軸のラベルと同じ計算方法）
-      const ratio = line.value / roundedMaxValue;
-      const y = margin.top + chartHeight - chartHeight * ratio;
-
-      return (
-        <G key={`reference-line-${i}`}>
-          <Path
-            d={`M ${margin.left} ${y} L ${margin.left + chartWidth} ${y}`}
-            stroke={line.color}
-            strokeWidth={1}
-            strokeDasharray="5,3"
-          />
-        </G>
-      );
-    })
-    .filter(Boolean);
+  return lines.map((line: ReferenceLineData) => (
+    <G key={line.key}>
+      <Path
+        d={`M ${line.x1} ${line.y} L ${line.x2} ${line.y}`}
+        stroke={line.stroke}
+        strokeWidth={line.strokeWidth}
+        strokeDasharray={line.strokeDasharray}
+      />
+    </G>
+  ));
 };
 
 export const renderChartReferenceLineLegend = (
@@ -43,24 +38,33 @@ export const renderChartReferenceLineLegend = (
   chartWidth: number,
   contributorsLength: number,
 ): React.ReactNode => {
-  const legendItems = referenceLines.map((line, i) => {
-    const x = margin.left + chartWidth + 10;
-    const y = margin.top + contributorsLength * 15 + 10 + i * 12;
+  const legendItems = calculateReferenceLineLegendItems(
+    referenceLines,
+    margin,
+    chartWidth,
+    contributorsLength,
+    pdfStyles.page.fontFamily,
+  );
 
-    return (
-      <G key={`reference-legend-${i}`}>
-        <Path
-          d={`M ${x} ${y} L ${x + 15} ${y}`}
-          stroke={line.color}
-          strokeWidth={1}
-          strokeDasharray="5,3"
-        />
-        <Text x={x + 20} y={y + 3} style={{ fontSize: 8, fontFamily: pdfStyles.page.fontFamily }}>
-          {line.label}
-        </Text>
-      </G>
-    );
-  });
-
-  return <G>{legendItems}</G>;
+  return (
+    <G>
+      {legendItems.map((item: ReferenceLineLegendItemData) => (
+        <G key={item.key}>
+          <Path
+            d={`M ${item.pathX} ${item.pathY} L ${item.pathX + item.pathWidth} ${item.pathY}`}
+            stroke={item.color}
+            strokeWidth={item.strokeWidth}
+            strokeDasharray={item.strokeDasharray}
+          />
+          <Text
+            x={item.textX}
+            y={item.textY}
+            style={{ fontSize: item.fontSize, fontFamily: item.fontFamily }}
+          >
+            {item.label}
+          </Text>
+        </G>
+      ))}
+    </G>
+  );
 };

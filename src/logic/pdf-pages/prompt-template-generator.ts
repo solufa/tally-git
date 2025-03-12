@@ -1,5 +1,5 @@
-import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../types';
-import { calculateTotalInsertions } from '../utils/insertions-calculator';
+import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../../types';
+import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 
 export const generatePromptTemplate = (
   authorLog: AuthorLog,

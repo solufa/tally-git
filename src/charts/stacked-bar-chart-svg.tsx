@@ -1,7 +1,9 @@
 import { G, Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
 import { STACKED_BAR_CHART_REF_LINES } from '../constants';
-import { assertString, getContributorColor } from './color-utils';
+import type { BarData } from '../logic/charts/stacked-bar-chart-svg-logic';
+import { prepareStackedBarChartSvgData } from '../logic/charts/stacked-bar-chart-svg-logic';
+import { getContributorColor } from './color-utils';
 import {
   renderChartReferenceLineLegend,
   renderChartReferenceLines,
@@ -26,62 +28,16 @@ export const StackedBarChartSvg = ({
   labels,
   contributors,
 }: StackedBarChartSvgProps): React.ReactElement => {
-  const barWidth = (chartWidth / labels.length) * 0.8;
-  const barSpacing = (chartWidth / labels.length) * 0.2;
-
-  // 特定の月の積み上げ棒を描画
-  const renderMonthBars = (monthIndex: number): React.ReactNode[] => {
-    const monthBars: React.ReactNode[] = [];
-    let yOffset = 0;
-
-    // 各開発者（データ行）ごとに処理
-    for (let contributorIndex = 0; contributorIndex < data.length; contributorIndex++) {
-      const value = data[contributorIndex]?.[monthIndex] ?? 0;
-      if (value === 0) continue;
-
-      // 値の高さを計算（値の割合 * チャートの高さ）
-      const barHeight = (value / maxValue) * chartHeight;
-
-      // x軸のラベルとメモリの位置を計算
-      const labelX =
-        margin.left + monthIndex * (chartWidth / labels.length) + barWidth / 2 + barSpacing / 2;
-      // 棒の位置を計算（中心がx軸のラベルとメモリの位置と一致するように）
-      const x = labelX - barWidth / 2;
-      const y = margin.top + chartHeight - barHeight - yOffset;
-
-      // 棒を描画
-      const contributor = contributors[contributorIndex];
-      assertString(contributor);
-      monthBars.push(
-        <Rect
-          key={`bar-${monthIndex}-${contributorIndex}`}
-          x={x}
-          y={y}
-          width={barWidth}
-          height={barHeight}
-          fill={getContributorColor(contributor)}
-        />,
-      );
-
-      // 次の棒の位置を更新
-      yOffset += barHeight;
-    }
-
-    return monthBars;
-  };
-
-  // 全ての月の積み上げ棒グラフを描画
-  const renderBars = (): React.ReactNode[] => {
-    const bars: React.ReactNode[] = [];
-
-    // 各月（X軸）ごとに処理
-    for (let monthIndex = 0; monthIndex < labels.length; monthIndex++) {
-      const monthBars = renderMonthBars(monthIndex);
-      bars.push(...monthBars);
-    }
-
-    return bars;
-  };
+  const { barWidth, bars } = prepareStackedBarChartSvgData(
+    data,
+    labels,
+    contributors,
+    maxValue,
+    chartHeight,
+    chartWidth,
+    margin,
+    getContributorColor,
+  );
 
   return (
     <Svg width={width} height={height}>
@@ -96,7 +52,16 @@ export const StackedBarChartSvg = ({
         chartHeight,
         chartWidth,
       )}
-      {renderBars()}
+      {bars.map((bar: BarData) => (
+        <Rect
+          key={bar.key}
+          x={bar.x}
+          y={bar.y}
+          width={bar.width}
+          height={bar.height}
+          fill={bar.fill}
+        />
+      ))}
       <G>
         {renderLegend(contributors, margin, chartWidth)}
         {renderChartReferenceLineLegend(

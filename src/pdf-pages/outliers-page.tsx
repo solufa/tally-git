@@ -1,47 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { INSERTIONS_THRESHOLD } from '../constants';
-import { pdfStyles } from '../styles/pdf-styles';
+import { prepareOutliersPageData } from '../logic/pdf-pages/outliers-page-logic';
 import type { CommitDetail } from '../types';
-import { compareDatesDesc, MONTH_FORMAT } from '../utils/date-utils';
-import { calculateTotalInsertions } from '../utils/insertions-calculator';
-
-type MonthlyOutlierData = {
-  month: string;
-  commits: number;
-  insertions: number;
-  deletions: number;
-};
+import { pdfStyles } from './pdf-styles';
 
 export const OutliersPage = ({
   outlierCommits,
 }: {
   outlierCommits: CommitDetail[];
 }): React.ReactElement => {
-  // 月ごとにグループ化する
-  const groupByMonth = (commits: CommitDetail[]): MonthlyOutlierData[] => {
-    const monthlyData: Record<string, MonthlyOutlierData> = {};
-
-    commits.forEach((commit) => {
-      // YYYY-MM 形式で月を取得
-      const month = commit.date.slice(0, 7);
-
-      if (!monthlyData[month]) {
-        monthlyData[month] = { month, commits: 0, insertions: 0, deletions: 0 };
-      }
-
-      monthlyData[month].commits += 1;
-      monthlyData[month].insertions += calculateTotalInsertions(commit.insertions);
-      monthlyData[month].deletions += commit.deletions;
-    });
-
-    return Object.values(monthlyData);
-  };
-
-  // 月別データを作成し、降順にソート
-  const monthlyOutliers = groupByMonth(outlierCommits).sort((a, b) =>
-    compareDatesDesc(a.month, b.month, MONTH_FORMAT),
-  );
+  const monthlyOutliers = prepareOutliersPageData(outlierCommits);
 
   return (
     <>

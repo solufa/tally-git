@@ -1,8 +1,10 @@
-import type { BarData } from './dual-bar-chart-bars-logic';
+import type { BarData as BarDataImport } from './dual-bar-chart-bars-logic';
 import {
   calculateMonthDeletionBars,
   calculateMonthInsertionBars,
 } from './dual-bar-chart-bars-logic';
+
+export type BarData = BarDataImport;
 
 export type SeparatorData = {
   key: string;
@@ -92,8 +94,8 @@ export const calculateBarSeparators = (
 export const prepareDualBarChartSvgData = (
   contributorInsertionsData: number[][],
   contributorDeletionsData: number[][],
-  labels: string[],
-  contributors: string[],
+  labels: Readonly<string[]>,
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   chartWidth: number,

@@ -1,6 +1,17 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import { STACKED_BAR_CHAT_Y_AXIS_STEP } from '../constants';
+import type {
+  LegendItemData,
+  XAxisLabelData,
+  XAxisProps,
+  YAxisLabelData,
+  YAxisProps,
+} from '../logic/charts/stacked-bar-chart-utils-logic';
+import {
+  calculateLegendItems,
+  calculateXAxisLabels,
+  calculateYAxisLabels,
+} from '../logic/charts/stacked-bar-chart-utils-logic';
 import { getContributorColor } from './color-utils';
 
 export interface StackedBarChartProps {
@@ -25,29 +36,17 @@ export interface StackedBarChartSvgProps {
   contributors: string[];
 }
 
-export const XAxis = ({
-  margin,
-  chartHeight,
-  chartWidth,
-}: {
-  margin: { top: number; right: number; bottom: number; left: number };
-  chartHeight: number;
-  chartWidth: number;
-}): React.ReactElement => (
+export const XAxis = ({ margin, chartHeight, chartWidth }: XAxisProps): React.ReactElement => (
   <Path
-    d={`M ${margin.left} ${margin.top + chartHeight} L ${margin.left + chartWidth} ${margin.top + chartHeight}`}
+    d={`M ${margin.left} ${margin.top + chartHeight} L ${margin.left + chartWidth} ${
+      margin.top + chartHeight
+    }`}
     stroke="#000000"
     strokeWidth={1}
   />
 );
 
-export const YAxis = ({
-  margin,
-  chartHeight,
-}: {
-  margin: { top: number; right: number; bottom: number; left: number };
-  chartHeight: number;
-}): React.ReactElement => (
+export const YAxis = ({ margin, chartHeight }: YAxisProps): React.ReactElement => (
   <Path
     d={`M ${margin.left} ${margin.top} L ${margin.left} ${margin.top + chartHeight}`}
     stroke="#000000"
@@ -62,39 +61,29 @@ export const renderXAxisLabels = (
   chartHeight: number,
   chartWidth: number,
 ): React.ReactNode[] => {
-  // 棒グラフの間隔を計算
-  const barSpacing = (chartWidth / labels.length) * 0.2;
+  const xAxisLabels = calculateXAxisLabels(labels, barWidth, margin, chartHeight, chartWidth);
 
-  return labels
-    .map((label, i) => {
-      // 棒グラフの中心位置を計算
-      const x = margin.left + i * (chartWidth / labels.length) + barWidth / 2 + barSpacing / 2;
-      const y = margin.top + chartHeight + 20;
-      // ラベルが多い場合は間引く
-      if (labels.length > 12 && i % 2 !== 0 && i !== labels.length - 1) return null;
-      return (
-        <G key={`x-label-${i}`}>
-          <Path
-            d={`M ${x} ${margin.top + chartHeight} L ${x} ${margin.top + chartHeight + 5}`}
-            stroke="#000000"
-            strokeWidth={1}
-          />
-          <Text
-            x={x}
-            y={y}
-            style={{
-              fontSize: 8,
-              textAnchor: 'middle',
-              transform: 'rotate(35deg)',
-              transformOrigin: `${x}px ${y - 5}px`,
-            }}
-          >
-            {label}
-          </Text>
-        </G>
-      );
-    })
-    .filter(Boolean);
+  return xAxisLabels.map((labelData: XAxisLabelData) => (
+    <G key={labelData.key}>
+      <Path
+        d={`M ${labelData.tickX} ${labelData.tickY1} L ${labelData.tickX} ${labelData.tickY2}`}
+        stroke="#000000"
+        strokeWidth={1}
+      />
+      <Text
+        x={labelData.x}
+        y={labelData.y}
+        style={{
+          fontSize: labelData.fontSize,
+          textAnchor: labelData.textAnchor,
+          transform: labelData.transform,
+          transformOrigin: labelData.transformOrigin,
+        }}
+      >
+        {labelData.label}
+      </Text>
+    </G>
+  ));
 };
 
 export const renderYAxisLabels = (
@@ -103,38 +92,32 @@ export const renderYAxisLabels = (
   chartHeight: number,
   chartWidth?: number,
 ): React.ReactNode[] => {
-  const labels: React.ReactNode[] = [];
-  const roundedMaxValue =
-    Math.ceil(maxValue / STACKED_BAR_CHAT_Y_AXIS_STEP) * STACKED_BAR_CHAT_Y_AXIS_STEP;
+  const yAxisLabels = calculateYAxisLabels(maxValue, margin, chartHeight, chartWidth);
 
-  for (let value = 0; value <= roundedMaxValue; value += STACKED_BAR_CHAT_Y_AXIS_STEP) {
-    // 切り上げた最大値に対する比率を計算
-    const ratio = value / roundedMaxValue;
-    const y = margin.top + chartHeight - chartHeight * ratio;
-
-    labels.push(
-      <G key={`y-label-${value}`}>
+  return yAxisLabels.map((labelData: YAxisLabelData) => (
+    <G key={labelData.key}>
+      <Path
+        d={`M ${labelData.tickX1} ${labelData.tickY} L ${labelData.tickX2} ${labelData.tickY}`}
+        stroke="#000000"
+        strokeWidth={1}
+      />
+      {chartWidth && (
         <Path
-          d={`M ${margin.left - 5} ${y} L ${margin.left} ${y}`}
-          stroke="#000000"
-          strokeWidth={1}
+          d={`M ${labelData.gridX1} ${labelData.tickY} L ${labelData.gridX2} ${labelData.tickY}`}
+          stroke="#CCCCCC"
+          strokeWidth={0.5}
+          strokeDasharray="3,3"
         />
-        {chartWidth && (
-          <Path
-            d={`M ${margin.left} ${y} L ${margin.left + chartWidth} ${y}`}
-            stroke="#CCCCCC"
-            strokeWidth={0.5}
-            strokeDasharray="3,3"
-          />
-        )}
-        <Text x={margin.left - 10} y={y + 3} style={{ fontSize: 8, textAnchor: 'end' }}>
-          {value}
-        </Text>
-      </G>,
-    );
-  }
-
-  return labels;
+      )}
+      <Text
+        x={labelData.textX}
+        y={labelData.textY}
+        style={{ fontSize: labelData.fontSize, textAnchor: labelData.textAnchor }}
+      >
+        {labelData.value}
+      </Text>
+    </G>
+  ));
 };
 
 export const renderLegend = (
@@ -142,22 +125,22 @@ export const renderLegend = (
   margin: { top: number; right: number; bottom: number; left: number },
   chartWidth: number,
 ): React.ReactNode => {
-  // 凡例をグラフの右側に配置
-  const contributorLegendItems = contributors.map((contributor, i) => {
-    // 右側の余白に配置
-    const x = margin.left + chartWidth + 10;
-    const y = margin.top + i * 15;
-    const color = getContributorColor(contributor);
+  const legendItems = calculateLegendItems(contributors, margin, chartWidth, getContributorColor);
 
-    return (
-      <G key={`legend-${i}`}>
-        <Path d={`M ${x} ${y} L ${x + 15} ${y}`} stroke={color} strokeWidth={4} />
-        <Text x={x + 20} y={y + 3} style={{ fontSize: 8 }}>
-          {contributor}
-        </Text>
-      </G>
-    );
-  });
-
-  return <G>{contributorLegendItems}</G>;
+  return (
+    <G>
+      {legendItems.map((item: LegendItemData) => (
+        <G key={item.key}>
+          <Path
+            d={`M ${item.pathX} ${item.pathY} L ${item.pathX + item.pathWidth} ${item.pathY}`}
+            stroke={item.color}
+            strokeWidth={4}
+          />
+          <Text x={item.textX} y={item.textY} style={{ fontSize: item.fontSize }}>
+            {item.label}
+          </Text>
+        </G>
+      ))}
+    </G>
+  );
 };

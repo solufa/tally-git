@@ -1,7 +1,7 @@
 import { Page, Text, View } from '@react-pdf/renderer';
 import React from 'react';
-import { pdfStyles } from '../styles/pdf-styles';
 import type { MonthColumns } from '../types';
+import { pdfStyles } from './pdf-styles';
 
 export const PdfLayout = ({
   projectName,

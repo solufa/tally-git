@@ -1,9 +1,9 @@
 import { Text, View } from '@react-pdf/renderer';
-import assert from 'assert';
 import React from 'react';
-import { pdfStyles } from '../styles/pdf-styles';
-import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../types';
-import { generatePromptTemplate } from './prompt-template-generator';
+import { anonymizeAuthors } from '../logic/pdf-pages/prompt-page-logic';
+import { generatePromptTemplate } from '../logic/pdf-pages/prompt-template-generator';
+import type { AuthorLog, MonthColumns } from '../types';
+import { pdfStyles } from './pdf-styles';
 
 export const PromptPage = ({
   authorLog,
@@ -75,22 +75,4 @@ export const PromptPage = ({
       </View>
     </>
   );
-};
-
-export const anonymizeAuthors = (authorLog: AuthorLog): AnonymousAuthors => {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-  return Object.keys(authorLog).reduce((dict, author, index): AnonymousAuthors => {
-    // アルファベットの範囲内で置き換え、超える場合は複数文字で表現（AA, AB, ...）
-    if (index < alphabet.length) {
-      assert(alphabet[index]);
-
-      return { ...dict, [author]: alphabet[index] };
-    } else {
-      const firstChar = alphabet[Math.floor(index / alphabet.length) - 1];
-      const secondChar = alphabet[index % alphabet.length];
-
-      return { ...dict, [author]: `${firstChar}${secondChar}` };
-    }
-  }, {});
 };

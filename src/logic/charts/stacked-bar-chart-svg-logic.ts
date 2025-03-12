@@ -42,7 +42,7 @@ export const createStackedBarData = (
 ): BarData => {
   const barHeight = (value / maxValue) * chartHeight;
   const labelX = calculateBarPosition(monthIndex, chartWidth, labelsLength, barWidth, barSpacing);
-  const x = labelX - barWidth / 2;
+  const x = margin.left + labelX - barWidth / 2;
   const y = margin.top + chartHeight - barHeight - yOffset;
 
   return {
@@ -63,7 +63,7 @@ export const processContributorBar = (
   data: number[][],
   monthIndex: number,
   contributorIndex: number,
-  contributors: string[],
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   margin: { top: number; right: number; bottom: number; left: number },
@@ -103,7 +103,7 @@ export const processContributorBar = (
 export const calculateMonthBars = (
   data: number[][],
   monthIndex: number,
-  contributors: string[],
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   margin: { top: number; right: number; bottom: number; left: number },
@@ -145,8 +145,8 @@ export const calculateMonthBars = (
 
 export const prepareStackedBarChartSvgData = (
   data: number[][],
-  labels: string[],
-  contributors: string[],
+  labels: Readonly<string[]>,
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   chartWidth: number,

@@ -42,7 +42,7 @@ export const isValidContributor = (value: number, contributor: string | undefine
 export const processContributorData = (
   contributorData: number[][],
   monthIndex: number,
-  contributors: string[],
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   margin: { top: number; right: number; bottom: number; left: number },
@@ -87,7 +87,7 @@ export const processContributorData = (
 export const calculateMonthInsertionBars = (
   contributorInsertionsData: number[][],
   monthIndex: number,
-  contributors: string[],
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   margin: { top: number; right: number; bottom: number; left: number },
@@ -116,7 +116,7 @@ export const calculateMonthInsertionBars = (
 export const calculateMonthDeletionBars = (
   contributorDeletionsData: number[][],
   monthIndex: number,
-  contributors: string[],
+  contributors: Readonly<string[]>,
   maxValue: number,
   chartHeight: number,
   margin: { top: number; right: number; bottom: number; left: number },

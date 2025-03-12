@@ -1,21 +1,15 @@
 import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
-import { pdfStyles } from '../styles/pdf-styles';
-import { compareDatesDesc, MONTH_FORMAT } from '../utils/date-utils';
+import { sortMonthlyTotals } from '../logic/pdf-pages/activity-page-logic';
+import type { MonthlyTotal } from '../logic/pdf/pdf-data-processor';
+import { pdfStyles } from './pdf-styles';
 
-interface ActivityPageProps {
-  monthlyTotals: {
-    month: string;
-    commits: number;
-    insertions: number;
-    deletions: number;
-  }[];
-}
-
-export const ActivityPage = ({ monthlyTotals }: ActivityPageProps): React.ReactElement => {
-  const descSortedMonthlyTotals = monthlyTotals.sort((a, b) =>
-    compareDatesDesc(a.month, b.month, MONTH_FORMAT),
-  );
+export const ActivityPage = ({
+  monthlyTotals,
+}: {
+  monthlyTotals: MonthlyTotal[];
+}): React.ReactElement => {
+  const descSortedMonthlyTotals = sortMonthlyTotals(monthlyTotals);
 
   return (
     <View style={pdfStyles.section}>

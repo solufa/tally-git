@@ -9,7 +9,7 @@
     "lint:js": "eslint .",
     "lint:prettier": "prettier --check \"./**/*.{ts,tsx,js}\" --ignore-path .gitignore",
     "fix:lint": "npm run lint:js -- --fix && npm run lint:prettier -- --write",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -17,6 +17,7 @@
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/node": "^22.7.7",
     "@types/react": "^19.0.10",
+    "@vitest/coverage-v8": "^3.0.8",
     "dayjs": "^1.11.13",
     "esbuild": "^0.21.5",
     "esbuild-node-externals": "^1.14.0",

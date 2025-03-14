@@ -42,7 +42,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['tests/**/*.ts'],
+    files: ['tests/**/*.{ts,tsx}'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off', 'max-lines': 'off' },
   },
   prettierConfig,

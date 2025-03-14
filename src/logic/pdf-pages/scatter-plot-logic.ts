@@ -1,4 +1,4 @@
-import type { FileMetric } from '../../types';
+import type { DirMetrics, FileMetric } from '../../types';
 
 export type ScatterPlotPoint = Readonly<{
   x: number;
@@ -49,7 +49,7 @@ export type ScatterPlotSvgData = Readonly<{
   points: Readonly<ScatterPlotSvgPoint[]>;
 }>;
 
-export const prepareBackendComplexityScatterPlotData = (
+export const prepareComplexityScatterPlotData = (
   fileMetrics: Readonly<FileMetric[]>,
 ): ScatterPlotData => {
   const points: ScatterPlotPoint[] = [];
@@ -113,4 +113,29 @@ export const prepareScatterPlotSvgData = (
     yAxisLabels,
     points: scaledPoints,
   };
+};
+
+export type ComplexityChartData = Readonly<{
+  backendSvgData?: ScatterPlotSvgData;
+  frontendSvgData?: ScatterPlotSvgData;
+}>;
+
+export const prepareComplexityChartData = (
+  dirMetrics: DirMetrics,
+  chartConfig: ScatterPlotConfig,
+): ComplexityChartData => {
+  const backendMetrics = dirMetrics.backend || [];
+  const frontendMetrics = dirMetrics.frontend || [];
+
+  const backendSvgData =
+    backendMetrics.length > 0
+      ? prepareScatterPlotSvgData(prepareComplexityScatterPlotData(backendMetrics), chartConfig)
+      : undefined;
+
+  const frontendSvgData =
+    frontendMetrics.length > 0
+      ? prepareScatterPlotSvgData(prepareComplexityScatterPlotData(frontendMetrics), chartConfig)
+      : undefined;
+
+  return { backendSvgData, frontendSvgData };
 };

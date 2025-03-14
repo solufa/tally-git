@@ -1,23 +1,35 @@
+import { View } from '@react-pdf/renderer';
 import React from 'react';
 import { ScatterPlot } from '../charts/scatter-plot';
-import {
-  prepareBackendComplexityScatterPlotData,
-  prepareScatterPlotSvgData,
-} from '../logic/pdf-pages/scatter-plot-logic';
-import type { FileMetric } from '../types';
+import { prepareComplexityChartData } from '../logic/pdf-pages/scatter-plot-logic';
+import type { DirMetrics } from '../types';
+import { pdfStyles } from './pdf-styles';
 
 type ScatterPlotPageProps = {
-  fileMetrics: Readonly<FileMetric[]>;
+  dirMetrics: DirMetrics;
 };
 
-export const ScatterPlotPage: React.FC<ScatterPlotPageProps> = ({ fileMetrics }) => {
-  const scatterPlotData = prepareBackendComplexityScatterPlotData(fileMetrics);
-
-  const svgData = prepareScatterPlotSvgData(scatterPlotData, {
+export const ScatterPlotPage: React.FC<ScatterPlotPageProps> = ({ dirMetrics }) => {
+  const chartData = prepareComplexityChartData(dirMetrics, {
     width: 500,
     height: 300,
     margin: { top: 30, right: 30, bottom: 50, left: 60 },
   });
 
-  return <ScatterPlot title="バックエンドの関数・メソッドの複雑度分布" svgData={svgData} />;
+  return (
+    <View style={pdfStyles.section}>
+      {chartData.frontendSvgData && (
+        <ScatterPlot
+          title="フロントエンドの関数・メソッドの複雑度分布"
+          svgData={chartData.frontendSvgData}
+        />
+      )}
+      {chartData.backendSvgData && (
+        <ScatterPlot
+          title="バックエンドの関数・メソッドの複雑度分布"
+          svgData={chartData.backendSvgData}
+        />
+      )}
+    </View>
+  );
 };

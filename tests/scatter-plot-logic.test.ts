@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
-  prepareBackendComplexityScatterPlotData,
+  prepareComplexityChartData,
+  prepareComplexityScatterPlotData,
   prepareScatterPlotSvgData,
 } from '../src/logic/pdf-pages/scatter-plot-logic';
 
 describe('scatter-plot-logic', () => {
-  describe('prepareBackendComplexityScatterPlotData', () => {
-    it('バックエンドデータがある場合は正しい結果を返す', () => {
-      const result = prepareBackendComplexityScatterPlotData([
+  describe('prepareComplexityScatterPlotData', () => {
+    it('関数メトリクスデータがある場合は正しい結果を返す', () => {
+      const result = prepareComplexityScatterPlotData([
         {
           filename: 'test.ts',
           functions: [
@@ -86,6 +87,69 @@ describe('scatter-plot-logic', () => {
       expect(result.points[0]!.y).toBe(0);
       expect(result.points[0]!.scaledX).toBe(60); // margin.left
       expect(result.points[0]!.scaledY).toBe(300); // chartHeight + margin.top
+    });
+  });
+
+  describe('prepareComplexityChartData', () => {
+    const chartConfig = {
+      width: 500,
+      height: 300,
+      margin: { top: 30, right: 30, bottom: 50, left: 60 },
+    };
+
+    const backendFunction = {
+      filename: 'backend.ts',
+      functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+    };
+
+    const frontendFunction = {
+      filename: 'frontend.ts',
+      functions: [{ name: 'func2', fields: 2, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
+    };
+
+    it('バックエンドとフロントエンドのデータがある場合は両方のSVGデータを返す', () => {
+      const dirMetrics = {
+        backend: [backendFunction],
+        frontend: [frontendFunction],
+      };
+
+      const result = prepareComplexityChartData(dirMetrics, chartConfig);
+
+      expect(result.backendSvgData).toBeDefined();
+      expect(result.frontendSvgData).toBeDefined();
+
+      expect(result.backendSvgData!.points).toHaveLength(1);
+      expect(result.frontendSvgData!.points).toHaveLength(1);
+      expect(result.backendSvgData!.points[0]!.name).toBe('func1');
+      expect(result.frontendSvgData!.points[0]!.name).toBe('func2');
+    });
+
+    it('バックエンドのデータのみがある場合はバックエンドのSVGデータのみを返す', () => {
+      const dirMetrics = {
+        backend: [backendFunction],
+      };
+
+      const result = prepareComplexityChartData(dirMetrics, chartConfig);
+
+      expect(result.backendSvgData).toBeDefined();
+      expect(result.frontendSvgData).toBeUndefined();
+
+      expect(result.backendSvgData!.points).toHaveLength(1);
+      expect(result.backendSvgData!.points[0]!.name).toBe('func1');
+    });
+
+    it('フロントエンドのデータのみがある場合はフロントエンドのSVGデータのみを返す', () => {
+      const dirMetrics = {
+        frontend: [frontendFunction],
+      };
+
+      const result = prepareComplexityChartData(dirMetrics, chartConfig);
+
+      expect(result.backendSvgData).toBeUndefined();
+      expect(result.frontendSvgData).toBeDefined();
+
+      expect(result.frontendSvgData!.points).toHaveLength(1);
+      expect(result.frontendSvgData!.points[0]!.name).toBe('func2');
     });
   });
 });

@@ -56,9 +56,9 @@ export const toPdf = async (
           <CodeVsTestChartPage monthColumns={monthColumns} authorLog={authorLog} />
         </PdfLayout>
       )}
-      {dirMetrics.backend && (
+      {(dirMetrics.backend || dirMetrics.frontend) && (
         <PdfLayout projectName={projectName} monthColumns={monthColumns}>
-          <ScatterPlotPage fileMetrics={dirMetrics.backend} />
+          <ScatterPlotPage dirMetrics={dirMetrics} />
         </PdfLayout>
       )}
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>

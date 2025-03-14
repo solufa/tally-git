@@ -7,8 +7,17 @@ export const ScatterPlot: React.FC<{
   title: string;
   svgData: ScatterPlotSvgData;
 }> = ({ title, svgData }) => {
-  const { width, height, margin, chartWidth, chartHeight, xAxisLabels, yAxisLabels, points } =
-    svgData;
+  const {
+    width,
+    height,
+    margin,
+    chartWidth,
+    chartHeight,
+    xAxisLabels,
+    yAxisLabels,
+    points,
+    refLines,
+  } = svgData;
 
   return (
     <View style={pdfStyles.chart}>
@@ -34,18 +43,18 @@ export const ScatterPlot: React.FC<{
         {xAxisLabels.map((label, i) => (
           <React.Fragment key={`x-label-${i}`}>
             <Path
-              d={`M ${margin.left + (chartWidth * i) / 5} ${chartHeight + margin.top} L ${
-                margin.left + (chartWidth * i) / 5
-              } ${chartHeight + margin.top + 5}`}
+              d={`M ${label.position} ${chartHeight + margin.top} L ${label.position} ${
+                chartHeight + margin.top + 5
+              }`}
               stroke="#000000"
               strokeWidth={1}
             />
             <Text
-              x={margin.left + (chartWidth * i) / 5 - 10}
+              x={label.position - 5}
               y={chartHeight + margin.top + 15}
               style={{ fontSize: 8, textAlign: 'center' }}
             >
-              {label}
+              {label.value}
             </Text>
           </React.Fragment>
         ))}
@@ -54,18 +63,16 @@ export const ScatterPlot: React.FC<{
         {yAxisLabels.map((label, i) => (
           <React.Fragment key={`y-label-${i}`}>
             <Path
-              d={`M ${margin.left - 5} ${margin.top + chartHeight - (chartHeight * i) / 5} L ${
-                margin.left
-              } ${margin.top + chartHeight - (chartHeight * i) / 5}`}
+              d={`M ${margin.left - 5} ${label.position} L ${margin.left} ${label.position}`}
               stroke="#000000"
               strokeWidth={1}
             />
             <Text
               x={margin.left - 25}
-              y={margin.top + chartHeight - (chartHeight * i) / 5 + 2}
+              y={label.position + 2}
               style={{ fontSize: 8, textAlign: 'right' }}
             >
-              {label}
+              {label.value}
             </Text>
           </React.Fragment>
         ))}
@@ -87,6 +94,55 @@ export const ScatterPlot: React.FC<{
         >
           認知的複雑度（可読性が低下）
         </Text>
+
+        {/* 参照線 - X軸に垂直な線 */}
+        {refLines.map((refLine, i) => (
+          <React.Fragment key={`ref-line-x-${i}`}>
+            <Path
+              d={`M ${refLine.scaledX} ${margin.top} L ${refLine.scaledX} ${
+                chartHeight + margin.top
+              }`}
+              stroke={refLine.color}
+              strokeWidth={1}
+              strokeDasharray="5,5"
+            />
+          </React.Fragment>
+        ))}
+
+        {/* 参照線 - Y軸に垂直な線 */}
+        {refLines.map((refLine, i) => (
+          <React.Fragment key={`ref-line-y-${i}`}>
+            <Path
+              d={`M ${margin.left} ${refLine.scaledY} L ${chartWidth + margin.left} ${
+                refLine.scaledY
+              }`}
+              stroke={refLine.color}
+              strokeWidth={1}
+              strokeDasharray="5,5"
+            />
+          </React.Fragment>
+        ))}
+
+        {/* 参照線の凡例（右の余白に配置） */}
+        {refLines.map((refLine, i) => (
+          <React.Fragment key={`ref-line-legend-${i}`}>
+            <Path
+              d={`M ${chartWidth + margin.left + 10} ${margin.top + 15 * (i + 1)} L ${
+                chartWidth + margin.left + 30
+              } ${margin.top + 15 * (i + 1)}`}
+              stroke={refLine.color}
+              strokeWidth={1}
+              strokeDasharray="5,5"
+            />
+            <Text
+              x={chartWidth + margin.left + 35}
+              y={margin.top + 15 * (i + 1) + 3}
+              style={{ fontSize: 8, fontFamily: pdfStyles.page.fontFamily }}
+            >
+              {refLine.label}
+            </Text>
+          </React.Fragment>
+        ))}
 
         {/* データポイント */}
         {points.map((point, i) => (

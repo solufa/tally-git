@@ -1,4 +1,4 @@
-import type { ChartReferenceLine } from './types';
+import type { ChartReferenceLine, PlotReferenceLine } from './types';
 
 export const STACKED_BAR_CHART_REF_LINES: ChartReferenceLine[] = [
   { value: 90, label: '松田のコミット', color: '#FF0000' },
@@ -12,11 +12,19 @@ export const DUAL_BAR_CHART_REF_LINES: ChartReferenceLine[] = [
   { value: 10000, label: 'IT系学部3年の追加行数', color: '#0000FF' },
 ];
 
+export const SCATTER_PLOT_REF_LINES: PlotReferenceLine[] = [
+  { values: { x: 50, y: 20 }, label: 'バグ混入確率60%', color: '#FF0000' },
+  { values: { x: 20, y: 15 }, label: 'バグ混入確率40%', color: '#00AA00' },
+  { values: { x: 10, y: 10 }, label: 'バグ混入確率20%', color: '#0000FF' },
+];
+
 export const INSERTIONS_THRESHOLD = 5000;
 
 export const DUAL_BAR_CHAT_Y_AXIS_STEP = 2500;
 
 export const STACKED_BAR_CHAT_Y_AXIS_STEP = 25;
+
+export const SCATTER_PLOT_AXIS_STEP = 5;
 
 export const EXCLUDED_FILES = [
   '.txt',

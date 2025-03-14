@@ -13,7 +13,7 @@ export const ScatterPlotPage: React.FC<ScatterPlotPageProps> = ({ dirMetrics }) 
   const chartData = prepareComplexityChartData(dirMetrics, {
     width: 500,
     height: 300,
-    margin: { top: 30, right: 30, bottom: 50, left: 60 },
+    margin: { top: 30, right: 100, bottom: 50, left: 60 },
   });
 
   return (

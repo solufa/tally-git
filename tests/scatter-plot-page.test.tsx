@@ -1,9 +1,9 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ComplexityChartData } from '../src/logic/pdf-pages/scatter-plot-logic';
+import * as scatterPlotLogic from '../src/logic/pdf-pages/scatter-plot-logic';
 import { ScatterPlotPage } from '../src/pdf-pages/scatter-plot-page';
 import type { DirMetrics } from '../src/types';
-import * as scatterPlotLogic from '../src/logic/pdf-pages/scatter-plot-logic';
-import type { ComplexityChartData } from '../src/logic/pdf-pages/scatter-plot-logic';
 
 // ScatterPlotコンポーネントをモック
 const mockScatterPlot = vi.fn().mockReturnValue('ScatterPlot');
@@ -55,8 +55,22 @@ describe('ScatterPlotPage', () => {
         margin: { top: 30, right: 30, bottom: 50, left: 60 },
         chartWidth: 410,
         chartHeight: 220,
-        xAxisLabels: [0, 1, 2, 3, 4, 5],
-        yAxisLabels: [0, 1, 2, 3, 4, 5],
+        xAxisLabels: [
+          { value: 0, position: 60 },
+          { value: 1, position: 100 },
+          { value: 2, position: 140 },
+          { value: 3, position: 180 },
+          { value: 4, position: 220 },
+          { value: 5, position: 260 },
+        ],
+        yAxisLabels: [
+          { value: 0, position: 250 },
+          { value: 1, position: 210 },
+          { value: 2, position: 170 },
+          { value: 3, position: 130 },
+          { value: 4, position: 90 },
+          { value: 5, position: 50 },
+        ],
         points: [
           {
             x: 2,
@@ -67,6 +81,7 @@ describe('ScatterPlotPage', () => {
             filename: 'frontend.ts',
           },
         ],
+        refLines: [{ x: 10, y: 10, scaledX: 100, scaledY: 200, label: 'テスト', color: '#0000FF' }],
       },
       backendSvgData: {
         width: 500,
@@ -74,8 +89,22 @@ describe('ScatterPlotPage', () => {
         margin: { top: 30, right: 30, bottom: 50, left: 60 },
         chartWidth: 410,
         chartHeight: 220,
-        xAxisLabels: [0, 1, 2, 3, 4, 5],
-        yAxisLabels: [0, 1, 2, 3, 4, 5],
+        xAxisLabels: [
+          { value: 0, position: 60 },
+          { value: 1, position: 100 },
+          { value: 2, position: 140 },
+          { value: 3, position: 180 },
+          { value: 4, position: 220 },
+          { value: 5, position: 260 },
+        ],
+        yAxisLabels: [
+          { value: 0, position: 250 },
+          { value: 1, position: 210 },
+          { value: 2, position: 170 },
+          { value: 3, position: 130 },
+          { value: 4, position: 90 },
+          { value: 5, position: 50 },
+        ],
         points: [
           {
             x: 3,
@@ -86,6 +115,7 @@ describe('ScatterPlotPage', () => {
             filename: 'backend.ts',
           },
         ],
+        refLines: [{ x: 10, y: 10, scaledX: 100, scaledY: 200, label: 'テスト', color: '#0000FF' }],
       },
     };
 
@@ -140,8 +170,23 @@ describe('ScatterPlotPage', () => {
         margin: { top: 30, right: 30, bottom: 50, left: 60 },
         chartWidth: 410,
         chartHeight: 220,
-        xAxisLabels: [0, 1, 2, 3, 4, 5],
-        yAxisLabels: [0, 1, 2, 3, 4, 5],
+        xAxisLabels: [
+          { value: 0, position: 60 },
+          { value: 1, position: 100 },
+          { value: 2, position: 140 },
+          { value: 3, position: 180 },
+          { value: 4, position: 220 },
+          { value: 5, position: 260 },
+        ],
+        yAxisLabels: [
+          { value: 0, position: 250 },
+          { value: 1, position: 210 },
+          { value: 2, position: 170 },
+          { value: 3, position: 130 },
+          { value: 4, position: 90 },
+          { value: 5, position: 50 },
+        ],
+        refLines: [{ x: 10, y: 10, scaledX: 100, scaledY: 200, label: 'テスト', color: '#0000FF' }],
         points: [
           {
             x: 2,
@@ -192,8 +237,23 @@ describe('ScatterPlotPage', () => {
         margin: { top: 30, right: 30, bottom: 50, left: 60 },
         chartWidth: 410,
         chartHeight: 220,
-        xAxisLabels: [0, 1, 2, 3, 4, 5],
-        yAxisLabels: [0, 1, 2, 3, 4, 5],
+        xAxisLabels: [
+          { value: 0, position: 60 },
+          { value: 1, position: 100 },
+          { value: 2, position: 140 },
+          { value: 3, position: 180 },
+          { value: 4, position: 220 },
+          { value: 5, position: 260 },
+        ],
+        yAxisLabels: [
+          { value: 0, position: 250 },
+          { value: 1, position: 210 },
+          { value: 2, position: 170 },
+          { value: 3, position: 130 },
+          { value: 4, position: 90 },
+          { value: 5, position: 50 },
+        ],
+        refLines: [{ x: 10, y: 10, scaledX: 100, scaledY: 200, label: 'テスト', color: '#0000FF' }],
         points: [
           {
             x: 3,

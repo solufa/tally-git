@@ -1,3 +1,4 @@
+import { SCATTER_PLOT_AXIS_STEP, SCATTER_PLOT_REF_LINES } from '../../constants';
 import type { DirMetrics, FileMetric } from '../../types';
 
 export type ScatterPlotPoint = Readonly<{
@@ -33,6 +34,20 @@ export type ScatterPlotSvgPoint = Readonly<{
   filename: string;
 }>;
 
+export type ScatterPlotRefLine = Readonly<{
+  x: number;
+  y: number;
+  scaledX: number;
+  scaledY: number;
+  label: string;
+  color: string;
+}>;
+
+export type AxisLabel = Readonly<{
+  value: number;
+  position: number;
+}>;
+
 export type ScatterPlotSvgData = Readonly<{
   width: number;
   height: number;
@@ -44,9 +59,10 @@ export type ScatterPlotSvgData = Readonly<{
   }>;
   chartWidth: number;
   chartHeight: number;
-  xAxisLabels: Readonly<number[]>;
-  yAxisLabels: Readonly<number[]>;
+  xAxisLabels: Readonly<AxisLabel[]>;
+  yAxisLabels: Readonly<AxisLabel[]>;
   points: Readonly<ScatterPlotSvgPoint[]>;
+  refLines: Readonly<ScatterPlotRefLine[]>;
 }>;
 
 export const prepareComplexityScatterPlotData = (
@@ -81,7 +97,18 @@ export const prepareScatterPlotSvgData = (
   config: ScatterPlotConfig,
 ): ScatterPlotSvgData => {
   const { width, height, margin } = config;
-  const { points, maxX, maxY } = data;
+  const { points, maxX: dataMaxX, maxY: dataMaxY } = data;
+
+  // 参照線の最大値を取得
+  const refMaxX = Math.max(...SCATTER_PLOT_REF_LINES.map((line) => line.values.x));
+  const refMaxY = Math.max(...SCATTER_PLOT_REF_LINES.map((line) => line.values.y));
+
+  // データの最大値と参照線の最大値を比較し、大きい方を使用
+  // 最大値をSCATTER_PLOT_AXIS_STEPの倍数に切り上げる
+  const maxX =
+    Math.ceil(Math.max(dataMaxX, refMaxX) / SCATTER_PLOT_AXIS_STEP) * SCATTER_PLOT_AXIS_STEP;
+  const maxY =
+    Math.ceil(Math.max(dataMaxY, refMaxY) / SCATTER_PLOT_AXIS_STEP) * SCATTER_PLOT_AXIS_STEP;
 
   // チャートの実際の描画領域を計算
   const chartWidth = width - margin.left - margin.right;
@@ -92,15 +119,43 @@ export const prepareScatterPlotSvgData = (
   const yScale = (value: number): number =>
     chartHeight - (value / (maxY || 1)) * chartHeight + margin.top;
 
-  // X軸とY軸のラベルを生成
-  const xAxisLabels = Array.from({ length: 6 }, (_, i) => Math.ceil(((maxX || 0) * i) / 5));
-  const yAxisLabels = Array.from({ length: 6 }, (_, i) => Math.ceil(((maxY || 0) * i) / 5));
+  // X軸とY軸のラベルを生成（SCATTER_PLOT_AXIS_STEPごと）
+  const xAxisLabels: AxisLabel[] = [];
+  const yAxisLabels: AxisLabel[] = [];
+
+  // X軸のラベルを生成（0からmaxXまで）
+  for (let i = 0; i * SCATTER_PLOT_AXIS_STEP <= maxX; i++) {
+    const value = i * SCATTER_PLOT_AXIS_STEP;
+    xAxisLabels.push({
+      value,
+      position: xScale(value),
+    });
+  }
+
+  // Y軸のラベルを生成（0からmaxYまで）
+  for (let i = 0; i * SCATTER_PLOT_AXIS_STEP <= maxY; i++) {
+    const value = i * SCATTER_PLOT_AXIS_STEP;
+    yAxisLabels.push({
+      value,
+      position: yScale(value),
+    });
+  }
 
   // データポイントにスケーリングされた座標を追加
   const scaledPoints = points.map((point) => ({
     ...point,
     scaledX: xScale(point.x),
     scaledY: yScale(point.y),
+  }));
+
+  // 参照線のスケーリングされた座標を追加
+  const refLines = SCATTER_PLOT_REF_LINES.map((refLine) => ({
+    x: refLine.values.x,
+    y: refLine.values.y,
+    scaledX: xScale(refLine.values.x),
+    scaledY: yScale(refLine.values.y),
+    label: refLine.label,
+    color: refLine.color,
   }));
 
   return {
@@ -112,6 +167,7 @@ export const prepareScatterPlotSvgData = (
     xAxisLabels,
     yAxisLabels,
     points: scaledPoints,
+    refLines,
   };
 };
 

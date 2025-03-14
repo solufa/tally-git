@@ -67,6 +67,12 @@ export type Result = Readonly<{
 
 export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;
 
+export type PlotReferenceLine = Readonly<{
+  values: { x: number; y: number };
+  label: string;
+  color: string;
+}>;
+
 export type ProjectDirType = keyof ProjectConfig['dirTypes'];
 
 export type AnonymousAuthors = Readonly<Record<string, string>>;

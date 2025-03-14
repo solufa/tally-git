@@ -1,5 +1,5 @@
 import { DUAL_BAR_CHAT_Y_AXIS_STEP } from './constants';
-import type { AuthorLog, CommitData, CommitDetail, MonthColumns } from './types';
+import type { AuthorLog, CommitData, CommitDetail, DirMetrics, MonthColumns } from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 const formatDataRow = (
@@ -53,11 +53,63 @@ const generateActivityRows = (
   return { commits, insertions, deletions };
 };
 
+const formatDirMetrics = (dirMetrics: DirMetrics): string => {
+  const sections: string[] = [];
+
+  if (dirMetrics.frontend) {
+    sections.push(`フロントエンド
+ファイル名,関数名,フィールド数,循環的複雑度,認知的複雑度,行数,コード行数
+${dirMetrics.frontend
+  .map((file) =>
+    file.functions
+      .map(
+        (func) =>
+          `${file.filename},${func.name},${func.fields},${func.cyclo},${func.cognitive},${func.lines},${func.loc}`,
+      )
+      .join('\n'),
+  )
+  .join('\n')}`);
+  }
+
+  if (dirMetrics.backend) {
+    sections.push(`バックエンド
+ファイル名,関数名,フィールド数,循環的複雑度,認知的複雑度,行数,コード行数
+${dirMetrics.backend
+  .map((file) =>
+    file.functions
+      .map(
+        (func) =>
+          `${file.filename},${func.name},${func.fields},${func.cyclo},${func.cognitive},${func.lines},${func.loc}`,
+      )
+      .join('\n'),
+  )
+  .join('\n')}`);
+  }
+
+  if (dirMetrics.infra) {
+    sections.push(`インフラ
+ファイル名,関数名,フィールド数,循環的複雑度,認知的複雑度,行数,コード行数
+${dirMetrics.infra
+  .map((file) =>
+    file.functions
+      .map(
+        (func) =>
+          `${file.filename},${func.name},${func.fields},${func.cyclo},${func.cognitive},${func.lines},${func.loc}`,
+      )
+      .join('\n'),
+  )
+  .join('\n')}`);
+  }
+
+  return sections.join('\n\n\n');
+};
+
 const formatCsvContent = (
   header: string,
   activityData: Readonly<{ commits: string[]; insertions: string[]; deletions: string[] }>,
   thresholdInfo: string,
   outlierInfo: string,
+  dirMetricsContent: string,
 ): string => {
   return `${header}
 コミット数
@@ -78,18 +130,24 @@ ${thresholdInfo}
 
 外れ値のコミット
 開発者,日付,コミットハッシュ,追加行数,削除行数
-${outlierInfo}`;
+${outlierInfo}
+
+
+コード複雑度メトリクス
+${dirMetricsContent}`;
 };
 
 export const toCsv = (
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
   outlierCommits: CommitDetail[],
+  dirMetrics: DirMetrics,
 ): string => {
   const header = `,${monthColumns.join(',')}`;
   const activityData = generateActivityRows(authorLog, monthColumns);
   const thresholdInfo = formatThresholdValues();
   const outlierInfo = formatOutlierCommits(outlierCommits);
+  const dirMetricsContent = formatDirMetrics(dirMetrics);
 
-  return formatCsvContent(header, activityData, thresholdInfo, outlierInfo);
+  return formatCsvContent(header, activityData, thresholdInfo, outlierInfo, dirMetricsContent);
 };

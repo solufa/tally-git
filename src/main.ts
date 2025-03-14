@@ -19,6 +19,7 @@ import {
   startOfMonth,
   toJSTString,
 } from './utils/date-utils';
+import { getDirMetrics } from './utils/project-metrics';
 import { projectConfigValidator } from './validators';
 
 export const readProjectConfig = (targetDir: string): ProjectConfig => {
@@ -54,8 +55,8 @@ export const main = async (
   const outlierCommits = findOutlierCommits(allCommitDetails);
   const filteredAuthorLog = createFilteredAuthorLog(authorLog, outlierCommits);
   const monthColumns = monthIndices.map((i) => formatDate(addMonths(startDate, i), MONTH_FORMAT));
-  const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits);
-
+  const dirMetrics = await getDirMetrics(option.targetDir, projectConfig);
+  const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits, dirMetrics);
   const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1) ?? '';
   const pdfContent = await toPdf(
     filteredAuthorLog,
@@ -68,6 +69,7 @@ export const main = async (
   return {
     authorLog,
     filteredAuthorLog,
+    dirMetrics,
     csv: {
       path: `${option.outputDir}/${dirName}${option.sinceYYMM}-${option.untilYYMM}.csv`,
       content: csvContent,

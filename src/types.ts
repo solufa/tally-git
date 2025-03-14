@@ -37,25 +37,9 @@ export type LogState = Readonly<{
   lastHash: string | null;
 }>;
 
-export type Result = Readonly<{
-  authorLog: AuthorLog;
-  filteredAuthorLog: AuthorLog;
-  csv: { path: string; content: string };
-  pdf: { path: string; content: Buffer };
-  outlierCommits: Readonly<CommitDetail[]>;
-}>;
-
-export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;
-
 export type ProjectConfig = Readonly<z.infer<typeof projectConfigValidator>>;
 
-export type ProjectDirType = keyof ProjectConfig['dirTypes'];
-
-export type AnonymousAuthors = Readonly<Record<string, string>>;
-
-export type MonthColumns = Readonly<string[]>;
-
-export type FunctionMetrics = Readonly<{
+export type FunctionMetric = Readonly<{
   name: string;
   fields: number;
   cyclo: number;
@@ -64,4 +48,25 @@ export type FunctionMetrics = Readonly<{
   loc: number;
 }>;
 
-export type FileMetrics = Readonly<{ filename: string; functions: FunctionMetrics[] }>;
+export type FileMetric = Readonly<{ filename: string; functions: FunctionMetric[] }>;
+
+export type DirMetrics = Readonly<{
+  [Key in keyof ProjectConfig['dirTypes']]: Readonly<FileMetric[]>;
+}>;
+
+export type Result = Readonly<{
+  authorLog: AuthorLog;
+  filteredAuthorLog: AuthorLog;
+  dirMetrics: DirMetrics;
+  csv: { path: string; content: string };
+  pdf: { path: string; content: Buffer };
+  outlierCommits: Readonly<CommitDetail[]>;
+}>;
+
+export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;
+
+export type ProjectDirType = keyof ProjectConfig['dirTypes'];
+
+export type AnonymousAuthors = Readonly<Record<string, string>>;
+
+export type MonthColumns = Readonly<string[]>;

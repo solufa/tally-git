@@ -355,7 +355,7 @@ test('laravel', async () => {
   const untilYYMM = '2502';
   const result = await main({
     projectName: 'OSS Laravel',
-    targetDir: './tests/projects/laravel',
+    targetDir: 'tests/projects/laravel',
     outputDir,
     sinceYYMM,
     untilYYMM,
@@ -382,7 +382,7 @@ test('laravel', async () => {
 test('filteredAuthorLogとoutlierCommitsを合算するとauthorLogと一致する', async () => {
   const outputDir = './tests/assets';
   const result = await main({
-    targetDir: './tests/projects/laravel',
+    targetDir: 'tests/projects/laravel',
     outputDir,
     sinceYYMM: '2403',
     untilYYMM: '2502',
@@ -581,7 +581,7 @@ test('generateCsvDataForPromptが正しいCSVデータを生成する', async ()
   // 実際のauthorLogデータを使用したテスト
   const outputDir = './tests/assets';
   const result = await main({
-    targetDir: './tests/projects/laravel',
+    targetDir: 'tests/projects/laravel',
     outputDir,
     sinceYYMM: '2403',
     untilYYMM: '2502',

@@ -49,7 +49,7 @@ const run = async (): Promise<void> => {
 
   const laravelResult = await main({
     projectName: 'OSS Laravel',
-    targetDir: './tests/projects/laravel',
+    targetDir: 'tests/projects/laravel',
     outputDir: 'tests/assets',
     sinceYYMM: '2403',
     untilYYMM: '2502',

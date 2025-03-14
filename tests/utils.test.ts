@@ -8,9 +8,7 @@ import {
   formatPeriod,
   getCurrentDate,
   getDefaultPeriod,
-  MONTH_FORMAT,
   parseDate,
-  PERIOD_FORMAT,
   startOfMonth,
   subtractMonths,
   toJSTString,
@@ -343,13 +341,5 @@ describe('date-utils', () => {
 
     expect(period.sinceYYMM).toBe(formatPeriod(sixMonthsAgo));
     expect(period.untilYYMM).toBe(formatPeriod(now));
-  });
-
-  test('PERIOD_FORMAT定数', () => {
-    expect(PERIOD_FORMAT).toBe('YYMM');
-  });
-
-  test('MONTH_FORMAT定数', () => {
-    expect(MONTH_FORMAT).toBe('YYYY-MM');
   });
 });

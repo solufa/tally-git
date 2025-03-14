@@ -68,6 +68,7 @@ export const main = async (
     option.projectName ?? dirName,
     outlierCommits,
     projectConfig,
+    dirMetrics,
   );
 
   return {

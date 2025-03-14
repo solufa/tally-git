@@ -6,8 +6,9 @@ import { ActivityChartPage, CodeVsTestChartPage } from './pdf-pages/chart-page';
 import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
+import { ScatterPlotPage } from './pdf-pages/scatter-plot-page';
 import { SummaryPage } from './pdf-pages/summary-page';
-import type { AuthorLog, CommitDetail, MonthColumns, ProjectConfig } from './types';
+import type { AuthorLog, CommitDetail, DirMetrics, MonthColumns, ProjectConfig } from './types';
 
 export const toPdf = async (
   authorLog: AuthorLog,
@@ -15,6 +16,7 @@ export const toPdf = async (
   projectName: string,
   outlierCommits: CommitDetail[],
   projectConfig: ProjectConfig,
+  dirMetrics: DirMetrics,
 ): Promise<Buffer> => {
   const {
     sortedAuthors,
@@ -52,6 +54,11 @@ export const toPdf = async (
       {dirTypesWithTests.includes('backend') && (
         <PdfLayout projectName={projectName} monthColumns={monthColumns}>
           <CodeVsTestChartPage monthColumns={monthColumns} authorLog={authorLog} />
+        </PdfLayout>
+      )}
+      {dirMetrics.backend && (
+        <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+          <ScatterPlotPage fileMetrics={dirMetrics.backend} />
         </PdfLayout>
       )}
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>

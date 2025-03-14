@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { projectConfigValidator } from './validators';
+import type { dirTypeValidator, projectConfigValidator } from './validators';
 
 export type Insertions = Readonly<{
   frontend?: { code: number; test?: number };
@@ -36,6 +36,8 @@ export type LogState = Readonly<{
   skipCurrentCommit: boolean;
   lastHash: string | null;
 }>;
+
+export type DirType = Readonly<z.infer<typeof dirTypeValidator>>;
 
 export type ProjectConfig = Readonly<z.infer<typeof projectConfigValidator>>;
 

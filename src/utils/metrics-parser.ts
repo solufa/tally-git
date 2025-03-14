@@ -4,27 +4,27 @@ import { condition } from './condition';
 
 type LineType = 'empty' | 'filename' | 'header' | 'separator' | 'functionMetrics';
 
-function isEmptyLine(line: string): boolean {
+export function isEmptyLine(line: string): boolean {
   return line === '';
 }
 
-function isFilenameLine(line: string): boolean {
+export function isFilenameLine(line: string): boolean {
   return line.length > 0 && !line.includes('|') && !line.includes('+');
 }
 
-function isHeaderLine(line: string): boolean {
+export function isHeaderLine(line: string): boolean {
   return line.includes('function') && line.includes('fields') && line.includes('cyclo');
 }
 
-function isSeparatorLine(line: string): boolean {
+export function isSeparatorLine(line: string): boolean {
   return line.includes('---') && line.includes('+');
 }
 
-function isFunctionMetricLine(line: string): boolean {
+export function isFunctionMetricLine(line: string): boolean {
   return line.includes('|');
 }
 
-function getLineType(line: string): LineType {
+export function getLineType(line: string): LineType {
   const result = [
     [isEmptyLine(line), 'empty'],
     [isFilenameLine(line), 'filename'],
@@ -38,17 +38,17 @@ function getLineType(line: string): LineType {
   return result[1] as LineType;
 }
 
-function safeParseInt(value: string | undefined): number {
+export function safeParseInt(value: string | undefined): number {
   if (!value) return 0;
   const parsed = parseInt(value, 10);
   return isNaN(parsed) ? 0 : parsed;
 }
 
-function splitLine(line: string): string[] {
+export function splitLine(line: string): string[] {
   return line.split('|').map((part) => part.trim());
 }
 
-function parseFunctionMetricLine(line: string): FunctionMetric {
+export function parseFunctionMetricLine(line: string): FunctionMetric {
   const parts = splitLine(line);
   return {
     name: parts[0] || '',
@@ -60,24 +60,24 @@ function parseFunctionMetricLine(line: string): FunctionMetric {
   };
 }
 
-function addCurrentFileToResult(result: FileMetric[], currentFile: FileMetric | null): void {
+export function addCurrentFileToResult(result: FileMetric[], currentFile: FileMetric | null): void {
   if (currentFile) {
     result.push(currentFile);
   }
 }
 
-function createFileMetric(filename: string): FileMetric {
+export function createFileMetric(filename: string): FileMetric {
   return { filename, functions: [] };
 }
 
-function addFunctionToFile(currentFile: FileMetric | null, line: string): void {
+export function addFunctionToFile(currentFile: FileMetric | null, line: string): void {
   if (currentFile) {
     const functionMetrics = parseFunctionMetricLine(line);
     currentFile.functions.push(functionMetrics);
   }
 }
 
-function processLine(
+export function processLine(
   line: string,
   result: FileMetric[],
   currentFile: FileMetric | null,

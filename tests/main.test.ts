@@ -17,16 +17,3 @@ test('readProjectConfig - 設定ファイルが存在しない場合はデフォ
   // モックをリセット
   existsSyncSpy.mockRestore();
 });
-
-// mainのテストは複雑なため、単純なテストに置き換え
-test('main - ディレクトリパスの処理', () => {
-  // at(-1)メソッドのテスト
-  const path1 = 'path/to/project';
-  const parts1 = path1.split('/');
-  expect(parts1.at(-1)).toBe('project');
-
-  // 空のパスの場合
-  const path2 = '';
-  const parts2 = path2.split('/');
-  expect(parts2.at(-1) ?? '').toBe('');
-});

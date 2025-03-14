@@ -65,6 +65,9 @@ Readonlyが付与されている型は実質DeepReadonlyとして扱う。
 
 複雑度の増加を防ぐため、switch文の代わりに`src/utils/condition.ts`のcondition関数を使う。
 
+テストカバレッジ4項目全て100%を維持する必要があるため、分岐の少ないコードを選んでください。
+絶対に通過しないことがわかっている分岐には`import assert from 'assert'`を使用してください。
+
 ### Reactコンポーネント
 
 Reactコンポーネントのロジックはテスト可能なように`src/logic`に関数を分離する。
@@ -115,7 +118,7 @@ export * from '../baz';
 
 - `npm run fix:lint` - ESLintとPrettierによるコード整形（変更後に必ず実行）
 - `npm run typecheck` - tscによる型検査の実行
-- `npm test` - テストの実行（変更が既存の機能を壊していないか確認）
+- `npm test` - テストの実行（変更が既存の機能を壊していないか確認）（テストを全てパスしたらカバレッジが表示される）
 - `npm start` - プロジェクトの実行（CSV/PDF生成の確認）
 
 ## コミュニケーションルール

@@ -9,15 +9,16 @@ export const findOutlierCommits = (commitDetails: Readonly<CommitDetail[]>): Com
   });
 };
 
-// codeフィールドを差し引く関数
-const subtractCode = (baseCode: number | undefined, subtractCode: number | undefined): number => {
+export const subtractCode = (
+  baseCode: number | undefined,
+  subtractCode: number | undefined,
+): number => {
   if (baseCode === undefined) return 0;
   if (subtractCode === undefined) return baseCode;
   return Math.max(0, baseCode - subtractCode);
 };
 
-// testフィールドを差し引く関数
-const subtractTest = (
+export const subtractTest = (
   baseTest: number | undefined,
   subtractTest: number | undefined,
 ): number | undefined => {
@@ -27,8 +28,7 @@ const subtractTest = (
   return result > 0 ? result : undefined;
 };
 
-// 入力チェックを行う関数
-const checkInputs = (
+export const checkInputs = (
   base?: { code: number; test?: number },
   subtract?: { code: number; test?: number },
 ): { base?: { code: number; test?: number }; subtract?: { code: number; test?: number } } => {
@@ -38,8 +38,7 @@ const checkInputs = (
   return { base, subtract };
 };
 
-// 新しい値を作成する関数
-const createNewValues = (
+export const createNewValues = (
   base: { code: number; test?: number },
   subtract: { code: number; test?: number },
 ): { newCode: number; newTest: number | undefined } => {
@@ -48,8 +47,7 @@ const createNewValues = (
   return { newCode, newTest };
 };
 
-// 結果を作成する関数
-const createResult = (
+export const createResult = (
   newCode: number,
   newTest: number | undefined,
 ): { code: number; test?: number } | undefined => {
@@ -57,8 +55,7 @@ const createResult = (
   return { code: newCode, test: newTest };
 };
 
-// frontendフィールドを処理する関数
-const processFrontend = (
+export const processFrontend = (
   base?: { code: number; test?: number },
   subtract?: { code: number; test?: number },
 ): { code: number; test?: number } | undefined => {
@@ -71,29 +68,25 @@ const processFrontend = (
   return createResult(newCode, newTest);
 };
 
-// backendフィールドを処理する関数
-const processBackend = (
+export const processBackend = (
   base?: { code: number; test?: number },
   subtract?: { code: number; test?: number },
 ): { code: number; test?: number } | undefined => {
   return processFrontend(base, subtract);
 };
 
-// infraフィールドを処理する関数
-const processInfra = (
+export const processInfra = (
   base?: { code: number; test?: number },
   subtract?: { code: number; test?: number },
 ): { code: number; test?: number } | undefined => {
   return processFrontend(base, subtract);
 };
 
-// othersフィールドを処理する関数
-const processOthers = (baseOthers: number, subtractOthers: number): number => {
+export const processOthers = (baseOthers: number, subtractOthers: number): number => {
   return Math.max(0, baseOthers - subtractOthers);
 };
 
-// 挿入行数を差し引く関数
-const subtractInsertions = (base: Insertions, subtract: Insertions): Insertions => {
+export const subtractInsertions = (base: Insertions, subtract: Insertions): Insertions => {
   return {
     frontend: processFrontend(base.frontend, subtract.frontend),
     backend: processBackend(base.backend, subtract.backend),
@@ -102,8 +95,7 @@ const subtractInsertions = (base: Insertions, subtract: Insertions): Insertions 
   };
 };
 
-// 月データを更新する関数
-const updateMonthData = (
+export const updateMonthData = (
   monthData: CommitData,
   insertions: Insertions,
   deletions: number,
@@ -115,8 +107,7 @@ const updateMonthData = (
   };
 };
 
-// 著者データを更新する関数
-const updateAuthorData = (
+export const updateAuthorData = (
   authorData: Record<string, CommitData | undefined>,
   YM: string,
   monthData: CommitData,

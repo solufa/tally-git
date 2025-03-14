@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { exec } from 'child_process';
 import type { Dayjs } from 'dayjs';
 import fs from 'fs';
@@ -57,7 +58,10 @@ export const main = async (
   const monthColumns = monthIndices.map((i) => formatDate(addMonths(startDate, i), MONTH_FORMAT));
   const dirMetrics = await getDirMetrics(option.targetDir, projectConfig);
   const csvContent = toCsv(filteredAuthorLog, monthColumns, outlierCommits, dirMetrics);
-  const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1) ?? '';
+  const dirName = option.targetDir.replace(/\/$/, '').split('/').at(-1);
+
+  assert(dirName);
+
   const pdfContent = await toPdf(
     filteredAuthorLog,
     monthColumns,

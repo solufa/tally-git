@@ -15,6 +15,197 @@ import {
   subtractMonths,
   toJSTString,
 } from '../src/utils/date-utils';
+import { metricsParser } from '../src/utils/metrics-parser';
+
+describe('metrics-parser', () => {
+  test('空のテキストを処理できる', () => {
+    const result = metricsParser('');
+    expect(result).toEqual([]);
+  });
+
+  test('1つのファイルと1つの関数を処理できる', () => {
+    const text = `src/index.ts
+
+ function      | fields | cyclo | cognitive | lines | loc
+---------------+--------+-------+-----------+-------+-----
+ run           |      0 |     3 |         4 |    68 |  50
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/index.ts');
+    expect(result[0]!.functions).toHaveLength(1);
+    expect(result[0]!.functions[0]!).toEqual({
+      name: 'run',
+      fields: 0,
+      cyclo: 3,
+      cognitive: 4,
+      lines: 68,
+      loc: 50,
+    });
+  });
+
+  test('複数のファイルと複数の関数を処理できる', () => {
+    const text = `src/index.ts
+
+ function      | fields | cyclo | cognitive | lines | loc
+---------------+--------+-------+-----------+-------+-----
+ run           |      0 |     3 |         4 |    68 |  50
+ parsePeriod   |      0 |     2 |         2 |     5 |   4
+
+src/utils/date-utils.ts
+
+ function         | fields | cyclo | cognitive | lines | loc
+------------------+--------+-------+-----------+-------+-----
+ parseDate        |      0 |     1 |         0 |     3 |   3
+ getCurrentDate   |      0 |     1 |         0 |     3 |   3
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(2);
+
+    expect(result[0]!.filename).toBe('src/index.ts');
+    expect(result[0]!.functions).toHaveLength(2);
+    expect(result[0]!.functions[0]!).toEqual({
+      name: 'run',
+      fields: 0,
+      cyclo: 3,
+      cognitive: 4,
+      lines: 68,
+      loc: 50,
+    });
+    expect(result[0]!.functions[1]!).toEqual({
+      name: 'parsePeriod',
+      fields: 0,
+      cyclo: 2,
+      cognitive: 2,
+      lines: 5,
+      loc: 4,
+    });
+
+    expect(result[1]!.filename).toBe('src/utils/date-utils.ts');
+    expect(result[1]!.functions).toHaveLength(2);
+    expect(result[1]!.functions[0]!).toEqual({
+      name: 'parseDate',
+      fields: 0,
+      cyclo: 1,
+      cognitive: 0,
+      lines: 3,
+      loc: 3,
+    });
+    expect(result[1]!.functions[1]!).toEqual({
+      name: 'getCurrentDate',
+      fields: 0,
+      cyclo: 1,
+      cognitive: 0,
+      lines: 3,
+      loc: 3,
+    });
+  });
+
+  test('不正な形式のテキストを処理できる', () => {
+    const text = `不正な形式のテキスト`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('不正な形式のテキスト');
+    expect(result[0]!.functions).toHaveLength(0);
+  });
+
+  test('ヘッダーと区切り線のみのファイルを処理できる', () => {
+    const text = `src/empty.ts
+
+ function      | fields | cyclo | cognitive | lines | loc
+---------------+--------+-------+-----------+-------+-----
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/empty.ts');
+    expect(result[0]!.functions).toHaveLength(0);
+  });
+
+  test('ヘッダーのないファイルを処理できる', () => {
+    const text = `src/no-header.ts
+
+ run           |      0 |     3 |         4 |    68 |  50
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/no-header.ts');
+    // ヘッダーがない場合は関数が認識されないことを期待
+    expect(result[0]!.functions).toHaveLength(0);
+  });
+
+  test('区切り線のないファイルを処理できる', () => {
+    const text = `src/no-separator.ts
+
+ function      | fields | cyclo | cognitive | lines | loc
+ run           |      0 |     3 |         4 |    68 |  50
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/no-separator.ts');
+    expect(result[0]!.functions).toHaveLength(1);
+    expect(result[0]!.functions[0]!.name).toBe('run');
+  });
+
+  test('複数の空行を含むファイルを処理できる', () => {
+    const text = `src/multiple-empty-lines.ts
+
+
+
+ function      | fields | cyclo | cognitive | lines | loc
+---------------+--------+-------+-----------+-------+-----
+ run           |      0 |     3 |         4 |    68 |  50
+
+
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/multiple-empty-lines.ts');
+    expect(result[0]!.functions).toHaveLength(1);
+  });
+
+  test('空のテキストを処理できる（再テスト）', () => {
+    const result = metricsParser('');
+    expect(result).toEqual([]);
+  });
+
+  test('ファイル名のみのテキストを処理できる', () => {
+    const result = metricsParser('src/filename-only.ts');
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/filename-only.ts');
+    expect(result[0]!.functions).toHaveLength(0);
+  });
+
+  test('不正な形式の関数メトリクス行を処理できる', () => {
+    const text = `src/invalid-metrics.ts
+
+ function      | fields | cyclo | cognitive | lines | loc
+---------------+--------+-------+-----------+-------+-----
+ run           |      x |     y |         z |    68 |  50
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/invalid-metrics.ts');
+    expect(result[0]!.functions).toHaveLength(1);
+    expect(result[0]!.functions[0]!.name).toBe('run');
+    expect(result[0]!.functions[0]!.fields).toBe(0);
+    expect(result[0]!.functions[0]!.cyclo).toBe(0);
+    expect(result[0]!.functions[0]!.cognitive).toBe(0);
+  });
+
+  test('名前のない関数メトリクス行を処理できる', () => {
+    const text = `src/no-name-function.ts
+
+ function      | fields | cyclo | cognitive | lines | loc
+---------------+--------+-------+-----------+-------+-----
+               |      1 |     2 |         3 |     4 |   5
+`;
+    const result = metricsParser(text);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.filename).toBe('src/no-name-function.ts');
+    expect(result[0]!.functions).toHaveLength(1);
+    expect(result[0]!.functions[0]!.name).toBe('');
+  });
+});
 
 describe('date-utils', () => {
   test('parseDate - 基本的なケース', () => {

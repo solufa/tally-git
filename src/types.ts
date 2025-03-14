@@ -54,3 +54,14 @@ export type ProjectDirType = keyof ProjectConfig['dirTypes'];
 export type AnonymousAuthors = Readonly<Record<string, string>>;
 
 export type MonthColumns = Readonly<string[]>;
+
+export type FunctionMetrics = Readonly<{
+  name: string;
+  fields: number;
+  cyclo: number;
+  cognitive: number;
+  lines: number;
+  loc: number;
+}>;
+
+export type FileMetrics = Readonly<{ filename: string; functions: FunctionMetrics[] }>;

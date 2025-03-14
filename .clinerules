@@ -62,6 +62,8 @@ Readonlyが付与されている型は実質DeepReadonlyとして扱う。
 
 トップレベルでは関数宣言を行う。他のファイルから参照されてない関数はexportしない。
 
+複雑度の増加を防ぐため、switch文の代わりに`src/utils/condition.ts`のcondition関数を使う。
+
 ### Reactコンポーネント
 
 Reactコンポーネントのロジックはテスト可能なように`src/logic`に関数を分離する。

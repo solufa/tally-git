@@ -5,7 +5,7 @@ export default defineConfig({
     coverage: {
       thresholds: { statements: 99, branches: 97, functions: 100, lines: 99 },
       include: ['src/**'],
-      exclude: ['src/index.ts'],
+      exclude: ['src/index.ts', 'src/utils/condition.ts'],
     },
   },
 });

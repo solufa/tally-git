@@ -125,6 +125,7 @@ describe('ScatterPlotPage', () => {
       frontend: [
         {
           filePath: 'frontend.ts',
+          classes: 0,
           funcs: 1,
           fields: 1,
           cyclo: 2,
@@ -137,6 +138,7 @@ describe('ScatterPlotPage', () => {
       backend: [
         {
           filePath: 'backend.ts',
+          classes: 1,
           funcs: 1,
           fields: 2,
           cyclo: 3,
@@ -218,6 +220,7 @@ describe('ScatterPlotPage', () => {
       frontend: [
         {
           filePath: 'frontend.ts',
+          classes: 0,
           funcs: 1,
           fields: 1,
           cyclo: 2,
@@ -291,6 +294,7 @@ describe('ScatterPlotPage', () => {
       backend: [
         {
           filePath: 'backend.ts',
+          classes: 1,
           funcs: 1,
           fields: 2,
           cyclo: 3,

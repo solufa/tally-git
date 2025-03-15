@@ -20,6 +20,7 @@ test('toCsv - 基本的なケース', () => {
     backend: [
       {
         filePath: 'backend.js',
+        classes: 1,
         funcs: 1,
         fields: 2,
         cyclo: 3,
@@ -60,6 +61,7 @@ test('toCsv - フロントエンドのディレクトリメトリクスがある
     frontend: [
       {
         filePath: 'frontend.js',
+        classes: 0,
         funcs: 1,
         fields: 2,
         cyclo: 3,
@@ -77,7 +79,7 @@ test('toCsv - フロントエンドのディレクトリメトリクスがある
   expect(result).toContain(
     'ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数',
   );
-  expect(result).toContain('frontend.js,1,1,2,3,4,0,10,8');
+  expect(result).toContain('frontend.js,0,1,2,3,4,0,10,8');
 });
 
 test('toCsv - インフラのディレクトリメトリクスがある場合', () => {
@@ -93,6 +95,7 @@ test('toCsv - インフラのディレクトリメトリクスがある場合', 
     infra: [
       {
         filePath: 'infra.js',
+        classes: 0,
         funcs: 1,
         fields: 2,
         cyclo: 3,
@@ -110,7 +113,7 @@ test('toCsv - インフラのディレクトリメトリクスがある場合', 
   expect(result).toContain(
     'ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数',
   );
-  expect(result).toContain('infra.js,1,1,2,3,4,0,10,8');
+  expect(result).toContain('infra.js,0,1,2,3,4,0,10,8');
 });
 
 test('toCsv - 外れ値のコミットがある場合', () => {
@@ -150,6 +153,7 @@ test('toCsv - すべてのディレクトリメトリクスがある場合', () 
     frontend: [
       {
         filePath: 'frontend.js',
+        classes: 0,
         funcs: 1,
         fields: 2,
         cyclo: 3,
@@ -162,6 +166,7 @@ test('toCsv - すべてのディレクトリメトリクスがある場合', () 
     backend: [
       {
         filePath: 'backend.js',
+        classes: 1,
         funcs: 1,
         fields: 3,
         cyclo: 4,
@@ -174,6 +179,7 @@ test('toCsv - すべてのディレクトリメトリクスがある場合', () 
     infra: [
       {
         filePath: 'infra.js',
+        classes: 0,
         funcs: 1,
         fields: 1,
         cyclo: 2,
@@ -188,9 +194,9 @@ test('toCsv - すべてのディレクトリメトリクスがある場合', () 
   const result = toCsv(authorLog, monthColumns, outlierCommits, dirMetrics);
 
   expect(result).toContain('フロントエンド');
-  expect(result).toContain('frontend.js,1,1,2,3,4,0,10,8');
+  expect(result).toContain('frontend.js,0,1,2,3,4,0,10,8');
   expect(result).toContain('バックエンド');
   expect(result).toContain('backend.js,1,1,3,4,5,0,15,12');
   expect(result).toContain('インフラ');
-  expect(result).toContain('infra.js,1,1,1,2,3,0,8,6');
+  expect(result).toContain('infra.js,0,1,1,2,3,0,8,6');
 });

@@ -47,6 +47,7 @@ describe('project-metrics', () => {
         return Promise.resolve([
           {
             filePath: 'test-dir/src/frontend/component.tsx',
+            classes: 0,
             funcs: 1,
             fields: 0,
             cyclo: 1,
@@ -88,6 +89,7 @@ describe('project-metrics', () => {
         return Promise.resolve([
           {
             filePath: 'test-dir/src/backend/api.ts',
+            classes: 1,
             funcs: 1,
             fields: 0,
             cyclo: 2,
@@ -129,6 +131,7 @@ describe('project-metrics', () => {
         return Promise.resolve([
           {
             filePath: 'test-dir/src/infra/config.ts',
+            classes: 0,
             funcs: 1,
             fields: 0,
             cyclo: 1,
@@ -170,6 +173,7 @@ describe('project-metrics', () => {
         return Promise.resolve([
           {
             filePath: 'test-dir/src/frontend/component.tsx',
+            classes: 0,
             funcs: 1,
             fields: 0,
             cyclo: 1,
@@ -183,6 +187,7 @@ describe('project-metrics', () => {
         return Promise.resolve([
           {
             filePath: 'test-dir/src/backend/api.ts',
+            classes: 1,
             funcs: 1,
             fields: 0,
             cyclo: 2,
@@ -196,6 +201,7 @@ describe('project-metrics', () => {
         return Promise.resolve([
           {
             filePath: 'test-dir/src/infra/config.ts',
+            classes: 0,
             funcs: 1,
             fields: 0,
             cyclo: 1,
@@ -239,6 +245,7 @@ describe('project-metrics', () => {
     vi.mocked(getDirectoryMetrics).mockResolvedValue([
       {
         filePath: 'test-dir/src/frontend/component.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -249,6 +256,7 @@ describe('project-metrics', () => {
       },
       {
         filePath: 'test-dir/tests/frontend/component.test.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -283,6 +291,7 @@ describe('project-metrics', () => {
     vi.mocked(getDirectoryMetrics).mockResolvedValue([
       {
         filePath: 'test-dir/src/frontend/component.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -293,6 +302,7 @@ describe('project-metrics', () => {
       },
       {
         filePath: 'test-dir/src/frontend/legacy/old-component.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -303,6 +313,7 @@ describe('project-metrics', () => {
       },
       {
         filePath: 'test-dir/src/frontend/vendor/third-party.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -340,6 +351,7 @@ describe('project-metrics', () => {
     vi.mocked(getDirectoryMetrics).mockResolvedValue([
       {
         filePath: 'test-dir/src/frontend/component.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -350,6 +362,7 @@ describe('project-metrics', () => {
       },
       {
         filePath: 'test-dir/tests/frontend/component.test.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,
@@ -360,6 +373,7 @@ describe('project-metrics', () => {
       },
       {
         filePath: 'test-dir/src/frontend/legacy/old-component.tsx',
+        classes: 0,
         funcs: 1,
         fields: 0,
         cyclo: 1,

@@ -7,6 +7,7 @@ test('prepareComplexityTableData - 通常のデータで正しく動作する', 
     frontend: [
       {
         filePath: 'frontend.js',
+        classes: 0,
         funcs: 1,
         fields: 1,
         cyclo: 2,
@@ -19,6 +20,7 @@ test('prepareComplexityTableData - 通常のデータで正しく動作する', 
     backend: [
       {
         filePath: 'backend.js',
+        classes: 1,
         funcs: 1,
         fields: 1,
         cyclo: 2,
@@ -69,6 +71,7 @@ test('prepareComplexityTableData - 複雑度でソートされる', () => {
     backend: [
       {
         filePath: 'low.js',
+        classes: 0,
         funcs: 1,
         fields: 1,
         cyclo: 1,
@@ -79,6 +82,7 @@ test('prepareComplexityTableData - 複雑度でソートされる', () => {
       },
       {
         filePath: 'high.js',
+        classes: 0,
         funcs: 1,
         fields: 1,
         cyclo: 5,
@@ -89,6 +93,7 @@ test('prepareComplexityTableData - 複雑度でソートされる', () => {
       },
       {
         filePath: 'medium.js',
+        classes: 0,
         funcs: 1,
         fields: 1,
         cyclo: 3,
@@ -119,6 +124,7 @@ test('prepareComplexityTableData - 上位10件のみ返される', () => {
   // 11個のファイルを作成
   const files: FileMetric[] = Array.from({ length: 11 }, (_, i) => ({
     filePath: `file${i}.js`,
+    classes: 0,
     funcs: 1,
     fields: 1,
     cyclo: 10 - i, // 降順になるように

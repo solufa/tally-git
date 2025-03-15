@@ -57,6 +57,7 @@ export type ProjectConfig = DeepReadonly<z.infer<typeof projectConfigValidator>>
 
 export type FileMetric = DeepReadonly<{
   filePath: string;
+  classes: number;
   funcs: number;
   fields: number;
   cyclo: number;

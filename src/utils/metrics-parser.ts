@@ -47,6 +47,7 @@ export function parseFileMetricLine(line: string): FileMetric {
 
   return {
     filePath: parts[0],
+    classes: safeParseInt(parts[1]),
     funcs: safeParseInt(parts[2]),
     fields: safeParseInt(parts[3]),
     cyclo: safeParseInt(parts[4]),
@@ -65,7 +66,17 @@ export function addCurrentFileToResult(
 }
 
 export function createFileMetric(filePath: string): FileMetric {
-  return { filePath, funcs: 0, fields: 0, cyclo: 0, complex: 0, LCOM: 0, lines: 0, LOC: 0 };
+  return {
+    filePath,
+    classes: 0,
+    funcs: 0,
+    fields: 0,
+    cyclo: 0,
+    complex: 0,
+    LCOM: 0,
+    lines: 0,
+    LOC: 0,
+  };
 }
 
 export function processLine(

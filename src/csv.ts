@@ -67,7 +67,7 @@ function formatDirMetrics(dirMetrics: DirMetrics): string {
 ${dirMetrics.frontend
   .map(
     (file) =>
-      `${file.filePath},1,${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
+      `${file.filePath},${file.classes},${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
   )
   .join('\n')}`);
   }
@@ -78,7 +78,7 @@ ${dirMetrics.frontend
 ${dirMetrics.backend
   .map(
     (file) =>
-      `${file.filePath},1,${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
+      `${file.filePath},${file.classes},${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
   )
   .join('\n')}`);
   }
@@ -89,7 +89,7 @@ ${dirMetrics.backend
 ${dirMetrics.infra
   .map(
     (file) =>
-      `${file.filePath},1,${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
+      `${file.filePath},${file.classes},${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
   )
   .join('\n')}`);
   }

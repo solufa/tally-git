@@ -63,6 +63,7 @@ test('parseFileMetricLine - 基本的なケース', () => {
   const result = parseFileMetricLine('src/index.ts | 1 | 2 | 0 | 5 | 6 | 0 | 73 | 54');
   expect(result).toEqual({
     filePath: 'src/index.ts',
+    classes: 1,
     funcs: 2,
     fields: 0,
     cyclo: 5,
@@ -77,6 +78,7 @@ test('parseFileMetricLine - 空の部分を含む場合', () => {
   const result = parseFileMetricLine('src/index.ts | | | | | | | |');
   expect(result).toEqual({
     filePath: 'src/index.ts',
+    classes: 0,
     funcs: 0,
     fields: 0,
     cyclo: 0,
@@ -91,6 +93,7 @@ test('createFileMetric - 基本的なケース', () => {
   const result = createFileMetric('src/utils/metrics-parser.ts');
   expect(result).toEqual({
     filePath: 'src/utils/metrics-parser.ts',
+    classes: 0,
     funcs: 0,
     fields: 0,
     cyclo: 0,

@@ -155,6 +155,7 @@ describe('toPdf', () => {
       backend: [
         {
           filePath: 'backend.js',
+          classes: 1,
           funcs: 1,
           fields: 1,
           cyclo: 2,
@@ -185,6 +186,7 @@ describe('toPdf', () => {
       frontend: [
         {
           filePath: 'frontend.js',
+          classes: 0,
           funcs: 1,
           fields: 1,
           cyclo: 2,

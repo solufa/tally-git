@@ -5,6 +5,7 @@ import {
   prepareComplexityScatterPlotData,
   prepareScatterPlotSvgData,
 } from '../src/logic/pdf-pages/scatter-plot-logic';
+import type { FileMetric } from '../src/types';
 
 describe('scatter-plot-logic', () => {
   describe('prepareComplexityScatterPlotData', () => {
@@ -12,6 +13,7 @@ describe('scatter-plot-logic', () => {
       const result = prepareComplexityScatterPlotData([
         {
           filePath: 'test.ts',
+          classes: 3,
           funcs: 2,
           fields: 3,
           cyclo: 2,
@@ -22,6 +24,7 @@ describe('scatter-plot-logic', () => {
         },
         {
           filePath: 'test2.ts',
+          classes: 4,
           funcs: 1,
           fields: 2,
           cyclo: 3,
@@ -196,8 +199,9 @@ describe('scatter-plot-logic', () => {
       margin: { top: 30, right: 30, bottom: 50, left: 60 },
     };
 
-    const backendFile = {
+    const backendFile: FileMetric = {
       filePath: 'backend.ts',
+      classes: 1,
       funcs: 1,
       fields: 1,
       cyclo: 2,
@@ -207,8 +211,9 @@ describe('scatter-plot-logic', () => {
       LOC: 8,
     };
 
-    const frontendFile = {
+    const frontendFile: FileMetric = {
       filePath: 'frontend.ts',
+      classes: 0,
       funcs: 1,
       fields: 2,
       cyclo: 3,

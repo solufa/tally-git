@@ -17,14 +17,8 @@ async function getMetricsForPath(
       );
     })
     .map((metric) => ({
+      ...metric,
       filePath: z.string().parse(metric.filePath.split(`${basePath}/`)[1]),
-      funcs: metric.funcs,
-      fields: metric.fields,
-      cyclo: metric.cyclo,
-      complex: metric.complex,
-      LCOM: metric.LCOM,
-      lines: metric.lines,
-      LOC: metric.LOC,
     }));
 }
 

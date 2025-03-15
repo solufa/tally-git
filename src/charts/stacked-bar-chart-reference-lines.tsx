@@ -1,8 +1,8 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
 import {
-  calculateReferenceLineLegendItems,
-  calculateReferenceLines,
+  calculateStackedBarChartReferenceLineLegendItems,
+  calculateStackedBarChartReferenceLines,
 } from '../logic/charts/stacked-bar-chart-reference-lines-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
 import type { ChartMargin, ChartReferenceLine } from '../types';
@@ -14,7 +14,13 @@ export function renderChartReferenceLines(
   chartHeight: number,
   chartWidth: number,
 ): readonly React.ReactNode[] {
-  const lines = calculateReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth);
+  const lines = calculateStackedBarChartReferenceLines(
+    referenceLines,
+    maxValue,
+    margin,
+    chartHeight,
+    chartWidth,
+  );
 
   return lines.map((line) => (
     <G key={line.key}>
@@ -34,7 +40,7 @@ export function renderChartReferenceLineLegend(
   chartWidth: number,
   contributorsLength: number,
 ): React.ReactNode {
-  const legendItems = calculateReferenceLineLegendItems(
+  const legendItems = calculateStackedBarChartReferenceLineLegendItems(
     referenceLines,
     margin,
     chartWidth,

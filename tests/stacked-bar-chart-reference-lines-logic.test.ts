@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import {
-  calculateReferenceLineLegendItems,
-  calculateReferenceLines,
+  calculateStackedBarChartReferenceLineLegendItems,
+  calculateStackedBarChartReferenceLines,
 } from '../src/logic/charts/stacked-bar-chart-reference-lines-logic';
 import type { ChartReferenceLine } from '../src/types';
 
@@ -16,7 +16,13 @@ test('calculateReferenceLines - 基本的なケース', () => {
   const chartHeight = 100;
   const chartWidth = 200;
 
-  const result = calculateReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth);
+  const result = calculateStackedBarChartReferenceLines(
+    referenceLines,
+    maxValue,
+    margin,
+    chartHeight,
+    chartWidth,
+  );
 
   expect(result).toHaveLength(2);
   expect(result[0]).toEqual({
@@ -49,7 +55,13 @@ test('calculateReferenceLines - maxValueを超える値は除外される', () =
   const chartHeight = 100;
   const chartWidth = 200;
 
-  const result = calculateReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth);
+  const result = calculateStackedBarChartReferenceLines(
+    referenceLines,
+    maxValue,
+    margin,
+    chartHeight,
+    chartWidth,
+  );
 
   expect(result).toHaveLength(1);
   expect(result[0]!.key).toBe('reference-line-0');
@@ -67,7 +79,7 @@ test('calculateReferenceLineLegendItems - 基本的なケース', () => {
   const contributorsLength = 3;
   const fontFamily = 'Arial';
 
-  const result = calculateReferenceLineLegendItems(
+  const result = calculateStackedBarChartReferenceLineLegendItems(
     referenceLines,
     margin,
     chartWidth,
@@ -113,7 +125,7 @@ test('calculateReferenceLineLegendItems - 開発者が0人の場合', () => {
   const contributorsLength = 0;
   const fontFamily = 'Arial';
 
-  const result = calculateReferenceLineLegendItems(
+  const result = calculateStackedBarChartReferenceLineLegendItems(
     referenceLines,
     margin,
     chartWidth,

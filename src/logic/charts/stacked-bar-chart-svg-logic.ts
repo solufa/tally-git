@@ -1,5 +1,6 @@
 import assert from 'assert';
 import type { ChartMargin, Contributors } from '../../types';
+import { isValidContributor } from '../../utils/chart-utils';
 
 export type BarData = Readonly<{
   key: string;
@@ -56,10 +57,6 @@ export function createStackedBarData(
     height: barHeight,
     fill: getContributorColor(contributor),
   };
-}
-
-export function isValidContributor(value: number, contributor: string | undefined): boolean {
-  return value > 0 && typeof contributor === 'string';
 }
 
 export function processContributorBar(

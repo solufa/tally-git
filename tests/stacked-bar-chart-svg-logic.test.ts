@@ -4,10 +4,10 @@ import {
   calculateBarSpacing,
   calculateBarWidth,
   createStackedBarData,
-  isValidContributor,
   prepareStackedBarChartSvgData,
   processContributorBar,
 } from '../src/logic/charts/stacked-bar-chart-svg-logic';
+import { isValidContributor } from '../src/utils/chart-utils';
 
 test('calculateBarWidth - 基本的なケース', () => {
   const chartWidth = 500;

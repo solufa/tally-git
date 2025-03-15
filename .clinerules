@@ -45,28 +45,50 @@ ESLintエラーを解消した後、必ず `npm run typecheck` を実行し、�
 interfaceを使わず、typeで型を定義する。
 型アサーション（as キーワード）は使用禁止。
 
-複数のコンポーネントから参照する型は `src/types.ts` に定義する。
 ここに定義するオブジェクトの型には全てReadonlyを付与する。
 配列やタプルにはreadonly修飾子を付与する。
 Readonlyが付与されている型は実質DeepReadonlyとして扱う。
-外部ライブラリからimportした型にReadonlyを付与してはいけない。
-`src/types.ts` からimportした型にはすでにReadonlyが付与されているので追加のReadonlyを付与してはいけない。
+importした型にはすでにReadonlyが付与されているので追加のReadonlyを付与してはいけない。
+importした型で配列を定義するときはreadonlyを付与する。
+
+```ts
+import { ImportedType } from './types';
+
+// ここにコメントを書かない
+type ObjectType = Readonly<{
+  text: string;
+  numberArray: readonly number[];
+  importeds: readonly ImportedType[];
+}>;
+
+// ここにコメントを書かない
+type ArrayType = readonly string[];
+
+// ここにコメントを書かない
+type ImportedTypes = readonly ImportedType[];
+```
 
 ### 関数
 
-ライブラリに強制されない限り、クラスを使わず関数を使う。
+ライブラリに強制されない限り、クラスを使わず関数宣言を使う。
 関数自体を説明すると認知コストが上がるので関数宣言の上にコメントを書いてはいけない。
 
-引数で配列を受け取る場合はReadonlyを付与する。
+配列の引数と返り値にはreadonly修飾子を、オブジェクトの引数と返り値にはReadonlyを付与する。
 デフォルト引数はESLintの複雑度計測対象に含まれているので、エラーを回避するため極力使用しない。
 すでにReadonlyな型にReadonlyを追加で無駄に付与してはいけない。
+このプロジェクトのTypeScriptバージョンは5.7なので型述語の型推論が可能である。
 
-トップレベルでは関数宣言を行う。他のファイルから参照されてない関数はexportしない。
+```ts
+// ここにコメントを書かない
+function filterByNumber(values: readonly (string | number)[]): readonly number[] {
+  return values.filter(val => typeof val === 'number');
+}
+```
 
 複雑度の増加を防ぐため、switch文の代わりに`src/utils/condition.ts`のcondition関数を使う。
 
-テストカバレッジ4項目全て100%を維持する必要があるため、分岐の少ないコードを選んでください。
-絶対に通過しないことがわかっている分岐には`import assert from 'assert'`を使用してください。
+テストカバレッジ4項目全て100%を維持する必要があるため、分岐の少ないコードを選ぶ。
+絶対に通過しないことがわかっている分岐には`import assert from 'assert'`を使用する。
 
 ### Reactコンポーネント
 
@@ -89,6 +111,7 @@ Reactコンポーネントのロジックはテスト可能なように`src/logi
 - 外部APIや仕様に関する重要な情報
 
 変数名や関数名で意図を明確に表現し、コードの自己説明性を高める努力を優先する。
+既存の関数を別ファイルに分離した際などにもとの場所にコメントを書かない。
 
 ### テストコード
 
@@ -112,7 +135,7 @@ export * from '../bar';
 export * from '../baz';
 ```
 
-1ファイルに対して行う変更はまとめて1回で生成する。
+1ファイルに対して行う変更はwrite_to_fileを使用してまとめて1回で生成する。
 
 ## テストと検証コマンド
 

@@ -120,13 +120,6 @@ describe('getGitLog', () => {
     await git
       .env({ GIT_AUTHOR_DATE: date20250302, GIT_COMMITTER_DATE: date20250302 })
       .commit('Commit from 2025-03-02');
-
-    // コミットログを確認
-    const log = await git.log();
-    console.log(
-      'Git log:',
-      log.all.map((commit) => ({ hash: commit.hash, date: commit.date, message: commit.message })),
-    );
   });
 
   afterAll(() => {
@@ -138,16 +131,11 @@ describe('getGitLog', () => {
   test('2024-12から2025-01までのコミットを取得できる', async () => {
     const startDate = parseDate('2024-12-01').startOf('day');
     const endDate = parseDate('2025-01-31').endOf('day');
-
     const log = await getGitLog(testRepoPath, startDate, endDate);
-    console.log('2024-12から2025-01までのログ:', log);
-
     const commits = log
       .split('\n')
       .map((line) => parseGitLogLine(line))
       .filter((commit) => commit !== null);
-
-    console.log('2024-12から2025-01までのコミット:', commits);
 
     expect(commits).toHaveLength(6);
     expect(commits.every((commit) => commit.YM === '2024-12' || commit.YM === '2025-01')).toBe(
@@ -158,16 +146,11 @@ describe('getGitLog', () => {
   test('2025-01から2025-02までのコミットを取得できる', async () => {
     const startDate = parseDate('2025-01-01').startOf('day');
     const endDate = parseDate('2025-02-28').endOf('day');
-
     const log = await getGitLog(testRepoPath, startDate, endDate);
-    console.log('2025-01から2025-02までのログ:', log);
-
     const commits = log
       .split('\n')
       .map((line) => parseGitLogLine(line))
       .filter((commit) => commit !== null);
-
-    console.log('2025-01から2025-02までのコミット:', commits);
 
     expect(commits).toHaveLength(6);
     expect(commits.every((commit) => commit.YM === '2025-01' || commit.YM === '2025-02')).toBe(
@@ -178,16 +161,11 @@ describe('getGitLog', () => {
   test('2024-11から2024-12までのコミットを取得できる', async () => {
     const startDate = parseDate('2024-11-01').startOf('day');
     const endDate = parseDate('2024-12-31').endOf('day');
-
     const log = await getGitLog(testRepoPath, startDate, endDate);
-    console.log('2024-11から2024-12までのログ:', log);
-
     const commits = log
       .split('\n')
       .map((line) => parseGitLogLine(line))
       .filter((commit) => commit !== null);
-
-    console.log('2024-11から2024-12までのコミット:', commits);
 
     expect(commits).toHaveLength(4);
     expect(commits.every((commit) => commit.YM === '2024-11' || commit.YM === '2024-12')).toBe(

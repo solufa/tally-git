@@ -1,12 +1,12 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import type { XAxisProps, YAxisProps } from '../logic/charts/stacked-bar-chart-utils-logic';
 import {
-  calculateLegendItems,
-  calculateXAxisLabels,
-  calculateYAxisLabels,
+  calculateStackedBarChartLegendItems,
+  calculateStackedBarChartXAxisLabels,
+  calculateStackedBarChartYAxisLabels,
 } from '../logic/charts/stacked-bar-chart-utils-logic';
 import type { ChartMargin, Contributors } from '../types';
+import type { XAxisProps, YAxisProps } from '../utils/chart-axis-types';
 import { getContributorColor } from './color-utils';
 
 export type StackedBarChartProps = {
@@ -60,7 +60,13 @@ export function renderXAxisLabels(
   chartHeight: number,
   chartWidth: number,
 ): React.ReactNode[] {
-  const xAxisLabels = calculateXAxisLabels(labels, barWidth, margin, chartHeight, chartWidth);
+  const xAxisLabels = calculateStackedBarChartXAxisLabels(
+    labels,
+    barWidth,
+    margin,
+    chartHeight,
+    chartWidth,
+  );
 
   return xAxisLabels.map((labelData) => (
     <G key={labelData.key}>
@@ -91,7 +97,12 @@ export function renderYAxisLabels(
   chartHeight: number,
   chartWidth?: number,
 ): React.ReactNode[] {
-  const yAxisLabels = calculateYAxisLabels(maxValue, margin, chartHeight, chartWidth);
+  const yAxisLabels = calculateStackedBarChartYAxisLabels(
+    maxValue,
+    margin,
+    chartHeight,
+    chartWidth,
+  );
 
   return yAxisLabels.map((labelData) => (
     <G key={labelData.key}>
@@ -124,7 +135,12 @@ export function renderLegend(
   margin: ChartMargin,
   chartWidth: number,
 ): React.ReactNode {
-  const legendItems = calculateLegendItems(contributors, margin, chartWidth, getContributorColor);
+  const legendItems = calculateStackedBarChartLegendItems(
+    contributors,
+    margin,
+    chartWidth,
+    getContributorColor,
+  );
 
   return (
     <G>

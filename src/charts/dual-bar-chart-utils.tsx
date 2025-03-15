@@ -1,13 +1,13 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import type { XAxisProps, YAxisProps } from '../logic/charts/dual-bar-chart-utils-logic';
 import {
-  calculateLegendItems,
-  calculateXAxisLabels,
-  calculateYAxisLabels,
+  calculateDualBarChartLegendItems,
+  calculateDualBarChartXAxisLabels,
+  calculateDualBarChartYAxisLabels,
 } from '../logic/charts/dual-bar-chart-utils-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
 import type { ChartMargin, ChartReferenceLine, Contributors } from '../types';
+import type { XAxisProps, YAxisProps } from '../utils/chart-axis-types';
 import { getContributorColor } from './color-utils';
 
 export type DualBarChartProps = Readonly<{
@@ -65,7 +65,7 @@ export function renderXAxisLabels(
   barWidth: number,
   monthPadding: number,
 ): React.ReactNode[] {
-  const xAxisLabels = calculateXAxisLabels(
+  const xAxisLabels = calculateDualBarChartXAxisLabels(
     labels,
     margin,
     chartHeight,
@@ -103,7 +103,7 @@ export function renderYAxisLabels(
   chartHeight: number,
   chartWidth: number,
 ): readonly React.ReactNode[] {
-  const yAxisLabels = calculateYAxisLabels(maxValue, margin, chartHeight, chartWidth);
+  const yAxisLabels = calculateDualBarChartYAxisLabels(maxValue, margin, chartHeight, chartWidth);
 
   return yAxisLabels.map((labelData) => (
     <G key={labelData.key}>
@@ -135,7 +135,7 @@ export function renderLegend(
   chartWidth: number,
   referenceLines?: readonly ChartReferenceLine[],
 ): React.ReactNode {
-  const legendItems = calculateLegendItems(
+  const legendItems = calculateDualBarChartLegendItems(
     contributors,
     margin,
     chartWidth,

@@ -5,8 +5,8 @@ import {
   renderChartReferenceLines,
 } from '../src/charts/dual-bar-chart-reference-lines';
 import {
-  calculateReferenceLineLegendItems,
-  calculateReferenceLines,
+  calculateDualBarChartReferenceLineLegendItems,
+  calculateDualBarChartReferenceLines,
 } from '../src/logic/charts/dual-bar-chart-reference-lines-logic';
 import {
   calculateBarHeight,
@@ -19,14 +19,14 @@ import {
   prepareDualBarChartSvgData,
 } from '../src/logic/charts/dual-bar-chart-svg-logic';
 import {
-  calculateLegendItems as calculateDualBarChartLegendItems,
-  calculateXAxisLabels as calculateDualBarChartXAxisLabels,
-  calculateYAxisLabels as calculateDualBarChartYAxisLabels,
+  calculateDualBarChartLegendItems,
+  calculateDualBarChartXAxisLabels,
+  calculateDualBarChartYAxisLabels,
 } from '../src/logic/charts/dual-bar-chart-utils-logic';
 import {
-  calculateLegendItems as calculateStackedBarChartLegendItems,
-  calculateXAxisLabels as calculateStackedBarChartXAxisLabels,
-  calculateYAxisLabels as calculateStackedBarChartYAxisLabels,
+  calculateStackedBarChartLegendItems,
+  calculateStackedBarChartXAxisLabels,
+  calculateStackedBarChartYAxisLabels,
 } from '../src/logic/charts/stacked-bar-chart-utils-logic';
 import type { ChartReferenceLine } from '../src/types';
 
@@ -41,7 +41,7 @@ describe('dual-bar-chart-reference-lines-logic', () => {
     const chartHeight = 100;
     const chartWidth = 200;
 
-    const result = calculateReferenceLines(
+    const result = calculateDualBarChartReferenceLines(
       referenceLines,
       maxValue,
       margin,
@@ -80,7 +80,7 @@ describe('dual-bar-chart-reference-lines-logic', () => {
     const chartHeight = 100;
     const chartWidth = 200;
 
-    const result = calculateReferenceLines(
+    const result = calculateDualBarChartReferenceLines(
       referenceLines,
       maxValue,
       margin,
@@ -102,7 +102,7 @@ describe('dual-bar-chart-reference-lines-logic', () => {
     const chartHeight = 100;
     const fontFamily = 'Arial';
 
-    const result = calculateReferenceLineLegendItems(
+    const result = calculateDualBarChartReferenceLineLegendItems(
       referenceLines,
       margin,
       chartHeight,

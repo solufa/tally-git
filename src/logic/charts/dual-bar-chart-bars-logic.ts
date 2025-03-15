@@ -1,5 +1,6 @@
 import assert from 'assert';
 import type { ChartMargin, Contributors } from '../../types';
+import { isValidContributor } from '../../utils/chart-utils';
 
 export type BarData = {
   key: string;
@@ -36,10 +37,6 @@ export function createBarData(
     height: barHeight,
     fill: getContributorColor(contributor),
   };
-}
-
-export function isValidContributor(value: number, contributor: string | undefined): boolean {
-  return value > 0 && typeof contributor === 'string';
 }
 
 export function processContributorData(
@@ -118,7 +115,7 @@ export function calculateMonthInsertionBars(
   );
 }
 
-export const calculateMonthDeletionBars = (
+export function calculateMonthDeletionBars(
   contributorDeletionsData: readonly (readonly number[])[],
   monthIndex: number,
   contributors: Contributors,
@@ -129,7 +126,7 @@ export const calculateMonthDeletionBars = (
   barWidth: number,
   monthPadding: number,
   getContributorColor: (contributor: string) => string,
-): readonly BarData[] => {
+): readonly BarData[] {
   const monthX = margin.left + monthIndex * monthWidth;
 
   return processContributorData(
@@ -145,4 +142,4 @@ export const calculateMonthDeletionBars = (
     getContributorColor,
     true,
   );
-};
+}

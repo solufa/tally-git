@@ -1,8 +1,8 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
 import {
-  calculateReferenceLineLegendItems,
-  calculateReferenceLines,
+  calculateDualBarChartReferenceLineLegendItems,
+  calculateDualBarChartReferenceLines,
 } from '../logic/charts/dual-bar-chart-reference-lines-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
 import type { ChartMargin, ChartReferenceLine } from '../types';
@@ -14,7 +14,13 @@ export function renderChartReferenceLines(
   chartHeight: number,
   chartWidth: number,
 ): readonly React.ReactNode[] {
-  const lines = calculateReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth);
+  const lines = calculateDualBarChartReferenceLines(
+    referenceLines,
+    maxValue,
+    margin,
+    chartHeight,
+    chartWidth,
+  );
 
   return lines.map((line) => (
     <G key={line.key}>
@@ -33,7 +39,7 @@ export function renderChartReferenceLineLegend(
   margin: ChartMargin,
   chartHeight: number,
 ): React.ReactNode {
-  const legendItems = calculateReferenceLineLegendItems(
+  const legendItems = calculateDualBarChartReferenceLineLegendItems(
     referenceLines,
     margin,
     chartHeight,

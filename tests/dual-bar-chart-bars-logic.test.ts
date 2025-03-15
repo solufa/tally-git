@@ -3,9 +3,9 @@ import {
   calculateMonthDeletionBars,
   calculateMonthInsertionBars,
   createBarData,
-  isValidContributor,
   processContributorData,
 } from '../src/logic/charts/dual-bar-chart-bars-logic';
+import { isValidContributor } from '../src/utils/chart-utils';
 
 test('createBarData - 基本的なケース', () => {
   const monthIndex = 0;

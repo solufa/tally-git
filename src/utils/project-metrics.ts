@@ -4,14 +4,16 @@ import { getDirectoryMetrics } from './directory-metrics';
 async function getMetricsForPath(
   basePath: string,
   dirPath: string,
-  testPaths: readonly string[] | undefined,
+  dirType: DirType,
 ): Promise<readonly FileMetric[]> {
   const fullPath = `${basePath}/${dirPath}`;
   const metrics = await getDirectoryMetrics(fullPath);
 
   return metrics
     .filter((metric) => {
-      return !testPaths?.some((testPath) => metric.filename.includes(`${basePath}/${testPath}`));
+      return ![...(dirType.tests ?? []), ...(dirType.exclude ?? [])].some((path) =>
+        metric.filename.includes(`${basePath}/${path}`),
+      );
     })
     .map((metric) => ({
       filename: metric.filename.replace(`${basePath}/`, ''),
@@ -29,10 +31,10 @@ async function processDirType(
 
   // getMetricsForPathを並列処理するとメモリが不足するのでfor ofで直列処理する
   for (const path of dirType.paths) {
-    metrics.push(...(await getMetricsForPath(targetDir, path, dirType.tests)));
+    metrics.push(...(await getMetricsForPath(targetDir, path, dirType)));
   }
 
-  return metrics;
+  return metrics.sort((a, b) => a.filename.localeCompare(b.filename, 'ja', { numeric: true }));
 }
 
 export async function getDirMetrics(

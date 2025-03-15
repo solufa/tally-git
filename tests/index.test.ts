@@ -345,15 +345,12 @@ test('laravel', async () => {
     JSON.parse(readFileSync(`${outputDir}/filteredAuthorLog.json`, 'utf8')),
   );
 
-  const sortByHash = (a: CommitDetail, b: CommitDetail): number =>
-    parseInt(a.hash.slice(0, 10), 16) - parseInt(b.hash.slice(0, 10), 16);
-
-  expect([...result.outlierCommits].sort(sortByHash)).toEqual(
-    JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')).sort(sortByHash),
+  expect(result.outlierCommits).toEqual(
+    JSON.parse(readFileSync(`${outputDir}/outlierCommits.json`, 'utf8')),
   );
 
-  expect(result.csv.content.split('\n').sort()).toEqual(
-    readFileSync(`${outputDir}/laravel${sinceYYMM}-${untilYYMM}.csv`, 'utf8').split('\n').sort(),
+  expect(result.csv.content).toEqual(
+    readFileSync(`${outputDir}/laravel${sinceYYMM}-${untilYYMM}.csv`, 'utf8'),
   );
 });
 

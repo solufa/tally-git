@@ -242,6 +242,89 @@ describe('project-metrics', () => {
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
+  test('除外パスが指定されている場合、該当ファイルが除外される', async () => {
+    // getDirectoryMetricsのモック実装
+    vi.mocked(getDirectoryMetrics).mockResolvedValue([
+      {
+        filename: 'test-dir/src/frontend/component.tsx',
+        functions: [{ name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 }],
+      },
+      {
+        filename: 'test-dir/src/frontend/legacy/old-component.tsx',
+        functions: [
+          { name: 'OldComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 15, loc: 12 },
+        ],
+      },
+      {
+        filename: 'test-dir/src/frontend/vendor/third-party.tsx',
+        functions: [{ name: 'ThirdParty', fields: 0, cyclo: 1, cognitive: 0, lines: 20, loc: 18 }],
+      },
+    ]);
+
+    // テスト用のプロジェクト設定
+    const projectConfig: ProjectConfig = {
+      dirTypes: {
+        frontend: {
+          paths: ['src/frontend'],
+          exclude: ['src/frontend/legacy', 'src/frontend/vendor'],
+        },
+        backend: { paths: ['src/backend'] },
+        infra: { paths: ['src/infra'] },
+      },
+    };
+
+    // 関数を実行
+    const result = await getDirMetrics('test-dir', projectConfig);
+
+    // 期待される結果（除外パスのファイルが除外されている）
+    expect(result).toHaveProperty('frontend');
+    expect(result.frontend).toHaveLength(1);
+    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
+    expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
+  });
+
+  test('テストパスと除外パスの両方が指定されている場合、両方が除外される', async () => {
+    // getDirectoryMetricsのモック実装
+    vi.mocked(getDirectoryMetrics).mockResolvedValue([
+      {
+        filename: 'test-dir/src/frontend/component.tsx',
+        functions: [{ name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 }],
+      },
+      {
+        filename: 'test-dir/tests/frontend/component.test.tsx',
+        functions: [{ name: 'TestComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 5, loc: 4 }],
+      },
+      {
+        filename: 'test-dir/src/frontend/legacy/old-component.tsx',
+        functions: [
+          { name: 'OldComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 15, loc: 12 },
+        ],
+      },
+    ]);
+
+    // テスト用のプロジェクト設定
+    const projectConfig: ProjectConfig = {
+      dirTypes: {
+        frontend: {
+          paths: ['src/frontend'],
+          tests: ['tests/frontend'],
+          exclude: ['src/frontend/legacy'],
+        },
+        backend: { paths: ['src/backend'] },
+        infra: { paths: ['src/infra'] },
+      },
+    };
+
+    // 関数を実行
+    const result = await getDirMetrics('test-dir', projectConfig);
+
+    // 期待される結果（テストファイルと除外パスのファイルが除外されている）
+    expect(result).toHaveProperty('frontend');
+    expect(result.frontend).toHaveLength(1);
+    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
+    expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
+  });
+
   test('dirTypesが未定義の場合、空の配列を返す', async () => {
     // テスト用のプロジェクト設定
     const projectConfig: ProjectConfig = {

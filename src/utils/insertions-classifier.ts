@@ -8,6 +8,10 @@ export function isTestPath(file: string, testPaths: readonly string[] | undefine
   return Boolean(testPaths && testPaths.length > 0 && isPathMatched(file, testPaths));
 }
 
+export function isExcludedPath(file: string, excludePaths: readonly string[] | undefined): boolean {
+  return Boolean(excludePaths && excludePaths.length > 0 && isPathMatched(file, excludePaths));
+}
+
 export function checkTypePath<T extends ProjectDirType>(
   file: string,
   insertionCount: number,
@@ -16,7 +20,7 @@ export function checkTypePath<T extends ProjectDirType>(
 ): Readonly<{ [K in T]?: { code: number; test?: number } } & { others: number }> | null {
   const typeConfig = dirTypes[type];
 
-  if (!typeConfig) return null;
+  if (!typeConfig || isExcludedPath(file, typeConfig.exclude)) return null;
 
   if (isTestPath(file, typeConfig.tests)) {
     return { [type]: { code: 0, test: insertionCount }, others: 0 } as {

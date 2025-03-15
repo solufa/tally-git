@@ -42,15 +42,15 @@ type ActivityData = Readonly<{
 }>;
 
 function generateActivityRows(authorLog: AuthorLog, monthColumns: MonthColumns): ActivityData {
-  const commits = Object.entries(authorLog).map(([author, monthData]) =>
-    formatDataRow(author, monthData, 'commits', monthColumns),
-  );
-  const insertions = Object.entries(authorLog).map(([author, monthData]) =>
-    formatDataRow(author, monthData, 'insertions', monthColumns),
-  );
-  const deletions = Object.entries(authorLog).map(([author, monthData]) =>
-    formatDataRow(author, monthData, 'deletions', monthColumns),
-  );
+  const commits = Object.entries(authorLog)
+    .sort((a, b) => a[0].localeCompare(b[0], 'ja', { numeric: true }))
+    .map(([author, monthData]) => formatDataRow(author, monthData, 'commits', monthColumns));
+  const insertions = Object.entries(authorLog)
+    .sort((a, b) => a[0].localeCompare(b[0], 'ja', { numeric: true }))
+    .map(([author, monthData]) => formatDataRow(author, monthData, 'insertions', monthColumns));
+  const deletions = Object.entries(authorLog)
+    .sort((a, b) => a[0].localeCompare(b[0], 'ja', { numeric: true }))
+    .map(([author, monthData]) => formatDataRow(author, monthData, 'deletions', monthColumns));
 
   return { commits, insertions, deletions };
 }

@@ -2,12 +2,12 @@ import { View } from '@react-pdf/renderer';
 import React from 'react';
 import { ScatterPlot } from '../charts/scatter-plot';
 import { prepareComplexityChartData } from '../logic/pdf-pages/scatter-plot-logic';
-import type { DirMetrics } from '../types';
+import type { DeepReadonly, DirMetrics } from '../types';
 import { pdfStyles } from './pdf-styles';
 
 export function ScatterPlotPage({
   dirMetrics,
-}: Readonly<{ dirMetrics: DirMetrics }>): React.ReactNode {
+}: DeepReadonly<{ dirMetrics: DirMetrics }>): React.ReactNode {
   const chartData = prepareComplexityChartData(dirMetrics, {
     width: 500,
     height: 300,

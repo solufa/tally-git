@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import type { DeepReadonly } from '../types';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
@@ -58,7 +59,7 @@ export function compareDatesDesc(date1: string, date2: string, format: string): 
 
 export function getDefaultPeriod(
   monthsAgo: number,
-): Readonly<{ sinceYYMM: string; untilYYMM: string }> {
+): DeepReadonly<{ sinceYYMM: string; untilYYMM: string }> {
   const now = getCurrentDate();
 
   return { sinceYYMM: formatPeriod(subtractMonths(now, monthsAgo)), untilYYMM: formatPeriod(now) };

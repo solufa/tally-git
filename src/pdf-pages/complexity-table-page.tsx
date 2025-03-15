@@ -1,16 +1,12 @@
 import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { prepareComplexityTableData } from '../logic/pdf-pages/complexity-table-logic';
-import type { DirMetrics } from '../types';
+import type { DeepReadonly, DirMetrics } from '../types';
 import { pdfStyles } from './pdf-styles';
 
-type ComplexityTableProps = Readonly<{
+type ComplexityTableProps = DeepReadonly<{
   title: string;
-  data?: readonly {
-    filename: string;
-    functionName: string;
-    complexity: number;
-  }[];
+  data?: { filename: string; functionName: string; complexity: number }[];
 }>;
 
 function ComplexityTable({ title, data }: ComplexityTableProps): React.ReactNode {
@@ -45,7 +41,7 @@ function ComplexityTable({ title, data }: ComplexityTableProps): React.ReactNode
 
 export function ComplexityTablePage({
   dirMetrics,
-}: Readonly<{ dirMetrics: DirMetrics }>): React.ReactNode {
+}: DeepReadonly<{ dirMetrics: DirMetrics }>): React.ReactNode {
   const tableData = prepareComplexityTableData(dirMetrics);
 
   return (

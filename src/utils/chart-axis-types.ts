@@ -1,12 +1,16 @@
-import type { ChartMargin, ChartReferenceLine } from '../types';
+import type { ChartMargin, ChartReferenceLine, DeepReadonly } from '../types';
 
 export type ChartType = 'dual' | 'stacked';
 
-export type XAxisProps = Readonly<{ margin: ChartMargin; chartHeight: number; chartWidth: number }>;
+export type XAxisProps = DeepReadonly<{
+  margin: ChartMargin;
+  chartHeight: number;
+  chartWidth: number;
+}>;
 
-export type YAxisProps = Readonly<{ margin: ChartMargin; chartHeight: number }>;
+export type YAxisProps = DeepReadonly<{ margin: ChartMargin; chartHeight: number }>;
 
-export type XAxisLabelData = Readonly<{
+export type XAxisLabelData = DeepReadonly<{
   key: string;
   x: number;
   y: number;
@@ -20,7 +24,7 @@ export type XAxisLabelData = Readonly<{
   transformOrigin: string;
 }>;
 
-export type YAxisLabelData = Readonly<{
+export type YAxisLabelData = DeepReadonly<{
   key: string;
   tickX1: number;
   tickX2: number;
@@ -34,7 +38,7 @@ export type YAxisLabelData = Readonly<{
   value: number;
 }>;
 
-export type LegendItemData = Readonly<{
+export type LegendItemData = DeepReadonly<{
   key: string;
   pathX: number;
   pathY: number;
@@ -49,7 +53,7 @@ export type LegendItemData = Readonly<{
   strokeDasharray?: string;
 }>;
 
-export type ReferenceLineData = Readonly<{
+export type ReferenceLineData = DeepReadonly<{
   key: string;
   x1: number;
   y: number;
@@ -59,7 +63,7 @@ export type ReferenceLineData = Readonly<{
   strokeDasharray: string;
 }>;
 
-export type ReferenceLineLegendItemData = Readonly<{
+export type ReferenceLineLegendItemData = DeepReadonly<{
   key: string;
   pathX: number;
   pathY: number;
@@ -74,29 +78,24 @@ export type ReferenceLineLegendItemData = Readonly<{
   strokeDasharray: string;
 }>;
 
-export type XAxisLabelOptions = Readonly<{
+export type XAxisLabelOptions = DeepReadonly<{
   chartType: ChartType;
   barWidth?: number;
   monthWidth?: number;
   monthPadding?: number;
 }>;
 
-export type YAxisLabelOptions = Readonly<{
+export type YAxisLabelOptions = DeepReadonly<{
   chartType: ChartType;
   chartWidth?: number;
   yAxisStep: number;
 }>;
 
-export type LegendItemOptions = Readonly<{
-  referenceLines?: readonly ChartReferenceLine[];
-}>;
+export type LegendItemOptions = DeepReadonly<{ referenceLines?: ChartReferenceLine[] }>;
 
-export type ReferenceLineOptions = Readonly<{
-  chartType: ChartType;
-  yAxisStep: number;
-}>;
+export type ReferenceLineOptions = DeepReadonly<{ chartType: ChartType; yAxisStep: number }>;
 
-export type ReferenceLineLegendItemOptions = Readonly<{
+export type ReferenceLineLegendItemOptions = DeepReadonly<{
   chartType: ChartType;
   chartHeight?: number;
   chartWidth?: number;

@@ -2,13 +2,13 @@ import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { anonymizeAuthors } from '../logic/pdf-pages/prompt-page-logic';
 import { generatePromptTemplate } from '../logic/pdf-pages/prompt-template-generator';
-import type { AuthorLog, MonthColumns } from '../types';
+import type { AuthorLog, DeepReadonly, MonthColumns } from '../types';
 import { pdfStyles } from './pdf-styles';
 
 export function PromptPage({
   authorLog,
   monthColumns,
-}: Readonly<{
+}: DeepReadonly<{
   authorLog: AuthorLog;
   monthColumns: MonthColumns;
 }>): React.ReactElement {

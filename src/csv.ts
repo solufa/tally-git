@@ -1,10 +1,17 @@
 import { DUAL_BAR_CHAT_Y_AXIS_STEP } from './constants';
-import type { AuthorLog, CommitData, CommitDetail, DirMetrics, MonthColumns } from './types';
+import type {
+  AuthorLog,
+  CommitData,
+  CommitDetail,
+  DeepReadonly,
+  DirMetrics,
+  MonthColumns,
+} from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
 
 function formatDataRow(
   author: string,
-  monthData: Readonly<Record<string, CommitData | undefined>>,
+  monthData: DeepReadonly<Record<string, CommitData | undefined>>,
   key: keyof CommitData,
   monthColumns: MonthColumns,
 ): string {
@@ -35,11 +42,7 @@ function formatThresholdValues(): string {
 削除行数の閾値（追加行数の10倍以上）,追加行数 × 10`;
 }
 
-type ActivityData = Readonly<{
-  commits: readonly string[];
-  insertions: readonly string[];
-  deletions: readonly string[];
-}>;
+type ActivityData = DeepReadonly<{ commits: string[]; insertions: string[]; deletions: string[] }>;
 
 function generateActivityRows(authorLog: AuthorLog, monthColumns: MonthColumns): ActivityData {
   const commits = Object.entries(authorLog)

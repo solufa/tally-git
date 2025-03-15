@@ -5,31 +5,31 @@ import {
   calculateStackedBarChartXAxisLabels,
   calculateStackedBarChartYAxisLabels,
 } from '../logic/charts/stacked-bar-chart-utils-logic';
-import type { ChartMargin, Contributors } from '../types';
+import type { ChartMargin, Contributors, DeepReadonly } from '../types';
 import type { XAxisProps, YAxisProps } from '../utils/chart-axis-types';
 import { getContributorColor } from './color-utils';
 
-export type StackedBarChartProps = {
+export type StackedBarChartProps = DeepReadonly<{
   title: string;
-  data: readonly number[][];
-  labels: readonly string[];
+  data: number[][];
+  labels: string[];
   contributors: Contributors;
   width?: number;
   height?: number;
   margin?: ChartMargin;
-};
+}>;
 
-export type StackedBarChartSvgProps = {
+export type StackedBarChartSvgProps = DeepReadonly<{
   width: number;
   height: number;
   margin: ChartMargin;
   chartWidth: number;
   chartHeight: number;
   maxValue: number;
-  data: readonly number[][];
-  labels: readonly string[];
+  data: number[][];
+  labels: string[];
   contributors: Contributors;
-};
+}>;
 
 export function XAxis({ margin, chartHeight, chartWidth }: XAxisProps): React.ReactElement {
   return (

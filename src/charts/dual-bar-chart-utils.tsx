@@ -6,15 +6,21 @@ import {
   calculateDualBarChartYAxisLabels,
 } from '../logic/charts/dual-bar-chart-utils-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
-import type { ChartMargin, ChartReferenceLine, Contributors } from '../types';
+import type {
+  ChartMargin,
+  ChartReferenceLine,
+  ContributorData,
+  Contributors,
+  DeepReadonly,
+} from '../types';
 import type { XAxisProps, YAxisProps } from '../utils/chart-axis-types';
 import { getContributorColor } from './color-utils';
 
-export type DualBarChartProps = Readonly<{
+export type DualBarChartProps = DeepReadonly<{
   title: string;
-  data: readonly [readonly number[], readonly number[]]; // [追加データ, 削除データ]
-  contributorData: readonly [readonly (readonly number[])[], readonly (readonly number[])[]]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
-  labels: readonly string[];
+  data: [number[], number[]]; // [追加データ, 削除データ]
+  contributorData: [ContributorData, ContributorData]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
+  labels: string[];
   contributors: Contributors;
   hasReferenceLines: boolean;
   width?: number;
@@ -22,17 +28,17 @@ export type DualBarChartProps = Readonly<{
   margin?: ChartMargin;
 }>;
 
-export type DualBarChartSvgProps = Readonly<{
+export type DualBarChartSvgProps = DeepReadonly<{
   width: number;
   height: number;
   margin: ChartMargin;
   chartWidth: number;
   chartHeight: number;
   maxValue: number;
-  contributorData: readonly [readonly (readonly number[])[], readonly (readonly number[])[]];
-  labels: readonly string[];
-  contributors: readonly string[];
-  referenceLines: readonly ChartReferenceLine[];
+  contributorData: [ContributorData, ContributorData];
+  labels: string[];
+  contributors: string[];
+  referenceLines: ChartReferenceLine[];
 }>;
 
 export function XAxis({ margin, chartHeight, chartWidth }: XAxisProps): React.ReactElement {

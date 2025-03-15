@@ -1,7 +1,7 @@
 import { writeFile } from 'fs/promises';
 import { z } from 'zod';
 import { main } from './main';
-import type { Period, Result } from './types';
+import type { DeepReadonly, Period, Result } from './types';
 import { getDefaultPeriod } from './utils/date-utils';
 
 async function run(): Promise<void> {
@@ -13,7 +13,7 @@ async function run(): Promise<void> {
     return;
   }
 
-  const targets: readonly (Period & { projectName: string; dir: string })[] = [
+  const targets: DeepReadonly<(Period & { projectName: string; dir: string })[]> = [
     { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2303', untilYYMM: '2402' },
     { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2403', untilYYMM: '2502' },
     {

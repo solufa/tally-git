@@ -1,22 +1,22 @@
-import type { AuthorLog } from '../../types';
+import type { AuthorLog, CommitData } from '../../types';
 import { condition } from '../../utils/condition';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 import type { AuthorTotal } from './pdf-data-processor';
 
-export function getCommitsValue(monthData: AuthorLog[string][string] | undefined): number {
+export function getCommitsValue(monthData: CommitData | undefined): number {
   return monthData?.commits ?? 0;
 }
 
-export function getInsertionsValue(monthData: AuthorLog[string][string] | undefined): number {
+export function getInsertionsValue(monthData: CommitData | undefined): number {
   return monthData ? calculateTotalInsertions(monthData.insertions) : 0;
 }
 
-export function getDeletionsValue(monthData: AuthorLog[string][string] | undefined): number {
+export function getDeletionsValue(monthData: CommitData | undefined): number {
   return monthData?.deletions ?? 0;
 }
 
 export function getMonthDataValue(
-  monthData: AuthorLog[string][string] | undefined,
+  monthData: CommitData | undefined,
   dataType: 'commits' | 'insertions' | 'deletions',
 ): number {
   if (!monthData) return 0;

@@ -1,15 +1,15 @@
 import assert from 'assert';
-import type { ChartMargin, Contributors } from '../../types';
+import type { ChartMargin, ContributorData, Contributors, DeepReadonly } from '../../types';
 import { isValidContributor } from '../../utils/chart-utils';
 
-export type BarData = {
+export type BarData = DeepReadonly<{
   key: string;
   x: number;
   y: number;
   width: number;
   height: number;
   fill: string;
-};
+}>;
 
 export function createBarData(
   monthIndex: number,
@@ -40,7 +40,7 @@ export function createBarData(
 }
 
 export function processContributorData(
-  contributorData: readonly (readonly number[])[],
+  contributorData: ContributorData,
   monthIndex: number,
   contributors: Contributors,
   maxValue: number,
@@ -87,7 +87,7 @@ export function processContributorData(
 }
 
 export function calculateMonthInsertionBars(
-  contributorInsertionsData: readonly (readonly number[])[],
+  contributorInsertionsData: ContributorData,
   monthIndex: number,
   contributors: Contributors,
   maxValue: number,
@@ -116,7 +116,7 @@ export function calculateMonthInsertionBars(
 }
 
 export function calculateMonthDeletionBars(
-  contributorDeletionsData: readonly (readonly number[])[],
+  contributorDeletionsData: ContributorData,
   monthIndex: number,
   contributors: Contributors,
   maxValue: number,

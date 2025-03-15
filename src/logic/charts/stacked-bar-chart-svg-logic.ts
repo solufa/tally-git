@@ -1,8 +1,8 @@
 import assert from 'assert';
-import type { ChartMargin, Contributors } from '../../types';
+import type { ChartMargin, ContributorData, Contributors, DeepReadonly } from '../../types';
 import { isValidContributor } from '../../utils/chart-utils';
 
-export type BarData = Readonly<{
+export type BarData = DeepReadonly<{
   key: string;
   x: number;
   y: number;
@@ -60,7 +60,7 @@ export function createStackedBarData(
 }
 
 export function processContributorBar(
-  data: readonly number[][],
+  data: ContributorData,
   monthIndex: number,
   contributorIndex: number,
   contributors: Contributors,
@@ -73,7 +73,7 @@ export function processContributorBar(
   barSpacing: number,
   yOffset: number,
   getContributorColor: (contributor: string) => string,
-): Readonly<{ bar: BarData | null; height: number }> {
+): DeepReadonly<{ bar: BarData | null; height: number }> {
   const value = data[contributorIndex]?.[monthIndex] ?? 0;
   const contributor = contributors[contributorIndex];
 
@@ -101,7 +101,7 @@ export function processContributorBar(
 }
 
 export function calculateMonthBars(
-  data: readonly number[][],
+  data: ContributorData,
   monthIndex: number,
   contributors: Contributors,
   maxValue: number,
@@ -143,7 +143,7 @@ export function calculateMonthBars(
 }
 
 export function prepareStackedBarChartSvgData(
-  data: readonly number[][],
+  data: ContributorData,
   labels: readonly string[],
   contributors: Contributors,
   maxValue: number,
@@ -151,7 +151,7 @@ export function prepareStackedBarChartSvgData(
   chartWidth: number,
   margin: ChartMargin,
   getContributorColor: (contributor: string) => string,
-): Readonly<{ barWidth: number; barSpacing: number; bars: readonly BarData[] }> {
+): DeepReadonly<{ barWidth: number; barSpacing: number; bars: BarData[] }> {
   const barWidth = calculateBarWidth(chartWidth, labels.length);
   const barSpacing = calculateBarSpacing(chartWidth, labels.length);
   const bars: BarData[] = [];

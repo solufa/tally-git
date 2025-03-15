@@ -2,11 +2,12 @@ import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import type { AuthorSummary } from '../logic/pdf-pages/summary-page-logic';
 import { prepareSummaryPageData } from '../logic/pdf-pages/summary-page-logic';
+import type { DeepReadonly } from '../types';
 import { pdfStyles } from './pdf-styles';
 
 export function SummaryPage({
   sortedAuthors,
-}: Readonly<{ sortedAuthors: readonly AuthorSummary[] }>): React.ReactElement {
+}: DeepReadonly<{ sortedAuthors: AuthorSummary[] }>): React.ReactElement {
   const {
     totalCommits,
     totalInsertions,

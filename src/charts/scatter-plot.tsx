@@ -2,14 +2,15 @@ import { Path, Svg, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import type { ScatterPlotSvgData } from '../logic/pdf-pages/scatter-plot-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
+import type { DeepReadonly } from '../types';
 
 export function ScatterPlot({
   title,
   svgData,
-}: {
+}: DeepReadonly<{
   title: string;
   svgData: ScatterPlotSvgData;
-}): React.ReactNode {
+}>): React.ReactNode {
   const {
     width,
     height,

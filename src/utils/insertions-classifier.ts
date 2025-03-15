@@ -1,4 +1,4 @@
-import type { Insertions, ProjectConfig, ProjectDirType } from '../types';
+import type { DeepReadonly, Insertions, ProjectConfig, ProjectDirType } from '../types';
 
 export function isPathMatched(filePath: string, paths: readonly string[]): boolean {
   return paths.some((path) => filePath.includes(`/${path}/`) || filePath.startsWith(path));
@@ -17,21 +17,25 @@ export function checkTypePath<T extends ProjectDirType>(
   insertionCount: number,
   dirTypes: ProjectConfig['dirTypes'],
   type: T,
-): Readonly<{ [K in T]?: { code: number; test?: number } } & { others: number }> | null {
+): DeepReadonly<{ [K in T]?: { code: number; test?: number } } & { others: number }> | null {
   const typeConfig = dirTypes[type];
 
   if (!typeConfig || isExcludedPath(file, typeConfig.exclude)) return null;
 
   if (isTestPath(file, typeConfig.tests)) {
-    return { [type]: { code: 0, test: insertionCount }, others: 0 } as {
-      [K in T]?: { code: number; test?: number };
-    } & { others: number };
+    return { [type]: { code: 0, test: insertionCount }, others: 0 } as DeepReadonly<
+      {
+        [K in T]?: { code: number; test?: number };
+      } & { others: number }
+    >;
   }
 
   if (isPathMatched(file, typeConfig.paths)) {
-    return { [type]: { code: insertionCount }, others: 0 } as {
-      [K in T]?: { code: number; test?: number };
-    } & { others: number };
+    return { [type]: { code: insertionCount }, others: 0 } as DeepReadonly<
+      {
+        [K in T]?: { code: number; test?: number };
+      } & { others: number }
+    >;
   }
 
   return null;

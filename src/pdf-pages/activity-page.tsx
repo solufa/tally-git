@@ -2,12 +2,13 @@ import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { sortMonthlyTotals } from '../logic/pdf-pages/activity-page-logic';
 import type { MonthlyTotal } from '../logic/pdf/pdf-data-processor';
+import type { DeepReadonly } from '../types';
 import { pdfStyles } from './pdf-styles';
 
 export function ActivityPage({
   monthlyTotals,
-}: Readonly<{
-  monthlyTotals: readonly MonthlyTotal[];
+}: DeepReadonly<{
+  monthlyTotals: MonthlyTotal[];
 }>): React.ReactElement {
   const descSortedMonthlyTotals = sortMonthlyTotals(monthlyTotals);
 

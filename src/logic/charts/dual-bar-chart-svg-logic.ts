@@ -1,13 +1,11 @@
-import type { ChartMargin, Contributors } from '../../types';
-import type { BarData as BarDataImport } from './dual-bar-chart-bars-logic';
+import type { ChartMargin, ContributorData, Contributors, DeepReadonly } from '../../types';
+import type { BarData } from './dual-bar-chart-bars-logic';
 import {
   calculateMonthDeletionBars,
   calculateMonthInsertionBars,
 } from './dual-bar-chart-bars-logic';
 
-export type BarData = BarDataImport;
-
-export type SeparatorData = Readonly<{ key: string; x: number; startY: number; endY: number }>;
+export type SeparatorData = DeepReadonly<{ key: string; x: number; startY: number; endY: number }>;
 
 export function calculateMonthWidth(chartWidth: number, labelsLength: number): number {
   return chartWidth / labelsLength;
@@ -35,10 +33,7 @@ export function calculateBarHeight(value: number, maxValue: number, chartHeight:
   return (value / maxValue) * chartHeight;
 }
 
-export function calculateMonthTotal(
-  contributorData: readonly (readonly number[])[],
-  monthIndex: number,
-): number {
+export function calculateMonthTotal(contributorData: ContributorData, monthIndex: number): number {
   return contributorData.reduce(
     (total, contributorData) => total + (contributorData[monthIndex] ?? 0),
     0,
@@ -46,8 +41,8 @@ export function calculateMonthTotal(
 }
 
 export function calculateBarSeparators(
-  contributorInsertionsData: readonly (readonly number[])[],
-  contributorDeletionsData: readonly (readonly number[])[],
+  contributorInsertionsData: ContributorData,
+  contributorDeletionsData: ContributorData,
   labelsLength: number,
   maxValue: number,
   chartHeight: number,
@@ -82,8 +77,8 @@ export function calculateBarSeparators(
 }
 
 export function prepareDualBarChartSvgData(
-  contributorInsertionsData: readonly (readonly number[])[],
-  contributorDeletionsData: readonly (readonly number[])[],
+  contributorInsertionsData: ContributorData,
+  contributorDeletionsData: ContributorData,
   labels: readonly string[],
   contributors: Contributors,
   maxValue: number,
@@ -91,13 +86,13 @@ export function prepareDualBarChartSvgData(
   chartWidth: number,
   margin: ChartMargin,
   getContributorColor: (contributor: string) => string,
-): Readonly<{
+): DeepReadonly<{
   monthWidth: number;
   barWidth: number;
   monthPadding: number;
-  insertionBars: readonly BarData[];
-  deletionBars: readonly BarData[];
-  separators: readonly SeparatorData[];
+  insertionBars: BarData[];
+  deletionBars: BarData[];
+  separators: SeparatorData[];
 }> {
   const monthWidth = calculateMonthWidth(chartWidth, labels.length);
   const barWidth = calculateBarWidth(monthWidth);

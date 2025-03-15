@@ -1,5 +1,5 @@
 import { INSERTIONS_THRESHOLD } from '../constants';
-import type { AuthorLog, CommitData, CommitDetail, Insertions } from '../types';
+import type { AuthorLog, CommitData, CommitDetail, DeepReadonly, Insertions } from '../types';
 import { calculateTotalInsertions } from '../utils/insertions-calculator';
 
 export function findOutlierCommits(
@@ -33,9 +33,9 @@ export function subtractTest(
 }
 
 export function createNewValues(
-  base: Readonly<{ code: number; test?: number }>,
-  subtract: Readonly<{ code: number; test?: number }>,
-): Readonly<{ newCode: number; newTest: number | undefined }> {
+  base: DeepReadonly<{ code: number; test?: number }>,
+  subtract: DeepReadonly<{ code: number; test?: number }>,
+): DeepReadonly<{ newCode: number; newTest: number | undefined }> {
   const newCode = subtractCode(base.code, subtract.code);
   const newTest = subtractTest(base.test, subtract.test);
 
@@ -45,16 +45,16 @@ export function createNewValues(
 export function createResult(
   newCode: number,
   newTest: number | undefined,
-): Readonly<{ code: number; test?: number }> | undefined {
+): DeepReadonly<{ code: number; test?: number }> | undefined {
   if (newCode === 0 && !newTest) return undefined;
 
   return { code: newCode, test: newTest };
 }
 
 export function processCode(
-  base?: Readonly<{ code: number; test?: number }>,
-  subtract?: Readonly<{ code: number; test?: number }>,
-): Readonly<{ code: number; test?: number }> | undefined {
+  base?: DeepReadonly<{ code: number; test?: number }>,
+  subtract?: DeepReadonly<{ code: number; test?: number }>,
+): DeepReadonly<{ code: number; test?: number }> | undefined {
   if (!base) return undefined;
   if (!subtract) return { ...base };
 
@@ -84,12 +84,12 @@ export function updateMonthData(
 }
 
 export function updateAuthorData(
-  authorData: Record<string, CommitData | undefined>,
+  authorData: AuthorLog[string],
   YM: string,
   monthData: CommitData,
   insertions: Insertions,
   deletions: number,
-): Readonly<Record<string, CommitData | undefined>> {
+): AuthorLog[string] {
   return { ...authorData, [YM]: updateMonthData(monthData, insertions, deletions) };
 }
 

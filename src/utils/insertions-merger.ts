@@ -1,4 +1,4 @@
-import type { Insertions } from '../types';
+import type { DeepReadonly, Insertions } from '../types';
 
 function mergeTestLines(
   currentTest: number | undefined,
@@ -12,9 +12,9 @@ function mergeTestLines(
 }
 
 function mergeTypeInsertions(
-  current: Readonly<{ code: number; test?: number }> | undefined,
-  categorized: Readonly<{ code: number; test?: number }> | undefined,
-): Readonly<{ code: number; test?: number }> | undefined {
+  current: DeepReadonly<{ code: number; test?: number }> | undefined,
+  categorized: DeepReadonly<{ code: number; test?: number }> | undefined,
+): DeepReadonly<{ code: number; test?: number }> | undefined {
   if (!current || !categorized) return categorized ?? current;
 
   return {

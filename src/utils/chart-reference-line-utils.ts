@@ -1,4 +1,4 @@
-import type { ChartMargin, ChartReferenceLine } from '../types';
+import type { ChartMargin, ChartReferenceLine, DeepReadonly } from '../types';
 import type {
   ReferenceLineData,
   ReferenceLineLegendItemData,
@@ -44,11 +44,8 @@ function calculateDualBarChartLegendPosition(
   margin: ChartMargin,
   index: number,
   chartHeight: number,
-): { x: number; y: number } {
-  return {
-    x: margin.left + 10,
-    y: margin.top + chartHeight + 30 + index * 12,
-  };
+): DeepReadonly<{ x: number; y: number }> {
+  return { x: margin.left + 10, y: margin.top + chartHeight + 30 + index * 12 };
 }
 
 function calculateStackedBarChartLegendPosition(
@@ -56,7 +53,7 @@ function calculateStackedBarChartLegendPosition(
   index: number,
   chartWidth: number,
   contributorsLength: number = 0,
-): { x: number; y: number } {
+): DeepReadonly<{ x: number; y: number }> {
   return {
     x: margin.left + chartWidth + 10,
     y: margin.top + contributorsLength * 15 + 10 + index * 12,
@@ -66,11 +63,8 @@ function calculateStackedBarChartLegendPosition(
 function calculateDefaultLegendPosition(
   margin: ChartMargin,
   index: number,
-): { x: number; y: number } {
-  return {
-    x: margin.left + 10,
-    y: margin.top + 30 + index * 12,
-  };
+): DeepReadonly<{ x: number; y: number }> {
+  return { x: margin.left + 10, y: margin.top + 30 + index * 12 };
 }
 
 export function calculateReferenceLineLegendItems(

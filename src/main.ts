@@ -8,7 +8,7 @@ import { toCsv } from './csv';
 import { toPdf } from './pdf';
 import { processLogData } from './stats/commit-processor';
 import { createFilteredAuthorLog, findOutlierCommits } from './stats/outliers';
-import type { AuthorLog, CommitDetail, Period, ProjectConfig, Result } from './types';
+import type { AuthorLog, CommitDetail, DeepReadonly, Period, ProjectConfig, Result } from './types';
 import {
   addMonths,
   diffInMonths,
@@ -32,7 +32,7 @@ export function readProjectConfig(targetDir: string): ProjectConfig {
 }
 
 export async function main(
-  option: Readonly<Period & { projectName?: string; targetDir: string; outputDir: string }>,
+  option: DeepReadonly<Period & { projectName?: string; targetDir: string; outputDir: string }>,
 ): Promise<Result> {
   let authorLog: AuthorLog = {};
   const allCommitDetails: CommitDetail[] = [];

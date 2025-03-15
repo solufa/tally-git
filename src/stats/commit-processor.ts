@@ -1,11 +1,18 @@
-import type { AuthorLog, CommitDetail, CommitInfo, LogState, ProjectConfig } from '../types';
+import type {
+  AuthorLog,
+  CommitDetail,
+  CommitInfo,
+  DeepReadonly,
+  LogState,
+  ProjectConfig,
+} from '../types';
 import { mergeInsertions } from '../utils/insertions-merger';
 import { isCommitLine, isStatLine, processCommitLine, processStatLine } from './git-log-parser';
 
 function updateAuthorCommitData(
   authorLog: AuthorLog,
   commit: CommitInfo,
-): Readonly<{ authorLog: AuthorLog; commitDetail: CommitDetail }> {
+): DeepReadonly<{ authorLog: AuthorLog; commitDetail: CommitDetail }> {
   const authorData = authorLog[commit.author] ?? {};
   const commitData = authorData[commit.YM] ?? {
     commits: 0,
@@ -38,7 +45,7 @@ function handleCommitLine(
   line: string,
   state: LogState,
   authorLog: AuthorLog,
-): Readonly<{ state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null }> {
+): DeepReadonly<{ state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null }> {
   let newAuthorLog = authorLog;
   let commitDetail: CommitDetail | null = null;
 
@@ -77,7 +84,11 @@ function processLogLine(
   state: LogState,
   authorLog: AuthorLog,
   projectConfig: ProjectConfig,
-): Readonly<{ state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null } | null> {
+): DeepReadonly<{
+  state: LogState;
+  authorLog: AuthorLog;
+  commitDetail: CommitDetail | null;
+} | null> {
   if (isCommitLine(line)) return handleCommitLine(line, state, authorLog);
 
   if (isStatLine(line)) {
@@ -91,7 +102,7 @@ export function processLogData(
   logData: string,
   authorLog: AuthorLog,
   projectConfig: ProjectConfig,
-): Readonly<{ authorLog: AuthorLog; commitDetails: CommitDetail[] }> {
+): DeepReadonly<{ authorLog: AuthorLog; commitDetails: CommitDetail[] }> {
   const lines = logData.split('\n');
   let newAuthorLog = authorLog;
   let state: LogState = { currentCommit: null, skipCurrentCommit: false, lastHash: null };

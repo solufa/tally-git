@@ -1,13 +1,19 @@
-import type { AuthorLog, Contributors, MonthColumns } from '../../types';
+import type {
+  AuthorLog,
+  ContributorData,
+  Contributors,
+  DeepReadonly,
+  MonthColumns,
+} from '../../types';
 
-export type DataByAuthor = Readonly<Record<string, readonly number[]>>;
+export type DataByAuthor = DeepReadonly<Record<string, number[]>>;
 
-export type AuthorTotal = Readonly<{ author: string; total: number }>;
+export type AuthorTotal = DeepReadonly<{ author: string; total: number }>;
 
 export function calculateBackendDataByAuthor(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-): Readonly<{ backendCodeByAuthor: DataByAuthor; backendTestByAuthor: DataByAuthor }> {
+): DeepReadonly<{ backendCodeByAuthor: DataByAuthor; backendTestByAuthor: DataByAuthor }> {
   return Object.entries(authorLog).reduce<{
     backendCodeByAuthor: DataByAuthor;
     backendTestByAuthor: DataByAuthor;
@@ -46,7 +52,7 @@ export function getTopAuthors(
 }
 
 export function calculateTotalData(
-  topData: readonly (readonly number[])[],
+  topData: ContributorData,
   monthColumns: MonthColumns,
 ): readonly number[] {
   return monthColumns.map((_, i) =>
@@ -57,19 +63,19 @@ export function calculateTotalData(
 export function extractContributorData(
   contributors: Contributors,
   dataByAuthor: DataByAuthor,
-): readonly (readonly number[])[] {
+): ContributorData {
   return contributors.map((author) => dataByAuthor[author]).filter((data) => data !== undefined);
 }
 
 export function prepareCodeVsTestChartData(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-): Readonly<{
-  totalCodeData: readonly number[];
-  totalTestData: readonly number[];
+): DeepReadonly<{
+  totalCodeData: number[];
+  totalTestData: number[];
   contributors: Contributors;
-  contributorCodeData: readonly (readonly number[])[];
-  contributorTestData: readonly (readonly number[])[];
+  contributorCodeData: ContributorData;
+  contributorTestData: ContributorData;
 }> {
   const { backendCodeByAuthor, backendTestByAuthor } = calculateBackendDataByAuthor(
     authorLog,

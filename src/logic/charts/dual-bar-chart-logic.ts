@@ -1,21 +1,21 @@
 import { DUAL_BAR_CHART_REF_LINES, DUAL_BAR_CHAT_Y_AXIS_STEP } from '../../constants';
-import type { ChartMargin, ChartReferenceLine } from '../../types';
+import type { ChartMargin, ChartReferenceLine, DeepReadonly } from '../../types';
 
-export type DualBarChartData = Readonly<{
+export type DualBarChartData = DeepReadonly<{
   width: number;
   height: number;
   margin: ChartMargin;
   chartWidth: number;
   chartHeight: number;
   maxValue: number;
-  actualReferenceLines: readonly ChartReferenceLine[];
+  actualReferenceLines: ChartReferenceLine[];
 }>;
 
 export const calculateChartDimensions = (
   width: number = 500,
   height: number = 300,
   margin: ChartMargin = { top: 20, right: 120, bottom: 40, left: 50 },
-): Readonly<{ chartWidth: number; chartHeight: number }> => {
+): DeepReadonly<{ chartWidth: number; chartHeight: number }> => {
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
@@ -23,9 +23,9 @@ export const calculateChartDimensions = (
 };
 
 export const calculateMaxValue = (
-  data: readonly [readonly number[], readonly number[]],
+  data: DeepReadonly<[number[], number[]]>,
   hasReferenceLines: boolean,
-): Readonly<{ maxValue: number; actualReferenceLines: readonly ChartReferenceLine[] }> => {
+): DeepReadonly<{ maxValue: number; actualReferenceLines: ChartReferenceLine[] }> => {
   const dataMaxValue = Math.max(...data[0], ...data[1]);
   const actualReferenceLines = hasReferenceLines ? DUAL_BAR_CHART_REF_LINES : [];
   const referenceMaxValue = Math.max(...actualReferenceLines.map((line) => line.value), 0);
@@ -37,7 +37,7 @@ export const calculateMaxValue = (
 };
 
 export const prepareDualBarChartData = (
-  data: readonly [readonly number[], readonly number[]],
+  data: DeepReadonly<[number[], number[]]>,
   hasReferenceLines: boolean,
   width?: number,
   height?: number,

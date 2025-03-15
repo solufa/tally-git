@@ -2,7 +2,7 @@ import React from 'react';
 import { DualBarChart } from '../charts/dual-bar-chart';
 import { StackedBarChart } from '../charts/stacked-bar-chart';
 import { prepareCodeVsTestChartData } from '../logic/pdf-pages/chart-page-logic';
-import type { AuthorLog, MonthColumns } from '../types';
+import type { AuthorLog, ContributorData, DeepReadonly, MonthColumns } from '../types';
 
 export function ActivityChartPage({
   monthColumns,
@@ -13,15 +13,15 @@ export function ActivityChartPage({
   deletionsData,
   contributorInsertionsData,
   contributorDeletionsData,
-}: Readonly<{
+}: DeepReadonly<{
   monthColumns: MonthColumns;
-  contributorCommitsData: readonly number[][];
-  contributorNamesByCommits: readonly string[];
-  contributorNamesByInsertions: readonly string[];
-  insertionsData: readonly number[];
-  deletionsData: readonly number[];
-  contributorInsertionsData: readonly number[][];
-  contributorDeletionsData: readonly number[][];
+  contributorCommitsData: ContributorData;
+  contributorNamesByCommits: string[];
+  contributorNamesByInsertions: string[];
+  insertionsData: number[];
+  deletionsData: number[];
+  contributorInsertionsData: ContributorData;
+  contributorDeletionsData: ContributorData;
 }>): React.ReactElement {
   return (
     <>
@@ -50,7 +50,7 @@ export function ActivityChartPage({
 export function CodeVsTestChartPage({
   monthColumns,
   authorLog,
-}: Readonly<{ monthColumns: MonthColumns; authorLog: AuthorLog }>): React.ReactElement {
+}: DeepReadonly<{ monthColumns: MonthColumns; authorLog: AuthorLog }>): React.ReactElement {
   const { totalCodeData, totalTestData, contributors, contributorCodeData, contributorTestData } =
     prepareCodeVsTestChartData(authorLog, monthColumns);
 

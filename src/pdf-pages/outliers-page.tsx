@@ -2,13 +2,13 @@ import { Text, View } from '@react-pdf/renderer';
 import React from 'react';
 import { INSERTIONS_THRESHOLD } from '../constants';
 import { prepareOutliersPageData } from '../logic/pdf-pages/outliers-page-logic';
-import type { CommitDetail } from '../types';
+import type { CommitDetail, DeepReadonly } from '../types';
 import { pdfStyles } from './pdf-styles';
 
 export function OutliersPage({
   outlierCommits,
-}: Readonly<{
-  outlierCommits: readonly CommitDetail[];
+}: DeepReadonly<{
+  outlierCommits: CommitDetail[];
 }>): React.ReactElement {
   const monthlyOutliers = prepareOutliersPageData(outlierCommits);
 

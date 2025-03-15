@@ -1,16 +1,16 @@
-import type { DirMetrics, FileMetric } from '../../types';
+import type { DeepReadonly, DirMetrics, FileMetric } from '../../types';
 
-export type ComplexityTableData = Readonly<{
+export type ComplexityTableData = DeepReadonly<{
   filename: string;
   functionName: string;
   complexity: number;
 }>;
 
-export type ComplexityTableResult = Readonly<{
-  frontendCognitiveTop10?: readonly ComplexityTableData[];
-  frontendCyclomaticTop10?: readonly ComplexityTableData[];
-  backendCognitiveTop10?: readonly ComplexityTableData[];
-  backendCyclomaticTop10?: readonly ComplexityTableData[];
+export type ComplexityTableResult = DeepReadonly<{
+  frontendCognitiveTop10?: ComplexityTableData[];
+  frontendCyclomaticTop10?: ComplexityTableData[];
+  backendCognitiveTop10?: ComplexityTableData[];
+  backendCyclomaticTop10?: ComplexityTableData[];
 }>;
 
 function getFileComplexity(

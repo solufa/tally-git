@@ -1,4 +1,6 @@
-export type AuthorSummary = Readonly<{
+import type { DeepReadonly } from '../../types';
+
+export type AuthorSummary = DeepReadonly<{
   author: string;
   totalCommits: number;
   totalInsertions: number;
@@ -21,7 +23,7 @@ export function calculateTotalDeletions(sortedAuthors: readonly AuthorSummary[])
 export function calculateOtherAuthorsStats(
   sortedAuthors: readonly AuthorSummary[],
   displayLimit: number = 20,
-): Readonly<{
+): DeepReadonly<{
   count: number;
   totalCommits: number;
   totalInsertions: number;
@@ -52,19 +54,19 @@ export function calculateOtherAuthorsStats(
 export function prepareSummaryPageData(
   sortedAuthors: readonly AuthorSummary[],
   displayLimit: number = 20,
-): Readonly<{
+): DeepReadonly<{
   totalCommits: number;
   totalInsertions: number;
   totalDeletions: number;
   authorCount: number;
-  displayedAuthors: readonly AuthorSummary[];
-  otherAuthors: Readonly<{
+  displayedAuthors: AuthorSummary[];
+  otherAuthors: {
     count: number;
     totalCommits: number;
     totalInsertions: number;
     totalDeletions: number;
     totalActiveMonths: number;
-  }>;
+  };
 }> {
   const totalCommits = calculateTotalCommits(sortedAuthors);
   const totalInsertions = calculateTotalInsertions(sortedAuthors);

@@ -1,13 +1,26 @@
 import { SCATTER_PLOT_AXIS_STEP, SCATTER_PLOT_REF_LINES } from '../../constants';
-import type { ChartMargin, DirMetrics, FileMetric } from '../../types';
+import type { ChartMargin, DeepReadonly, DirMetrics, FileMetric } from '../../types';
 
-export type ScatterPlotPoint = Readonly<{ x: number; y: number; name: string; filename: string }>;
+export type ScatterPlotPoint = DeepReadonly<{
+  x: number;
+  y: number;
+  name: string;
+  filename: string;
+}>;
 
-export type ScatterPlotData = Readonly<{ points: ScatterPlotPoint[]; maxX: number; maxY: number }>;
+export type ScatterPlotData = DeepReadonly<{
+  points: ScatterPlotPoint[];
+  maxX: number;
+  maxY: number;
+}>;
 
-export type ScatterPlotConfig = Readonly<{ width: number; height: number; margin: ChartMargin }>;
+export type ScatterPlotConfig = DeepReadonly<{
+  width: number;
+  height: number;
+  margin: ChartMargin;
+}>;
 
-export type ScatterPlotSvgPoint = Readonly<{
+export type ScatterPlotSvgPoint = DeepReadonly<{
   x: number;
   y: number;
   scaledX: number;
@@ -17,7 +30,7 @@ export type ScatterPlotSvgPoint = Readonly<{
   count: number;
 }>;
 
-export type ScatterPlotRefLine = Readonly<{
+export type ScatterPlotRefLine = DeepReadonly<{
   x: number;
   y: number;
   scaledX: number;
@@ -26,18 +39,18 @@ export type ScatterPlotRefLine = Readonly<{
   color: string;
 }>;
 
-export type AxisLabel = Readonly<{ value: number; position: number }>;
+export type AxisLabel = DeepReadonly<{ value: number; position: number }>;
 
-export type ScatterPlotSvgData = Readonly<{
+export type ScatterPlotSvgData = DeepReadonly<{
   width: number;
   height: number;
   margin: ChartMargin;
   chartWidth: number;
   chartHeight: number;
-  xAxisLabels: readonly AxisLabel[];
-  yAxisLabels: readonly AxisLabel[];
-  points: readonly ScatterPlotSvgPoint[];
-  refLines: readonly ScatterPlotRefLine[];
+  xAxisLabels: AxisLabel[];
+  yAxisLabels: AxisLabel[];
+  points: ScatterPlotSvgPoint[];
+  refLines: ScatterPlotRefLine[];
 }>;
 
 export function prepareComplexityScatterPlotData(
@@ -141,7 +154,7 @@ export const prepareScatterPlotSvgData = (
   };
 };
 
-export type ComplexityChartData = Readonly<{
+export type ComplexityChartData = DeepReadonly<{
   backendSvgData?: ScatterPlotSvgData;
   frontendSvgData?: ScatterPlotSvgData;
 }>;

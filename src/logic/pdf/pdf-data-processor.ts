@@ -1,8 +1,15 @@
-import type { AuthorLog, MonthColumns, ProjectConfig, ProjectDirType } from '../../types';
+import type {
+  AuthorLog,
+  ContributorData,
+  DeepReadonly,
+  MonthColumns,
+  ProjectConfig,
+  ProjectDirType,
+} from '../../types';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 import { getAggregateMonthValue, getMonthDataValue } from './pdf-data-utils';
 
-export type AuthorTotal = Readonly<{
+export type AuthorTotal = DeepReadonly<{
   author: string;
   totalCommits: number;
   totalInsertions: number;
@@ -10,24 +17,24 @@ export type AuthorTotal = Readonly<{
   activeMonths: number;
 }>;
 
-export type MonthlyTotal = Readonly<{
+export type MonthlyTotal = DeepReadonly<{
   month: string;
   commits: number;
   insertions: number;
   deletions: number;
 }>;
 
-export type PdfData = Readonly<{
-  sortedAuthors: readonly AuthorTotal[];
-  monthlyTotals: readonly MonthlyTotal[];
-  contributorNamesByCommits: readonly string[];
-  contributorNamesByInsertions: readonly string[];
-  insertionsData: readonly number[];
-  deletionsData: readonly number[];
-  contributorCommitsData: readonly number[][];
-  contributorInsertionsData: readonly number[][];
-  contributorDeletionsData: readonly number[][];
-  dirTypesWithTests: readonly ProjectDirType[];
+export type PdfData = DeepReadonly<{
+  sortedAuthors: AuthorTotal[];
+  monthlyTotals: MonthlyTotal[];
+  contributorNamesByCommits: string[];
+  contributorNamesByInsertions: string[];
+  insertionsData: number[];
+  deletionsData: number[];
+  contributorCommitsData: ContributorData;
+  contributorInsertionsData: ContributorData;
+  contributorDeletionsData: ContributorData;
+  dirTypesWithTests: ProjectDirType[];
 }>;
 
 export function calculateAuthorTotals(authorLog: AuthorLog): readonly AuthorTotal[] {

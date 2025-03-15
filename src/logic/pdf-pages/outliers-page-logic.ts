@@ -1,8 +1,8 @@
-import type { CommitDetail } from '../../types';
+import type { CommitDetail, DeepReadonly } from '../../types';
 import { compareDatesDesc, MONTH_FORMAT } from '../../utils/date-utils';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 
-export type MonthlyOutlierData = Readonly<{
+export type MonthlyOutlierData = DeepReadonly<{
   month: string;
   commits: number;
   insertions: number;

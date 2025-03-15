@@ -1,6 +1,6 @@
-import type { Insertions } from '../types';
+import type { DeepReadonly, Insertions } from '../types';
 
-function calculateTypeInsertions(typeData?: Readonly<{ code: number; test?: number }>): number {
+function calculateTypeInsertions(typeData?: DeepReadonly<{ code: number; test?: number }>): number {
   return typeData ? typeData.code + (typeData.test ?? 0) : 0;
 }
 

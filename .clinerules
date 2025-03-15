@@ -45,20 +45,20 @@ ESLintエラーを解消した後、必ず `npm run typecheck` を実行し、�
 interfaceを使わず、typeで型を定義する。
 型アサーション（as キーワード）は使用禁止。
 
-ここに定義するオブジェクトの型には全てReadonlyを付与する。
+定義するオブジェクトの型には全てDeepReadonlyを付与する。
 配列やタプルにはreadonly修飾子を付与する。
-Readonlyが付与されている型は実質DeepReadonlyとして扱う。
+2次元以上の配列にはDeepReadonlyを付与する。
 importした型にはすでにReadonlyが付与されているので追加のReadonlyを付与してはいけない。
 importした型で配列を定義するときはreadonlyを付与する。
 
 ```ts
-import { ImportedType } from './types';
+import type { DeepReadonly, ImportedType } from './types';
 
 // ここにコメントを書かない
-type ObjectType = Readonly<{
+type ObjectType = DeepReadonly<{
   text: string;
-  numberArray: readonly number[];
-  importeds: readonly ImportedType[];
+  numberArray: number[];
+  importeds: ImportedType[];
 }>;
 
 // ここにコメントを書かない
@@ -73,9 +73,8 @@ type ImportedTypes = readonly ImportedType[];
 ライブラリに強制されない限り、クラスを使わず関数宣言を使う。
 関数自体を説明すると認知コストが上がるので関数宣言の上にコメントを書いてはいけない。
 
-配列の引数と返り値にはreadonly修飾子を、オブジェクトの引数と返り値にはReadonlyを付与する。
+配列の引数と返り値にはreadonly修飾子を、オブジェクトの引数と返り値には`types.ts`のDeepReadonlyを付与する。
 デフォルト引数はESLintの複雑度計測対象に含まれているので、エラーを回避するため極力使用しない。
-すでにReadonlyな型にReadonlyを追加で無駄に付与してはいけない。
 このプロジェクトのTypeScriptバージョンは5.7なので型述語の型推論が可能である。
 
 ```ts

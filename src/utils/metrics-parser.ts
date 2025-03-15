@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { z } from 'zod';
-import type { FileMetric, FunctionMetric } from '../types';
+import type { DeepReadonly, FileMetric, FunctionMetric } from '../types';
 import { condition } from './condition';
 
 type LineType = 'empty' | 'filename' | 'header' | 'separator' | 'functionMetrics';
@@ -78,7 +78,7 @@ export function processLine(
   result: readonly FileMetric[],
   currentFile: FileMetric | null,
   isParsingFunctions: boolean,
-): readonly [readonly FileMetric[], FileMetric | null, boolean] {
+): DeepReadonly<[FileMetric[], FileMetric | null, boolean]> {
   const trimmedLine = line.trim();
   const lineType = getLineType(trimmedLine);
 

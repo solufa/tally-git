@@ -1,4 +1,4 @@
-import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../../types';
+import type { AnonymousAuthors, AuthorLog, DeepReadonly, MonthColumns } from '../../types';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 
 export function generatePromptTemplate(
@@ -73,7 +73,7 @@ export function generateCsvDataForPrompt(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
   anonymousMap: AnonymousAuthors,
-): Readonly<{ header: string; csvList: readonly { title: string; rows: readonly string[] }[] }> {
+): DeepReadonly<{ header: string; csvList: { title: string; rows: string[] }[] }> {
   const header = `,${monthColumns.join(',')}`;
   const commitsRows = Object.entries(authorLog).map(([author, monthData]) => {
     const anonymousAuthor = anonymousMap[author];

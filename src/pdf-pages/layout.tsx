@@ -1,13 +1,13 @@
 import { Page, Text, View } from '@react-pdf/renderer';
 import React from 'react';
-import type { MonthColumns } from '../types';
+import type { DeepReadonly, MonthColumns } from '../types';
 import { pdfStyles } from './pdf-styles';
 
 export function PdfLayout({
   projectName,
   monthColumns,
   children,
-}: Readonly<{
+}: DeepReadonly<{
   projectName: string;
   monthColumns: MonthColumns;
   children: React.ReactNode;

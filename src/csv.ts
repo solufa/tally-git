@@ -63,45 +63,33 @@ function formatDirMetrics(dirMetrics: DirMetrics): string {
 
   if (dirMetrics.frontend) {
     sections.push(`フロントエンド
-ファイル名,関数名,フィールド数,循環的複雑度,認知的複雑度,行数,コード行数
+ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数
 ${dirMetrics.frontend
-  .map((file) =>
-    file.functions
-      .map(
-        (func) =>
-          `${file.filename},${func.name},${func.fields},${func.cyclo},${func.cognitive},${func.lines},${func.loc}`,
-      )
-      .join('\n'),
+  .map(
+    (file) =>
+      `${file.filePath},1,${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
   )
   .join('\n')}`);
   }
 
   if (dirMetrics.backend) {
     sections.push(`バックエンド
-ファイル名,関数名,フィールド数,循環的複雑度,認知的複雑度,行数,コード行数
+ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数
 ${dirMetrics.backend
-  .map((file) =>
-    file.functions
-      .map(
-        (func) =>
-          `${file.filename},${func.name},${func.fields},${func.cyclo},${func.cognitive},${func.lines},${func.loc}`,
-      )
-      .join('\n'),
+  .map(
+    (file) =>
+      `${file.filePath},1,${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
   )
   .join('\n')}`);
   }
 
   if (dirMetrics.infra) {
     sections.push(`インフラ
-ファイル名,関数名,フィールド数,循環的複雑度,認知的複雑度,行数,コード行数
+ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数
 ${dirMetrics.infra
-  .map((file) =>
-    file.functions
-      .map(
-        (func) =>
-          `${file.filename},${func.name},${func.fields},${func.cyclo},${func.cognitive},${func.lines},${func.loc}`,
-      )
-      .join('\n'),
+  .map(
+    (file) =>
+      `${file.filePath},1,${file.funcs},${file.fields},${file.cyclo},${file.complex},${file.LCOM},${file.lines},${file.LOC}`,
   )
   .join('\n')}`);
   }

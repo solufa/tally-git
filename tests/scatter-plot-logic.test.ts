@@ -8,14 +8,27 @@ import {
 
 describe('scatter-plot-logic', () => {
   describe('prepareComplexityScatterPlotData', () => {
-    it('関数メトリクスデータがある場合は正しい結果を返す', () => {
+    it('ファイルメトリクスデータがある場合は正しい結果を返す', () => {
       const result = prepareComplexityScatterPlotData([
         {
-          filename: 'test.ts',
-          functions: [
-            { name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 },
-            { name: 'func2', fields: 2, cyclo: 3, cognitive: 4, lines: 15, loc: 12 },
-          ],
+          filePath: 'test.ts',
+          funcs: 2,
+          fields: 3,
+          cyclo: 2,
+          complex: 3,
+          LCOM: 0,
+          lines: 10,
+          LOC: 8,
+        },
+        {
+          filePath: 'test2.ts',
+          funcs: 1,
+          fields: 2,
+          cyclo: 3,
+          complex: 4,
+          LCOM: 0,
+          lines: 15,
+          LOC: 12,
         },
       ]);
       expect(result.points).toHaveLength(2);
@@ -24,14 +37,12 @@ describe('scatter-plot-logic', () => {
       expect(result.points[0]).toEqual({
         x: 2,
         y: 3,
-        name: 'func1',
-        filename: 'test.ts',
+        filePath: 'test.ts',
       });
       expect(result.points[1]).toEqual({
         x: 3,
         y: 4,
-        name: 'func2',
-        filename: 'test.ts',
+        filePath: 'test2.ts',
       });
     });
   });
@@ -40,8 +51,8 @@ describe('scatter-plot-logic', () => {
     it('正しいSVGデータを生成する', () => {
       const scatterPlotData = {
         points: [
-          { x: 2, y: 3, name: 'func1', filename: 'test.ts' },
-          { x: 3, y: 4, name: 'func2', filename: 'test.ts' },
+          { x: 2, y: 3, filePath: 'test.ts' },
+          { x: 3, y: 4, filePath: 'test2.ts' },
         ],
         maxX: 3,
         maxY: 4,
@@ -86,15 +97,17 @@ describe('scatter-plot-logic', () => {
       expect(result.points[0]!.y).toBe(3);
       expect(result.points[0]!.scaledX).toBeCloseTo(76.4, 1);
       expect(result.points[0]!.scaledY).toBeCloseTo(259.5, 1);
+      expect(result.points[0]!.filePath).toBe('test.ts');
       expect(result.points[1]!.x).toBe(3);
       expect(result.points[1]!.y).toBe(4);
       expect(result.points[1]!.scaledX).toBeCloseTo(84.6, 1);
       expect(result.points[1]!.scaledY).toBeCloseTo(246, 1);
+      expect(result.points[1]!.filePath).toBe('test2.ts');
     });
 
     it('maxXとmaxYが0の場合でも正しく処理する', () => {
       const scatterPlotData = {
-        points: [{ x: 0, y: 0, name: 'func1', filename: 'test.ts' }],
+        points: [{ x: 0, y: 0, filePath: 'test.ts' }],
         maxX: 0,
         maxY: 0,
       };
@@ -134,6 +147,7 @@ describe('scatter-plot-logic', () => {
       expect(result.points[0]!.y).toBe(0);
       expect(result.points[0]!.scaledX).toBe(60); // margin.left
       expect(result.points[0]!.scaledY).toBe(300); // chartHeight + margin.top
+      expect(result.points[0]!.filePath).toBe('test.ts');
     });
 
     it('maxXとmaxYが0で、SCATTER_PLOT_REF_LINESも0の場合でも正しく処理する', () => {
@@ -141,7 +155,7 @@ describe('scatter-plot-logic', () => {
       vi.spyOn(constants, 'SCATTER_PLOT_REF_LINES', 'get').mockReturnValue(mockRefLines);
 
       const scatterPlotData = {
-        points: [{ x: 0, y: 0, name: 'func1', filename: 'test.ts' }],
+        points: [{ x: 0, y: 0, filePath: 'test.ts' }],
         maxX: 0,
         maxY: 0,
       };
@@ -158,6 +172,7 @@ describe('scatter-plot-logic', () => {
       expect(result.points[0]!.y).toBe(0);
       expect(result.points[0]!.scaledX).toBe(60); // margin.left
       expect(result.points[0]!.scaledY).toBe(300); // chartHeight + margin.top
+      expect(result.points[0]!.filePath).toBe('test.ts');
 
       // maxXが0の場合、X軸のラベルは0のみが生成される
       expect(result.xAxisLabels).toEqual([
@@ -181,20 +196,32 @@ describe('scatter-plot-logic', () => {
       margin: { top: 30, right: 30, bottom: 50, left: 60 },
     };
 
-    const backendFunction = {
-      filename: 'backend.ts',
-      functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+    const backendFile = {
+      filePath: 'backend.ts',
+      funcs: 1,
+      fields: 1,
+      cyclo: 2,
+      complex: 3,
+      LCOM: 0,
+      lines: 10,
+      LOC: 8,
     };
 
-    const frontendFunction = {
-      filename: 'frontend.ts',
-      functions: [{ name: 'func2', fields: 2, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
+    const frontendFile = {
+      filePath: 'frontend.ts',
+      funcs: 1,
+      fields: 2,
+      cyclo: 3,
+      complex: 4,
+      LCOM: 0,
+      lines: 15,
+      LOC: 12,
     };
 
     it('バックエンドとフロントエンドのデータがある場合は両方のSVGデータを返す', () => {
       const dirMetrics = {
-        backend: [backendFunction],
-        frontend: [frontendFunction],
+        backend: [backendFile],
+        frontend: [frontendFile],
       };
 
       const result = prepareComplexityChartData(dirMetrics, chartConfig);
@@ -204,13 +231,13 @@ describe('scatter-plot-logic', () => {
 
       expect(result.backendSvgData!.points).toHaveLength(1);
       expect(result.frontendSvgData!.points).toHaveLength(1);
-      expect(result.backendSvgData!.points[0]!.name).toBe('func1');
-      expect(result.frontendSvgData!.points[0]!.name).toBe('func2');
+      expect(result.backendSvgData!.points[0]!.filePath).toBe('backend.ts');
+      expect(result.frontendSvgData!.points[0]!.filePath).toBe('frontend.ts');
     });
 
     it('バックエンドのデータのみがある場合はバックエンドのSVGデータのみを返す', () => {
       const dirMetrics = {
-        backend: [backendFunction],
+        backend: [backendFile],
       };
 
       const result = prepareComplexityChartData(dirMetrics, chartConfig);
@@ -219,12 +246,12 @@ describe('scatter-plot-logic', () => {
       expect(result.frontendSvgData).toBeUndefined();
 
       expect(result.backendSvgData!.points).toHaveLength(1);
-      expect(result.backendSvgData!.points[0]!.name).toBe('func1');
+      expect(result.backendSvgData!.points[0]!.filePath).toBe('backend.ts');
     });
 
     it('フロントエンドのデータのみがある場合はフロントエンドのSVGデータのみを返す', () => {
       const dirMetrics = {
-        frontend: [frontendFunction],
+        frontend: [frontendFile],
       };
 
       const result = prepareComplexityChartData(dirMetrics, chartConfig);
@@ -233,7 +260,7 @@ describe('scatter-plot-logic', () => {
       expect(result.frontendSvgData).toBeDefined();
 
       expect(result.frontendSvgData!.points).toHaveLength(1);
-      expect(result.frontendSvgData!.points[0]!.name).toBe('func2');
+      expect(result.frontendSvgData!.points[0]!.filePath).toBe('frontend.ts');
     });
   });
 });

@@ -154,8 +154,14 @@ describe('toPdf', () => {
     const dirMetrics: DirMetrics = {
       backend: [
         {
-          filename: 'backend.js',
-          functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+          filePath: 'backend.js',
+          funcs: 1,
+          fields: 1,
+          cyclo: 2,
+          complex: 3,
+          LCOM: 0,
+          lines: 10,
+          LOC: 8,
         },
       ],
     };
@@ -178,8 +184,14 @@ describe('toPdf', () => {
     const dirMetrics: DirMetrics = {
       frontend: [
         {
-          filename: 'frontend.js',
-          functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+          filePath: 'frontend.js',
+          funcs: 1,
+          fields: 1,
+          cyclo: 2,
+          complex: 3,
+          LCOM: 0,
+          lines: 10,
+          LOC: 8,
         },
       ],
     };

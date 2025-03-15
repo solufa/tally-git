@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { DirMetrics, DirType, FileMetric, ProjectConfig } from '../types';
 import { getDirectoryMetrics } from './directory-metrics';
 
@@ -12,12 +13,18 @@ async function getMetricsForPath(
   return metrics
     .filter((metric) => {
       return ![...(dirType.tests ?? []), ...(dirType.exclude ?? [])].some((path) =>
-        metric.filename.includes(`${basePath}/${path}`),
+        metric.filePath.includes(`${basePath}/${path}`),
       );
     })
     .map((metric) => ({
-      filename: metric.filename.replace(`${basePath}/`, ''),
-      functions: metric.functions,
+      filePath: z.string().parse(metric.filePath.split(`${basePath}/`)[1]),
+      funcs: metric.funcs,
+      fields: metric.fields,
+      cyclo: metric.cyclo,
+      complex: metric.complex,
+      LCOM: metric.LCOM,
+      lines: metric.lines,
+      LOC: metric.LOC,
     }));
 }
 
@@ -34,7 +41,7 @@ async function processDirType(
     metrics.push(...(await getMetricsForPath(targetDir, path, dirType)));
   }
 
-  return metrics.sort((a, b) => a.filename.localeCompare(b.filename, 'ja', { numeric: true }));
+  return metrics.sort((a, b) => a.filePath.localeCompare(b.filePath, 'ja', { numeric: true }));
 }
 
 export async function getDirMetrics(

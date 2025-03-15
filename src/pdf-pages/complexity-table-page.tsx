@@ -6,7 +6,7 @@ import { pdfStyles } from './pdf-styles';
 
 type ComplexityTableProps = DeepReadonly<{
   title: string;
-  data?: { filename: string; functionName: string; complexity: number }[];
+  data?: { filename: string; lines: number; complexity: number }[];
 }>;
 
 function ComplexityTable({ title, data }: ComplexityTableProps): React.ReactNode {
@@ -19,16 +19,14 @@ function ComplexityTable({ title, data }: ComplexityTableProps): React.ReactNode
       <Text style={{ fontSize: 14, marginBottom: 5, fontWeight: 'bold' }}>{title}</Text>
       <View style={pdfStyles.table}>
         <View style={pdfStyles.tableHeaderRow}>
-          <Text style={[pdfStyles.tableHeader, { width: '50%', padding: 5 }]}>ファイルパス</Text>
-          <Text style={[pdfStyles.tableHeader, { width: '30%', padding: 5 }]}>関数名</Text>
+          <Text style={[pdfStyles.tableHeader, { width: '60%', padding: 5 }]}>ファイルパス</Text>
+          <Text style={[pdfStyles.tableHeader, { width: '20%', padding: 5 }]}>行数</Text>
           <Text style={[pdfStyles.tableHeader, { width: '20%', padding: 5 }]}>複雑度</Text>
         </View>
         {data.map((item, index) => (
           <View key={index} style={pdfStyles.tableRow}>
-            <Text style={[pdfStyles.tableCell, { width: '50%', padding: 5 }]}>{item.filename}</Text>
-            <Text style={[pdfStyles.tableCell, { width: '30%', padding: 5 }]}>
-              {item.functionName}
-            </Text>
+            <Text style={[pdfStyles.tableCell, { width: '60%', padding: 5 }]}>{item.filename}</Text>
+            <Text style={[pdfStyles.tableCell, { width: '20%', padding: 5 }]}>{item.lines}</Text>
             <Text style={[pdfStyles.tableCell, { width: '20%', padding: 5 }]}>
               {item.complexity}
             </Text>

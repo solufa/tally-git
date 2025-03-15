@@ -46,10 +46,14 @@ describe('project-metrics', () => {
       if (path === 'test-dir/src/frontend') {
         return Promise.resolve([
           {
-            filename: 'test-dir/src/frontend/component.tsx',
-            functions: [
-              { name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 },
-            ],
+            filePath: 'test-dir/src/frontend/component.tsx',
+            funcs: 1,
+            fields: 0,
+            cyclo: 1,
+            complex: 0,
+            LCOM: 0,
+            lines: 10,
+            LOC: 8,
           },
         ]);
       }
@@ -73,7 +77,7 @@ describe('project-metrics', () => {
     expect(result).not.toHaveProperty('backend');
     expect(result).not.toHaveProperty('infra');
     expect(result.frontend).toHaveLength(1);
-    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
+    expect(result.frontend![0]!.filePath).toBe('src/frontend/component.tsx');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
@@ -83,10 +87,14 @@ describe('project-metrics', () => {
       if (path === 'test-dir/src/backend') {
         return Promise.resolve([
           {
-            filename: 'test-dir/src/backend/api.ts',
-            functions: [
-              { name: 'fetchData', fields: 0, cyclo: 2, cognitive: 1, lines: 15, loc: 12 },
-            ],
+            filePath: 'test-dir/src/backend/api.ts',
+            funcs: 1,
+            fields: 0,
+            cyclo: 2,
+            complex: 1,
+            LCOM: 0,
+            lines: 15,
+            LOC: 12,
           },
         ]);
       }
@@ -110,7 +118,7 @@ describe('project-metrics', () => {
     expect(result).toHaveProperty('backend');
     expect(result).not.toHaveProperty('infra');
     expect(result.backend).toHaveLength(1);
-    expect(result.backend![0]!.filename).toBe('src/backend/api.ts');
+    expect(result.backend![0]!.filePath).toBe('src/backend/api.ts');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
@@ -120,10 +128,14 @@ describe('project-metrics', () => {
       if (path === 'test-dir/src/infra') {
         return Promise.resolve([
           {
-            filename: 'test-dir/src/infra/config.ts',
-            functions: [
-              { name: 'loadConfig', fields: 0, cyclo: 1, cognitive: 0, lines: 8, loc: 6 },
-            ],
+            filePath: 'test-dir/src/infra/config.ts',
+            funcs: 1,
+            fields: 0,
+            cyclo: 1,
+            complex: 0,
+            LCOM: 0,
+            lines: 8,
+            LOC: 6,
           },
         ]);
       }
@@ -147,7 +159,7 @@ describe('project-metrics', () => {
     expect(result).not.toHaveProperty('backend');
     expect(result).toHaveProperty('infra');
     expect(result.infra).toHaveLength(1);
-    expect(result.infra![0]!.filename).toBe('src/infra/config.ts');
+    expect(result.infra![0]!.filePath).toBe('src/infra/config.ts');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
@@ -157,28 +169,40 @@ describe('project-metrics', () => {
       if (path === 'test-dir/src/frontend') {
         return Promise.resolve([
           {
-            filename: 'test-dir/src/frontend/component.tsx',
-            functions: [
-              { name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 },
-            ],
+            filePath: 'test-dir/src/frontend/component.tsx',
+            funcs: 1,
+            fields: 0,
+            cyclo: 1,
+            complex: 0,
+            LCOM: 0,
+            lines: 10,
+            LOC: 8,
           },
         ]);
       } else if (path === 'test-dir/src/backend') {
         return Promise.resolve([
           {
-            filename: 'test-dir/src/backend/api.ts',
-            functions: [
-              { name: 'fetchData', fields: 0, cyclo: 2, cognitive: 1, lines: 15, loc: 12 },
-            ],
+            filePath: 'test-dir/src/backend/api.ts',
+            funcs: 1,
+            fields: 0,
+            cyclo: 2,
+            complex: 1,
+            LCOM: 0,
+            lines: 15,
+            LOC: 12,
           },
         ]);
       } else if (path === 'test-dir/src/infra') {
         return Promise.resolve([
           {
-            filename: 'test-dir/src/infra/config.ts',
-            functions: [
-              { name: 'loadConfig', fields: 0, cyclo: 1, cognitive: 0, lines: 8, loc: 6 },
-            ],
+            filePath: 'test-dir/src/infra/config.ts',
+            funcs: 1,
+            fields: 0,
+            cyclo: 1,
+            complex: 0,
+            LCOM: 0,
+            lines: 8,
+            LOC: 6,
           },
         ]);
       }
@@ -204,9 +228,9 @@ describe('project-metrics', () => {
     expect(result.frontend).toHaveLength(1);
     expect(result.backend).toHaveLength(1);
     expect(result.infra).toHaveLength(1);
-    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
-    expect(result.backend![0]!.filename).toBe('src/backend/api.ts');
-    expect(result.infra![0]!.filename).toBe('src/infra/config.ts');
+    expect(result.frontend![0]!.filePath).toBe('src/frontend/component.tsx');
+    expect(result.backend![0]!.filePath).toBe('src/backend/api.ts');
+    expect(result.infra![0]!.filePath).toBe('src/infra/config.ts');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
@@ -214,12 +238,24 @@ describe('project-metrics', () => {
     // getDirectoryMetricsのモック実装
     vi.mocked(getDirectoryMetrics).mockResolvedValue([
       {
-        filename: 'test-dir/src/frontend/component.tsx',
-        functions: [{ name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 }],
+        filePath: 'test-dir/src/frontend/component.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
       {
-        filename: 'test-dir/tests/frontend/component.test.tsx',
-        functions: [{ name: 'testComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 5, loc: 4 }],
+        filePath: 'test-dir/tests/frontend/component.test.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 5,
+        LOC: 4,
       },
     ]);
 
@@ -238,7 +274,7 @@ describe('project-metrics', () => {
     // 期待される結果（テストファイルが除外されている）
     expect(result).toHaveProperty('frontend');
     expect(result.frontend).toHaveLength(1);
-    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
+    expect(result.frontend![0]!.filePath).toBe('src/frontend/component.tsx');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
@@ -246,18 +282,34 @@ describe('project-metrics', () => {
     // getDirectoryMetricsのモック実装
     vi.mocked(getDirectoryMetrics).mockResolvedValue([
       {
-        filename: 'test-dir/src/frontend/component.tsx',
-        functions: [{ name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 }],
+        filePath: 'test-dir/src/frontend/component.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
       {
-        filename: 'test-dir/src/frontend/legacy/old-component.tsx',
-        functions: [
-          { name: 'OldComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 15, loc: 12 },
-        ],
+        filePath: 'test-dir/src/frontend/legacy/old-component.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 15,
+        LOC: 12,
       },
       {
-        filename: 'test-dir/src/frontend/vendor/third-party.tsx',
-        functions: [{ name: 'ThirdParty', fields: 0, cyclo: 1, cognitive: 0, lines: 20, loc: 18 }],
+        filePath: 'test-dir/src/frontend/vendor/third-party.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 20,
+        LOC: 18,
       },
     ]);
 
@@ -279,7 +331,7 @@ describe('project-metrics', () => {
     // 期待される結果（除外パスのファイルが除外されている）
     expect(result).toHaveProperty('frontend');
     expect(result.frontend).toHaveLength(1);
-    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
+    expect(result.frontend![0]!.filePath).toBe('src/frontend/component.tsx');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 
@@ -287,18 +339,34 @@ describe('project-metrics', () => {
     // getDirectoryMetricsのモック実装
     vi.mocked(getDirectoryMetrics).mockResolvedValue([
       {
-        filename: 'test-dir/src/frontend/component.tsx',
-        functions: [{ name: 'Component', fields: 0, cyclo: 1, cognitive: 0, lines: 10, loc: 8 }],
+        filePath: 'test-dir/src/frontend/component.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
       {
-        filename: 'test-dir/tests/frontend/component.test.tsx',
-        functions: [{ name: 'TestComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 5, loc: 4 }],
+        filePath: 'test-dir/tests/frontend/component.test.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 5,
+        LOC: 4,
       },
       {
-        filename: 'test-dir/src/frontend/legacy/old-component.tsx',
-        functions: [
-          { name: 'OldComponent', fields: 0, cyclo: 1, cognitive: 0, lines: 15, loc: 12 },
-        ],
+        filePath: 'test-dir/src/frontend/legacy/old-component.tsx',
+        funcs: 1,
+        fields: 0,
+        cyclo: 1,
+        complex: 0,
+        LCOM: 0,
+        lines: 15,
+        LOC: 12,
       },
     ]);
 
@@ -321,7 +389,7 @@ describe('project-metrics', () => {
     // 期待される結果（テストファイルと除外パスのファイルが除外されている）
     expect(result).toHaveProperty('frontend');
     expect(result.frontend).toHaveLength(1);
-    expect(result.frontend![0]!.filename).toBe('src/frontend/component.tsx');
+    expect(result.frontend![0]!.filePath).toBe('src/frontend/component.tsx');
     expect(getDirectoryMetrics).toHaveBeenCalledTimes(3);
   });
 

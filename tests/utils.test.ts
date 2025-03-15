@@ -21,144 +21,82 @@ describe('metrics-parser', () => {
     expect(result).toEqual([]);
   });
 
-  test('1つのファイルと1つの関数を処理できる', () => {
-    const text = `src/index.ts
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
- run           |      0 |     3 |         4 |    68 |  50
+  test('1つのファイルを処理できる', () => {
+    const text = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+ src/index.ts                                                  |       1 |     1 |      0 |     3 |       4 |    0 |    68 |   50
 `;
     const result = metricsParser(text);
     expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/index.ts');
-    expect(result[0]!.functions).toHaveLength(1);
-    expect(result[0]!.functions[0]!).toEqual({
-      name: 'run',
-      fields: 0,
-      cyclo: 3,
-      cognitive: 4,
-      lines: 68,
-      loc: 50,
-    });
+    expect(result[0]!.filePath).toBe('src/index.ts');
+    expect(result[0]!.funcs).toBe(1);
+    expect(result[0]!.fields).toBe(0);
+    expect(result[0]!.cyclo).toBe(3);
+    expect(result[0]!.complex).toBe(4);
+    expect(result[0]!.LCOM).toBe(0);
+    expect(result[0]!.lines).toBe(68);
+    expect(result[0]!.LOC).toBe(50);
   });
 
-  test('複数のファイルと複数の関数を処理できる', () => {
-    const text = `src/index.ts
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
- run           |      0 |     3 |         4 |    68 |  50
- parsePeriod   |      0 |     2 |         2 |     5 |   4
-
-src/utils/date-utils.ts
-
- function         | fields | cyclo | cognitive | lines | loc
-------------------+--------+-------+-----------+-------+-----
- parseDate        |      0 |     1 |         0 |     3 |   3
- getCurrentDate   |      0 |     1 |         0 |     3 |   3
+  test('複数のファイルを処理できる', () => {
+    const text = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+ src/index.ts                                                  |       1 |     2 |      0 |     5 |       6 |    0 |    73 |   54
+ src/utils/date-utils.ts                                       |       1 |     2 |      0 |     2 |       0 |    0 |     6 |    6
 `;
     const result = metricsParser(text);
     expect(result).toHaveLength(2);
 
-    expect(result[0]!.filename).toBe('src/index.ts');
-    expect(result[0]!.functions).toHaveLength(2);
-    expect(result[0]!.functions[0]!).toEqual({
-      name: 'run',
-      fields: 0,
-      cyclo: 3,
-      cognitive: 4,
-      lines: 68,
-      loc: 50,
-    });
-    expect(result[0]!.functions[1]!).toEqual({
-      name: 'parsePeriod',
-      fields: 0,
-      cyclo: 2,
-      cognitive: 2,
-      lines: 5,
-      loc: 4,
-    });
+    expect(result[0]!.filePath).toBe('src/index.ts');
+    expect(result[0]!.funcs).toBe(2);
+    expect(result[0]!.fields).toBe(0);
+    expect(result[0]!.cyclo).toBe(5);
+    expect(result[0]!.complex).toBe(6);
+    expect(result[0]!.LCOM).toBe(0);
+    expect(result[0]!.lines).toBe(73);
+    expect(result[0]!.LOC).toBe(54);
 
-    expect(result[1]!.filename).toBe('src/utils/date-utils.ts');
-    expect(result[1]!.functions).toHaveLength(2);
-    expect(result[1]!.functions[0]!).toEqual({
-      name: 'parseDate',
-      fields: 0,
-      cyclo: 1,
-      cognitive: 0,
-      lines: 3,
-      loc: 3,
-    });
-    expect(result[1]!.functions[1]!).toEqual({
-      name: 'getCurrentDate',
-      fields: 0,
-      cyclo: 1,
-      cognitive: 0,
-      lines: 3,
-      loc: 3,
-    });
-  });
-
-  test('不正な形式のテキストを処理できる', () => {
-    const text = `不正な形式のテキスト`;
-    const result = metricsParser(text);
-    expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('不正な形式のテキスト');
-    expect(result[0]!.functions).toHaveLength(0);
+    expect(result[1]!.filePath).toBe('src/utils/date-utils.ts');
+    expect(result[1]!.funcs).toBe(2);
+    expect(result[1]!.fields).toBe(0);
+    expect(result[1]!.cyclo).toBe(2);
+    expect(result[1]!.complex).toBe(0);
+    expect(result[1]!.LCOM).toBe(0);
+    expect(result[1]!.lines).toBe(6);
+    expect(result[1]!.LOC).toBe(6);
   });
 
   test('ヘッダーと区切り線のみのファイルを処理できる', () => {
-    const text = `src/empty.ts
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
+    const text = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
 `;
     const result = metricsParser(text);
-    expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/empty.ts');
-    expect(result[0]!.functions).toHaveLength(0);
-  });
-
-  test('ヘッダーのないファイルを処理できる', () => {
-    const text = `src/no-header.ts
-
- run           |      0 |     3 |         4 |    68 |  50
-`;
-    const result = metricsParser(text);
-    expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/no-header.ts');
-    // ヘッダーがない場合は関数が認識されないことを期待
-    expect(result[0]!.functions).toHaveLength(0);
+    expect(result).toHaveLength(0);
   });
 
   test('区切り線のないファイルを処理できる', () => {
-    const text = `src/no-separator.ts
-
- function      | fields | cyclo | cognitive | lines | loc
- run           |      0 |     3 |         4 |    68 |  50
+    const text = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+ src/no-separator.ts                                           |       1 |     1 |      0 |     3 |       4 |    0 |    68 |   50
 `;
     const result = metricsParser(text);
     expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/no-separator.ts');
-    expect(result[0]!.functions).toHaveLength(1);
-    expect(result[0]!.functions[0]!.name).toBe('run');
+    expect(result[0]!.filePath).toBe('src/no-separator.ts');
+    expect(result[0]!.funcs).toBe(1);
   });
 
   test('複数の空行を含むファイルを処理できる', () => {
-    const text = `src/multiple-empty-lines.ts
+    const text = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
 
 
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
- run           |      0 |     3 |         4 |    68 |  50
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+ src/multiple-empty-lines.ts                                   |       1 |     1 |      0 |     3 |       4 |    0 |    68 |   50
 
 
 `;
     const result = metricsParser(text);
     expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/multiple-empty-lines.ts');
-    expect(result[0]!.functions).toHaveLength(1);
+    expect(result[0]!.filePath).toBe('src/multiple-empty-lines.ts');
+    expect(result[0]!.funcs).toBe(1);
   });
 
   test('空のテキストを処理できる（再テスト）', () => {
@@ -166,42 +104,18 @@ src/utils/date-utils.ts
     expect(result).toEqual([]);
   });
 
-  test('ファイル名のみのテキストを処理できる', () => {
-    const result = metricsParser('src/filename-only.ts');
-    expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/filename-only.ts');
-    expect(result[0]!.functions).toHaveLength(0);
-  });
-
-  test('不正な形式の関数メトリクス行を処理できる', () => {
-    const text = `src/invalid-metrics.ts
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
- run           |      x |     y |         z |    68 |  50
+  test('不正な形式のファイルメトリクス行を処理できる', () => {
+    const text = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+ src/invalid-metrics.ts                                        |       x |     y |      z |     a |       b |    c |    68 |   50
 `;
     const result = metricsParser(text);
     expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/invalid-metrics.ts');
-    expect(result[0]!.functions).toHaveLength(1);
-    expect(result[0]!.functions[0]!.name).toBe('run');
-    expect(result[0]!.functions[0]!.fields).toBe(0);
-    expect(result[0]!.functions[0]!.cyclo).toBe(0);
-    expect(result[0]!.functions[0]!.cognitive).toBe(0);
-  });
-
-  test('名前のない関数メトリクス行を処理できる', () => {
-    const text = `src/no-name-function.ts
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
-               |      1 |     2 |         3 |     4 |   5
-`;
-    const result = metricsParser(text);
-    expect(result).toHaveLength(1);
-    expect(result[0]!.filename).toBe('src/no-name-function.ts');
-    expect(result[0]!.functions).toHaveLength(1);
-    expect(result[0]!.functions[0]!.name).toBe('');
+    expect(result[0]!.filePath).toBe('src/invalid-metrics.ts');
+    expect(result[0]!.funcs).toBe(0);
+    expect(result[0]!.fields).toBe(0);
+    expect(result[0]!.cyclo).toBe(0);
+    expect(result[0]!.complex).toBe(0);
   });
 });
 

@@ -18,15 +18,12 @@ export function ScatterPlotPage({
     <View style={pdfStyles.section}>
       {chartData.frontendSvgData && (
         <ScatterPlot
-          title="フロントエンドの関数・メソッドの複雑度分布"
+          title="フロントエンドのファイル複雑度分布"
           svgData={chartData.frontendSvgData}
         />
       )}
       {chartData.backendSvgData && (
-        <ScatterPlot
-          title="バックエンドの関数・メソッドの複雑度分布"
-          svgData={chartData.backendSvgData}
-        />
+        <ScatterPlot title="バックエンドのファイル複雑度分布" svgData={chartData.backendSvgData} />
       )}
     </View>
   );

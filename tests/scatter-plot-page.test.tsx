@@ -77,8 +77,7 @@ describe('ScatterPlotPage', () => {
             y: 3,
             scaledX: 200,
             scaledY: 150,
-            name: 'func1',
-            filename: 'frontend.ts',
+            filePath: 'frontend.ts',
             count: 1,
           },
         ],
@@ -112,8 +111,7 @@ describe('ScatterPlotPage', () => {
             y: 4,
             scaledX: 300,
             scaledY: 100,
-            name: 'func2',
-            filename: 'backend.ts',
+            filePath: 'backend.ts',
             count: 1,
           },
         ],
@@ -126,14 +124,26 @@ describe('ScatterPlotPage', () => {
     const dirMetrics: DirMetrics = {
       frontend: [
         {
-          filename: 'frontend.ts',
-          functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+          filePath: 'frontend.ts',
+          funcs: 1,
+          fields: 1,
+          cyclo: 2,
+          complex: 3,
+          LCOM: 0,
+          lines: 10,
+          LOC: 8,
         },
       ],
       backend: [
         {
-          filename: 'backend.ts',
-          functions: [{ name: 'func2', fields: 2, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
+          filePath: 'backend.ts',
+          funcs: 1,
+          fields: 2,
+          cyclo: 3,
+          complex: 4,
+          LCOM: 0,
+          lines: 15,
+          LOC: 12,
         },
       ],
     };
@@ -149,7 +159,7 @@ describe('ScatterPlotPage', () => {
     // フロントエンド用のScatterPlotが呼ばれたことを確認
     expect(mockScatterPlot).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'フロントエンドの関数・メソッドの複雑度分布',
+        title: 'フロントエンドのファイル複雑度分布',
         svgData: mockChartData.frontendSvgData,
       }),
     );
@@ -157,7 +167,7 @@ describe('ScatterPlotPage', () => {
     // バックエンド用のScatterPlotが呼ばれたことを確認
     expect(mockScatterPlot).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'バックエンドの関数・メソッドの複雑度分布',
+        title: 'バックエンドのファイル複雑度分布',
         svgData: mockChartData.backendSvgData,
       }),
     );
@@ -195,8 +205,7 @@ describe('ScatterPlotPage', () => {
             y: 3,
             scaledX: 200,
             scaledY: 150,
-            name: 'func1',
-            filename: 'frontend.ts',
+            filePath: 'frontend.ts',
             count: 1,
           },
         ],
@@ -208,8 +217,14 @@ describe('ScatterPlotPage', () => {
     const dirMetrics: DirMetrics = {
       frontend: [
         {
-          filename: 'frontend.ts',
-          functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+          filePath: 'frontend.ts',
+          funcs: 1,
+          fields: 1,
+          cyclo: 2,
+          complex: 3,
+          LCOM: 0,
+          lines: 10,
+          LOC: 8,
         },
       ],
     };
@@ -225,7 +240,7 @@ describe('ScatterPlotPage', () => {
     // フロントエンド用のScatterPlotが呼ばれたことを確認
     expect(mockScatterPlot).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'フロントエンドの関数・メソッドの複雑度分布',
+        title: 'フロントエンドのファイル複雑度分布',
         svgData: mockChartData.frontendSvgData,
       }),
     );
@@ -263,8 +278,7 @@ describe('ScatterPlotPage', () => {
             y: 4,
             scaledX: 300,
             scaledY: 100,
-            name: 'func2',
-            filename: 'backend.ts',
+            filePath: 'backend.ts',
             count: 1,
           },
         ],
@@ -276,8 +290,14 @@ describe('ScatterPlotPage', () => {
     const dirMetrics: DirMetrics = {
       backend: [
         {
-          filename: 'backend.ts',
-          functions: [{ name: 'func2', fields: 2, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
+          filePath: 'backend.ts',
+          funcs: 1,
+          fields: 2,
+          cyclo: 3,
+          complex: 4,
+          LCOM: 0,
+          lines: 15,
+          LOC: 12,
         },
       ],
     };
@@ -293,7 +313,7 @@ describe('ScatterPlotPage', () => {
     // バックエンド用のScatterPlotが呼ばれたことを確認
     expect(mockScatterPlot).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'バックエンドの関数・メソッドの複雑度分布',
+        title: 'バックエンドのファイル複雑度分布',
         svgData: mockChartData.backendSvgData,
       }),
     );

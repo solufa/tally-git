@@ -1,13 +1,10 @@
 import { expect, test } from 'vitest';
 import {
   addCurrentFileToResult,
-  addFunctionToFile,
   createFileMetric,
   getLineType,
-  isFilenameLine,
-  isHeaderLine,
   metricsParser,
-  parseFunctionMetricLine,
+  parseFileMetricLine,
   processLine,
   safeParseInt,
   splitLine,
@@ -28,43 +25,13 @@ test('safeParseInt - 空文字列', () => {
   expect(result).toBe(0);
 });
 
-test('isFilenameLine - ファイル名の行', () => {
-  const result = isFilenameLine('src/utils/metrics-parser.ts');
-  expect(result).toBe(true);
-});
-
-test('isFilenameLine - |を含む行', () => {
-  const result = isFilenameLine('function | fields | cyclo');
-  expect(result).toBe(false);
-});
-
-test('isFilenameLine - +を含む行', () => {
-  const result = isFilenameLine('---+---+---');
-  expect(result).toBe(false);
-});
-
-test('isHeaderLine - ヘッダー行', () => {
-  const result = isHeaderLine('function | fields | cyclo');
-  expect(result).toBe(true);
-});
-
-test('isHeaderLine - ヘッダーでない行', () => {
-  const result = isHeaderLine('src/utils/metrics-parser.ts');
-  expect(result).toBe(false);
-});
-
 test('getLineType - 空行', () => {
   const result = getLineType('');
   expect(result).toBe('empty');
 });
 
-test('getLineType - ファイル名行', () => {
-  const result = getLineType('src/utils/metrics-parser.ts');
-  expect(result).toBe('filename');
-});
-
 test('getLineType - ヘッダー行', () => {
-  const result = getLineType('function | fields | cyclo');
+  const result = getLineType('name | classes | funcs | LOC');
   expect(result).toBe('header');
 });
 
@@ -73,72 +40,65 @@ test('getLineType - 区切り行', () => {
   expect(result).toBe('separator');
 });
 
-test('getLineType - 関数メトリクス行', () => {
-  const result = getLineType('safeParseInt | 3 | 2');
-  expect(result).toBe('functionMetrics');
+test('getLineType - フッター行', () => {
+  const result = getLineType('TOTAL');
+  expect(result).toBe('footer');
+});
+
+test('getLineType - ファイルメトリクス行', () => {
+  const result = getLineType('src/index.ts | 1 | 2 | 0 | 5 | 6 | 0 | 73 | 54');
+  expect(result).toBe('fileMetrics');
 });
 
 test('splitLine - 基本的なケース', () => {
-  const result = splitLine('safeParseInt | 1 | 2 | 3 | 4 | 5');
-  expect(result).toEqual(['safeParseInt', '1', '2', '3', '4', '5']);
+  const result = splitLine('src/index.ts | 1 | 2 | 0 | 5 | 6 | 0 | 73 | 54');
+  expect(result).toEqual(['src/index.ts', '1', '2', '0', '5', '6', '0', '73', '54']);
 });
 
 test('splitLine - 空の部分を含む場合', () => {
-  expect(() => splitLine('safeParseInt | | 2')).toThrow();
+  expect(() => splitLine('src/index.ts | | 2')).toThrow();
 });
 
-test('parseFunctionMetricLine - 基本的なケース', () => {
-  const result = parseFunctionMetricLine('safeParseInt | 3 | 2 | 4 | 5 | 6');
+test('parseFileMetricLine - 基本的なケース', () => {
+  const result = parseFileMetricLine('src/index.ts | 1 | 2 | 0 | 5 | 6 | 0 | 73 | 54');
   expect(result).toEqual({
-    name: 'safeParseInt',
-    fields: 3,
-    cyclo: 2,
-    cognitive: 4,
-    lines: 5,
-    loc: 6,
+    filePath: 'src/index.ts',
+    funcs: 2,
+    fields: 0,
+    cyclo: 5,
+    complex: 6,
+    LCOM: 0,
+    lines: 73,
+    LOC: 54,
   });
 });
 
-test('parseFunctionMetricLine - 空の部分を含む場合', () => {
-  const result = parseFunctionMetricLine('safeParseInt | | | | |');
+test('parseFileMetricLine - 空の部分を含む場合', () => {
+  const result = parseFileMetricLine('src/index.ts | | | | | | | |');
   expect(result).toEqual({
-    name: 'safeParseInt',
+    filePath: 'src/index.ts',
+    funcs: 0,
     fields: 0,
     cyclo: 0,
-    cognitive: 0,
+    complex: 0,
+    LCOM: 0,
     lines: 0,
-    loc: 0,
+    LOC: 0,
   });
 });
 
 test('createFileMetric - 基本的なケース', () => {
   const result = createFileMetric('src/utils/metrics-parser.ts');
   expect(result).toEqual({
-    filename: 'src/utils/metrics-parser.ts',
-    functions: [],
+    filePath: 'src/utils/metrics-parser.ts',
+    funcs: 0,
+    fields: 0,
+    cyclo: 0,
+    complex: 0,
+    LCOM: 0,
+    lines: 0,
+    LOC: 0,
   });
-});
-
-test('addFunctionToFile - 基本的なケース', () => {
-  const currentFile = addFunctionToFile(
-    createFileMetric('src/utils/metrics-parser.ts'),
-    'safeParseInt | 3 | 2 | 4 | 5 | 6',
-  );
-
-  expect(currentFile!.functions).toHaveLength(1);
-  expect(currentFile!.functions[0]).toEqual({
-    name: 'safeParseInt',
-    fields: 3,
-    cyclo: 2,
-    cognitive: 4,
-    lines: 5,
-    loc: 6,
-  });
-});
-
-test('addFunctionToFile - currentFileがnullの場合', () => {
-  const currentFile = null;
-  expect(() => addFunctionToFile(currentFile, 'safeParseInt | 3 | 2 | 4 | 5 | 6')).not.toThrow();
 });
 
 test('addCurrentFileToResult - 基本的なケース', () => {
@@ -159,183 +119,65 @@ test('addCurrentFileToResult - currentFileがnullの場合', () => {
 test('processLine - 空行の場合', () => {
   const line = '';
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  const isParsingFunctions = false;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
+  const [result, newCurrentFile] = processLine(line, [], currentFile);
 
-  expect(newCurrentFile!.filename).toBe(currentFile.filename);
-  expect(newIsParsingFunctions).toBe(false);
-  expect(result).toHaveLength(0);
-});
-
-test('processLine - ファイル名行の場合', () => {
-  const line = 'src/utils/metrics-parser.ts';
-  const currentFile = null;
-  const isParsingFunctions = false;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
-
-  expect(newCurrentFile).not.toBeNull();
-  expect(newCurrentFile!.filename).toBe(line);
-  expect(newIsParsingFunctions).toBe(false);
+  expect(newCurrentFile!.filePath).toBe(currentFile.filePath);
   expect(result).toHaveLength(0);
 });
 
 test('processLine - ヘッダー行の場合', () => {
-  const line = 'function | fields | cyclo';
+  const line = 'name | classes | funcs | LOC';
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  const isParsingFunctions = false;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
+  const [result, newCurrentFile] = processLine(line, [], currentFile);
 
   expect(newCurrentFile).toBe(currentFile);
-  expect(newIsParsingFunctions).toBe(true);
   expect(result).toHaveLength(0);
 });
 
-test('processLine - 区切り行の場合（isParsingFunctionsがtrue）', () => {
+test('processLine - 区切り行の場合', () => {
   const line = '---+---+---';
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  const isParsingFunctions = true;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
+  const [result, newCurrentFile] = processLine(line, [], currentFile);
 
   expect(newCurrentFile).toBe(currentFile);
-  expect(newIsParsingFunctions).toBe(true);
   expect(result).toHaveLength(0);
 });
 
-test('processLine - 区切り行の場合（isParsingFunctionsがfalse）', () => {
-  const line = '---+---+---';
+test('processLine - フッター行の場合', () => {
+  const line = 'TOTAL';
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  const isParsingFunctions = false;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
+  const [result, newCurrentFile] = processLine(line, [], currentFile);
 
   expect(newCurrentFile).toBe(currentFile);
-  expect(newIsParsingFunctions).toBe(false);
   expect(result).toHaveLength(0);
 });
 
-test('processLine - 関数メトリクス行の場合（isParsingFunctionsがtrue）', () => {
-  const line = 'safeParseInt | 3 | 2 | 4 | 5 | 6';
+test('processLine - ファイルメトリクス行の場合', () => {
+  const line = 'src/index.ts | 1 | 2 | 0 | 5 | 6 | 0 | 73 | 54';
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  const isParsingFunctions = true;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
+  const [result, newCurrentFile] = processLine(line, [], currentFile);
 
-  expect(newCurrentFile!.filename).toBe(currentFile.filename);
-  expect(newIsParsingFunctions).toBe(true);
-  expect(result).toHaveLength(0);
-  expect(newCurrentFile!.functions).toHaveLength(1);
-  expect(newCurrentFile!.functions[0]).toEqual({
-    name: 'safeParseInt',
-    fields: 3,
-    cyclo: 2,
-    cognitive: 4,
-    lines: 5,
-    loc: 6,
-  });
-});
-
-test('processLine - 関数メトリクス行の場合（isParsingFunctionsがfalse）', () => {
-  const line = 'safeParseInt | 3 | 2 | 4 | 5 | 6';
-  const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  const isParsingFunctions = false;
-  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
-    line,
-    [],
-    currentFile,
-    isParsingFunctions,
-  );
-
-  expect(newCurrentFile!.filename).toBe(currentFile.filename);
-  expect(newIsParsingFunctions).toBe(false);
-  expect(result).toHaveLength(0);
-  expect(newCurrentFile!.functions).toHaveLength(0);
+  expect(newCurrentFile!.filePath).toBe('src/index.ts');
+  expect(result).toHaveLength(1);
+  expect(result[0]!.filePath).toBe('src/utils/metrics-parser.ts');
 });
 
 test('metricsParser - 基本的なケース', () => {
-  const text = `src/utils/metrics-parser.ts
-function | fields | cyclo | cognitive | lines | loc
----+---+---+---+---+---
-safeParseInt | 3 | 2 | 4 | 5 | 6
-getLineType | 5 | 3 | 2 | 10 | 8
-`;
-
-  const result = metricsParser(text);
-
-  expect(result).toHaveLength(1);
-  expect(result[0]!.filename).toBe('src/utils/metrics-parser.ts');
-  expect(result[0]!.functions).toHaveLength(2);
-  expect(result[0]!.functions[0]!).toEqual({
-    name: 'safeParseInt',
-    fields: 3,
-    cyclo: 2,
-    cognitive: 4,
-    lines: 5,
-    loc: 6,
-  });
-  expect(result[0]!.functions[1]!).toEqual({
-    name: 'getLineType',
-    fields: 5,
-    cyclo: 3,
-    cognitive: 2,
-    lines: 10,
-    loc: 8,
-  });
-});
-
-test('metricsParser - 複数のファイル', () => {
-  const text = `src/utils/metrics-parser.ts
-function | fields | cyclo | cognitive | lines | loc
----+---+---+---+---+---
-safeParseInt | 3 | 2 | 4 | 5 | 6
-getLineType | 5 | 3 | 2 | 10 | 8
-
-src/utils/condition.ts
-function | fields | cyclo | cognitive | lines | loc
----+---+---+---+---+---
-condition | 2 | 1 | 1 | 5 | 4
+  const text = `
+ name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+ src/index.ts                                                  |       1 |     2 |      0 |     5 |       6 |    0 |    73 |   54
+ src/utils/date-utils.ts                                       |       1 |     2 |      0 |     2 |       0 |    0 |     6 |    6
+ TOTAL                                                         |       2 |     4 |      0 |     7 |       6 |    0 |    73 |   60
 `;
 
   const result = metricsParser(text);
 
   expect(result).toHaveLength(2);
-  expect(result[0]!.filename).toBe('src/utils/metrics-parser.ts');
-  expect(result[0]!.functions).toHaveLength(2);
-  expect(result[1]!.filename).toBe('src/utils/condition.ts');
-  expect(result[1]!.functions).toHaveLength(1);
-  expect(result[1]!.functions[0]!).toEqual({
-    name: 'condition',
-    fields: 2,
-    cyclo: 1,
-    cognitive: 1,
-    lines: 5,
-    loc: 4,
-  });
+  expect(result[0]!.filePath).toBe('src/index.ts');
+  expect(result[0]!.funcs).toBe(2);
+  expect(result[0]!.cyclo).toBe(5);
+  expect(result[0]!.complex).toBe(6);
+  expect(result[0]!.lines).toBe(73);
+  expect(result[0]!.LOC).toBe(54);
 });

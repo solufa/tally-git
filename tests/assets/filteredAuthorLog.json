@@ -4,10 +4,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 13,
+          "code": 0,
           "test": 93
         },
-        "others": 0
+        "others": 13
       },
       "deletions": 0
     }
@@ -35,10 +35,10 @@
       "commits": 4,
       "insertions": {
         "backend": {
-          "code": 9,
+          "code": 0,
           "test": 33
         },
-        "others": 79
+        "others": 88
       },
       "deletions": 23
     },
@@ -46,10 +46,10 @@
       "commits": 9,
       "insertions": {
         "backend": {
-          "code": 268,
+          "code": 264,
           "test": 2
         },
-        "others": 566
+        "others": 570
       },
       "deletions": 122
     },
@@ -57,9 +57,9 @@
       "commits": 7,
       "insertions": {
         "backend": {
-          "code": 55
+          "code": 52
         },
-        "others": 3
+        "others": 6
       },
       "deletions": 12
     }
@@ -69,10 +69,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 3,
+          "code": 0,
           "test": 241
         },
-        "others": 0
+        "others": 3
       },
       "deletions": 3
     }
@@ -81,10 +81,7 @@
     "2024-07": {
       "commits": 1,
       "insertions": {
-        "backend": {
-          "code": 1
-        },
-        "others": 0
+        "others": 1
       },
       "deletions": 1
     }
@@ -94,10 +91,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 1,
+          "code": 0,
           "test": 24
         },
-        "others": 0
+        "others": 1
       },
       "deletions": 1
     }
@@ -107,10 +104,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 29,
+          "code": 0,
           "test": 102
         },
-        "others": 0
+        "others": 29
       },
       "deletions": 1
     }
@@ -120,10 +117,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 2,
+          "code": 0,
           "test": 9
         },
-        "others": 0
+        "others": 2
       },
       "deletions": 0
     }
@@ -151,10 +148,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 112,
+          "code": 79,
           "test": 344
         },
-        "others": 0
+        "others": 33
       },
       "deletions": 30
     }
@@ -164,10 +161,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 1,
+          "code": 0,
           "test": 2
         },
-        "others": 0
+        "others": 1
       },
       "deletions": 0
     }
@@ -177,10 +174,10 @@
       "commits": 2,
       "insertions": {
         "backend": {
-          "code": 12,
+          "code": 0,
           "test": 73
         },
-        "others": 0
+        "others": 12
       },
       "deletions": 36
     }
@@ -212,10 +209,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 3,
+          "code": 0,
           "test": 285
         },
-        "others": 23
+        "others": 26
       },
       "deletions": 1
     }
@@ -255,10 +252,10 @@
       "commits": 2,
       "insertions": {
         "backend": {
-          "code": 24,
+          "code": 0,
           "test": 99
         },
-        "others": 0
+        "others": 24
       },
       "deletions": 8
     },
@@ -278,10 +275,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 2,
+          "code": 0,
           "test": 1
         },
-        "others": 0
+        "others": 2
       },
       "deletions": 1
     }
@@ -291,10 +288,10 @@
       "commits": 3,
       "insertions": {
         "backend": {
-          "code": 9,
+          "code": 0,
           "test": 1327
         },
-        "others": 4
+        "others": 13
       },
       "deletions": 1345
     },
@@ -350,10 +347,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 3,
+          "code": 0,
           "test": 10
         },
-        "others": 0
+        "others": 3
       },
       "deletions": 13
     }
@@ -372,9 +369,9 @@
       "commits": 2,
       "insertions": {
         "backend": {
-          "code": 5
+          "code": 3
         },
-        "others": 0
+        "others": 2
       },
       "deletions": 3
     }
@@ -416,10 +413,7 @@
     "2025-01": {
       "commits": 1,
       "insertions": {
-        "backend": {
-          "code": 4
-        },
-        "others": 0
+        "others": 4
       },
       "deletions": 0
     }
@@ -437,10 +431,7 @@
     "2025-01": {
       "commits": 1,
       "insertions": {
-        "backend": {
-          "code": 5
-        },
-        "others": 0
+        "others": 5
       },
       "deletions": 1
     }
@@ -485,10 +476,10 @@
       "commits": 1,
       "insertions": {
         "backend": {
-          "code": 1,
+          "code": 0,
           "test": 1
         },
-        "others": 0
+        "others": 1
       },
       "deletions": 2
     }
@@ -506,10 +497,7 @@
     "2025-02": {
       "commits": 1,
       "insertions": {
-        "backend": {
-          "code": 1
-        },
-        "others": 0
+        "others": 1
       },
       "deletions": 1
     }

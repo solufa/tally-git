@@ -4,8 +4,7 @@ import type { ChartMargin, DeepReadonly, DirMetrics, FileMetric } from '../../ty
 export type ScatterPlotPoint = DeepReadonly<{
   x: number;
   y: number;
-  name: string;
-  filename: string;
+  filePath: string;
 }>;
 
 export type ScatterPlotData = DeepReadonly<{
@@ -25,8 +24,7 @@ export type ScatterPlotSvgPoint = DeepReadonly<{
   y: number;
   scaledX: number;
   scaledY: number;
-  name: string;
-  filename: string;
+  filePath: string;
   count: number;
 }>;
 
@@ -61,15 +59,13 @@ export function prepareComplexityScatterPlotData(
   let maxY = 0;
 
   fileMetrics.forEach((fileMetric) => {
-    fileMetric.functions.forEach((functionMetric) => {
-      const x = functionMetric.cyclo;
-      const y = functionMetric.cognitive;
+    const x = fileMetric.cyclo;
+    const y = fileMetric.complex;
 
-      points.push({ x, y, name: functionMetric.name, filename: fileMetric.filename });
+    points.push({ x, y, filePath: fileMetric.filePath });
 
-      maxX = Math.max(maxX, x);
-      maxY = Math.max(maxY, y);
-    });
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
   });
 
   return { points, maxX, maxY };

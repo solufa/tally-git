@@ -19,17 +19,14 @@ test('toCsv - 基本的なケース', () => {
   const dirMetrics: DirMetrics = {
     backend: [
       {
-        filename: 'backend.js',
-        functions: [
-          {
-            name: 'function1',
-            fields: 2,
-            cyclo: 3,
-            cognitive: 4,
-            lines: 10,
-            loc: 8,
-          },
-        ],
+        filePath: 'backend.js',
+        funcs: 1,
+        fields: 2,
+        cyclo: 3,
+        complex: 4,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
     ],
   };
@@ -44,7 +41,10 @@ test('toCsv - 基本的なケース', () => {
   expect(result).toContain('Developer2,30,40');
   expect(result).toContain('外れ値のコミットはありません');
   expect(result).toContain('バックエンド');
-  expect(result).toContain('backend.js,function1,2,3,4,10,8');
+  expect(result).toContain(
+    'ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数',
+  );
+  expect(result).toContain('backend.js,1,1,2,3,4,0,10,8');
 });
 
 test('toCsv - フロントエンドのディレクトリメトリクスがある場合', () => {
@@ -59,17 +59,14 @@ test('toCsv - フロントエンドのディレクトリメトリクスがある
   const dirMetrics: DirMetrics = {
     frontend: [
       {
-        filename: 'frontend.js',
-        functions: [
-          {
-            name: 'function1',
-            fields: 2,
-            cyclo: 3,
-            cognitive: 4,
-            lines: 10,
-            loc: 8,
-          },
-        ],
+        filePath: 'frontend.js',
+        funcs: 1,
+        fields: 2,
+        cyclo: 3,
+        complex: 4,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
     ],
   };
@@ -77,7 +74,10 @@ test('toCsv - フロントエンドのディレクトリメトリクスがある
   const result = toCsv(authorLog, monthColumns, outlierCommits, dirMetrics);
 
   expect(result).toContain('フロントエンド');
-  expect(result).toContain('frontend.js,function1,2,3,4,10,8');
+  expect(result).toContain(
+    'ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数',
+  );
+  expect(result).toContain('frontend.js,1,1,2,3,4,0,10,8');
 });
 
 test('toCsv - インフラのディレクトリメトリクスがある場合', () => {
@@ -92,17 +92,14 @@ test('toCsv - インフラのディレクトリメトリクスがある場合', 
   const dirMetrics: DirMetrics = {
     infra: [
       {
-        filename: 'infra.js',
-        functions: [
-          {
-            name: 'function1',
-            fields: 2,
-            cyclo: 3,
-            cognitive: 4,
-            lines: 10,
-            loc: 8,
-          },
-        ],
+        filePath: 'infra.js',
+        funcs: 1,
+        fields: 2,
+        cyclo: 3,
+        complex: 4,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
     ],
   };
@@ -110,7 +107,10 @@ test('toCsv - インフラのディレクトリメトリクスがある場合', 
   const result = toCsv(authorLog, monthColumns, outlierCommits, dirMetrics);
 
   expect(result).toContain('インフラ');
-  expect(result).toContain('infra.js,function1,2,3,4,10,8');
+  expect(result).toContain(
+    'ファイル名,クラス数,関数数,フィールド数,循環的複雑度,認知的複雑度,凝集度,行数,コード行数',
+  );
+  expect(result).toContain('infra.js,1,1,2,3,4,0,10,8');
 });
 
 test('toCsv - 外れ値のコミットがある場合', () => {
@@ -149,47 +149,38 @@ test('toCsv - すべてのディレクトリメトリクスがある場合', () 
   const dirMetrics: DirMetrics = {
     frontend: [
       {
-        filename: 'frontend.js',
-        functions: [
-          {
-            name: 'function1',
-            fields: 2,
-            cyclo: 3,
-            cognitive: 4,
-            lines: 10,
-            loc: 8,
-          },
-        ],
+        filePath: 'frontend.js',
+        funcs: 1,
+        fields: 2,
+        cyclo: 3,
+        complex: 4,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
     ],
     backend: [
       {
-        filename: 'backend.js',
-        functions: [
-          {
-            name: 'function2',
-            fields: 3,
-            cyclo: 4,
-            cognitive: 5,
-            lines: 15,
-            loc: 12,
-          },
-        ],
+        filePath: 'backend.js',
+        funcs: 1,
+        fields: 3,
+        cyclo: 4,
+        complex: 5,
+        LCOM: 0,
+        lines: 15,
+        LOC: 12,
       },
     ],
     infra: [
       {
-        filename: 'infra.js',
-        functions: [
-          {
-            name: 'function3',
-            fields: 1,
-            cyclo: 2,
-            cognitive: 3,
-            lines: 8,
-            loc: 6,
-          },
-        ],
+        filePath: 'infra.js',
+        funcs: 1,
+        fields: 1,
+        cyclo: 2,
+        complex: 3,
+        LCOM: 0,
+        lines: 8,
+        LOC: 6,
       },
     ],
   };
@@ -197,9 +188,9 @@ test('toCsv - すべてのディレクトリメトリクスがある場合', () 
   const result = toCsv(authorLog, monthColumns, outlierCommits, dirMetrics);
 
   expect(result).toContain('フロントエンド');
-  expect(result).toContain('frontend.js,function1,2,3,4,10,8');
+  expect(result).toContain('frontend.js,1,1,2,3,4,0,10,8');
   expect(result).toContain('バックエンド');
-  expect(result).toContain('backend.js,function2,3,4,5,15,12');
+  expect(result).toContain('backend.js,1,1,3,4,5,0,15,12');
   expect(result).toContain('インフラ');
-  expect(result).toContain('infra.js,function3,1,2,3,8,6');
+  expect(result).toContain('infra.js,1,1,1,2,3,0,8,6');
 });

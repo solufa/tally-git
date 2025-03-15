@@ -55,16 +55,16 @@ export type DirType = DeepReadonly<z.infer<typeof dirTypeValidator>>;
 
 export type ProjectConfig = DeepReadonly<z.infer<typeof projectConfigValidator>>;
 
-export type FunctionMetric = DeepReadonly<{
-  name: string;
+export type FileMetric = DeepReadonly<{
+  filePath: string;
+  funcs: number;
   fields: number;
   cyclo: number;
-  cognitive: number;
+  complex: number;
+  LCOM: number;
   lines: number;
-  loc: number;
+  LOC: number;
 }>;
-
-export type FileMetric = DeepReadonly<{ filename: string; functions: FunctionMetric[] }>;
 
 export type DirMetrics = DeepReadonly<{
   [Key in keyof ProjectConfig['dirTypes']]: FileMetric[];

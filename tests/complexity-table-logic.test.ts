@@ -6,14 +6,26 @@ test('prepareComplexityTableData - 通常のデータで正しく動作する', 
   const dirMetrics: DirMetrics = {
     frontend: [
       {
-        filename: 'frontend.js',
-        functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+        filePath: 'frontend.js',
+        funcs: 1,
+        fields: 1,
+        cyclo: 2,
+        complex: 3,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
     ],
     backend: [
       {
-        filename: 'backend.js',
-        functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
+        filePath: 'backend.js',
+        funcs: 1,
+        fields: 1,
+        cyclo: 2,
+        complex: 3,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
     ],
   };
@@ -27,13 +39,13 @@ test('prepareComplexityTableData - 通常のデータで正しく動作する', 
 
   expect(result.frontendCognitiveTop10?.[0]).toEqual({
     filename: 'frontend.js',
-    functionName: 'func1',
+    lines: 10,
     complexity: 3,
   });
 
   expect(result.frontendCyclomaticTop10?.[0]).toEqual({
     filename: 'frontend.js',
-    functionName: 'func1',
+    lines: 10,
     complexity: 2,
   });
 });
@@ -52,90 +64,38 @@ test('prepareComplexityTableData - 空のデータでundefinedを返す', () => 
   expect(result.backendCyclomaticTop10).toBeUndefined();
 });
 
-test('prepareComplexityTableData - 関数が空のファイルを含むデータで正しく動作する', () => {
-  // このテストは未カバーの行をカバーするためのもの
-  const dirMetrics: DirMetrics = {
-    frontend: [
-      {
-        filename: 'empty-functions.js',
-        functions: [], // 空の関数配列
-      },
-      {
-        filename: 'with-functions.js',
-        functions: [{ name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 }],
-      },
-    ],
-  };
-
-  const result = prepareComplexityTableData(dirMetrics);
-
-  expect(result.frontendCognitiveTop10).toHaveLength(2);
-  expect(result.frontendCyclomaticTop10).toHaveLength(2);
-
-  // 関数がないファイルは複雑度0になる
-  const emptyFunctionsFile = result.frontendCognitiveTop10?.find(
-    (item) => item.filename === 'empty-functions.js',
-  );
-  expect(emptyFunctionsFile).toEqual({
-    filename: 'empty-functions.js',
-    functionName: '-',
-    complexity: 0,
-  });
-
-  // 関数があるファイルは通常通り処理される
-  const withFunctionsFile = result.frontendCognitiveTop10?.find(
-    (item) => item.filename === 'with-functions.js',
-  );
-  expect(withFunctionsFile).toEqual({
-    filename: 'with-functions.js',
-    functionName: 'func1',
-    complexity: 3,
-  });
-});
-
-test('prepareComplexityTableData - 複数の関数を持つファイルで最大の複雑度を取得する', () => {
-  const dirMetrics: DirMetrics = {
-    frontend: [
-      {
-        filename: 'multi-function.js',
-        functions: [
-          { name: 'func1', fields: 1, cyclo: 2, cognitive: 3, lines: 10, loc: 8 },
-          { name: 'func2', fields: 1, cyclo: 5, cognitive: 7, lines: 20, loc: 15 },
-          { name: 'func3', fields: 1, cyclo: 3, cognitive: 4, lines: 15, loc: 12 },
-        ],
-      },
-    ],
-  };
-
-  const result = prepareComplexityTableData(dirMetrics);
-
-  expect(result.frontendCognitiveTop10?.[0]).toEqual({
-    filename: 'multi-function.js',
-    functionName: 'func2',
-    complexity: 7,
-  });
-
-  expect(result.frontendCyclomaticTop10?.[0]).toEqual({
-    filename: 'multi-function.js',
-    functionName: 'func2',
-    complexity: 5,
-  });
-});
-
 test('prepareComplexityTableData - 複雑度でソートされる', () => {
   const dirMetrics: DirMetrics = {
     backend: [
       {
-        filename: 'low.js',
-        functions: [{ name: 'lowFunc', fields: 1, cyclo: 1, cognitive: 1, lines: 10, loc: 8 }],
+        filePath: 'low.js',
+        funcs: 1,
+        fields: 1,
+        cyclo: 1,
+        complex: 1,
+        LCOM: 0,
+        lines: 10,
+        LOC: 8,
       },
       {
-        filename: 'high.js',
-        functions: [{ name: 'highFunc', fields: 1, cyclo: 5, cognitive: 8, lines: 20, loc: 15 }],
+        filePath: 'high.js',
+        funcs: 1,
+        fields: 1,
+        cyclo: 5,
+        complex: 8,
+        LCOM: 0,
+        lines: 20,
+        LOC: 15,
       },
       {
-        filename: 'medium.js',
-        functions: [{ name: 'mediumFunc', fields: 1, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
+        filePath: 'medium.js',
+        funcs: 1,
+        fields: 1,
+        cyclo: 3,
+        complex: 4,
+        LCOM: 0,
+        lines: 15,
+        LOC: 12,
       },
     ],
   };
@@ -158,17 +118,14 @@ test('prepareComplexityTableData - 複雑度でソートされる', () => {
 test('prepareComplexityTableData - 上位10件のみ返される', () => {
   // 11個のファイルを作成
   const files: FileMetric[] = Array.from({ length: 11 }, (_, i) => ({
-    filename: `file${i}.js`,
-    functions: [
-      {
-        name: `func${i}`,
-        fields: 1,
-        cyclo: 10 - i, // 降順になるように
-        cognitive: 10 - i, // 降順になるように
-        lines: 10,
-        loc: 8,
-      },
-    ],
+    filePath: `file${i}.js`,
+    funcs: 1,
+    fields: 1,
+    cyclo: 10 - i, // 降順になるように
+    complex: 10 - i, // 降順になるように
+    LCOM: 0,
+    lines: 10,
+    LOC: 8,
   }));
 
   const dirMetrics: DirMetrics = {

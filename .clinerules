@@ -122,6 +122,10 @@ undefinedになる可能性のあるプロパティや配列要素へアクセ�
 expect(val).toBe('test');
 ```
 
+実装コードで`import assert from 'assert';`のassertを使っている部分がエラーになることをテストしない。
+assertは仕様上発生しないパターンだがTypeScriptの型がそれを検知できない場所で使っている。
+assertはテストカバレッジのbranchに相当しないのでエラーが起こることのテストは不要。
+
 ### その他
 
 for文の代わりにmap/filter/reduce/findなど配列の組み込みメソッドを使えかどうかを検討する。

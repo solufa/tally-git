@@ -9,7 +9,7 @@ function removeAnsiCodes(text: string): string {
 }
 
 export async function getDirectoryMetrics(directory: string): Promise<readonly FileMetric[]> {
-  const command = `qlty metrics --functions --quiet ${directory}`;
+  const command = `qlty metrics --quiet ${directory}`;
   const { stdout } = await promisify(execCallback)(command);
 
   return metricsParser(removeAnsiCodes(stdout));

@@ -27,19 +27,10 @@ describe('directory-metrics', () => {
 
   test('正常系：コマンドが正常に実行される場合', async () => {
     // モックの出力を設定
-    const mockOutput = `src/index.ts
-
- function      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
- run           |      0 |     3 |         4 |    68 |  50
- parsePeriod   |      0 |     2 |         2 |     5 |   4
-
-src/utils/date-utils.ts
-
- function         | fields | cyclo | cognitive | lines | loc
-------------------+--------+-------+-----------+-------+-----
- parseDate        |      0 |     1 |         0 |     3 |   3
- getCurrentDate   |      0 |     1 |         0 |     3 |   3
+    const mockOutput = ` name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+ src/index.ts                                                  |       1 |     2 |      0 |     5 |       6 |    0 |    73 |   54
+ src/utils/date-utils.ts                                       |       1 |     2 |      0 |     2 |       0 |    0 |     6 |    6
 `;
 
     // promisifyのモック実装
@@ -55,17 +46,15 @@ src/utils/date-utils.ts
 
     // 期待される結果
     expect(result).toHaveLength(2);
-    expect(result[0]?.filename).toBe('src/index.ts');
-    expect(result[0]?.functions).toHaveLength(2);
+    expect(result[0]?.filePath).toBe('src/index.ts');
+    expect(result[0]?.funcs).toBe(2);
   });
 
   test('ANSIエスケープコードが含まれる出力を処理できる', async () => {
     // ANSIエスケープコードを含むモック出力
-    const mockOutput = `\x1b[32msrc/index.ts\x1b[0m
-
- \x1b[1mfunction\x1b[0m      | fields | cyclo | cognitive | lines | loc
----------------+--------+-------+-----------+-------+-----
- \x1b[36mrun\x1b[0m           |      0 |     3 |         4 |    68 |  50
+    const mockOutput = `\x1b[32m name                                                          | classes | funcs | fields | cyclo | complex | LCOM | lines |  LOC\x1b[0m
+---------------------------------------------------------------+---------+-------+--------+-------+---------+------+-------+------
+\x1b[36m src/index.ts                                                  |       1 |     2 |      0 |     5 |       6 |    0 |    73 |   54\x1b[0m
 `;
 
     // promisifyのモック実装
@@ -81,8 +70,8 @@ src/utils/date-utils.ts
 
     // 期待される結果（ANSIコードが除去されている）
     expect(result).toHaveLength(1);
-    expect(result[0]?.filename).toBe('src/index.ts');
-    expect(result[0]?.functions).toHaveLength(1);
+    expect(result[0]?.filePath).toBe('src/index.ts');
+    expect(result[0]?.funcs).toBe(2);
   });
 
   test('空の出力を処理できる', async () => {

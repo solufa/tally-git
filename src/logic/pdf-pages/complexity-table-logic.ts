@@ -2,7 +2,7 @@ import type { DirMetrics, FileMetric } from '../../types';
 
 export type ComplexityTableData = Readonly<{
   filename: string;
-  lines: number;
+  functionName: string;
   complexity: number;
 }>;
 
@@ -17,20 +17,31 @@ function getFileComplexity(
   fileMetrics: readonly FileMetric[],
   complexityType: 'cognitive' | 'cyclo',
 ): readonly ComplexityTableData[] {
-  // ファイルごとに最大の複雑度を取得
+  // ファイルごとに最大の複雑度を持つ関数を取得
   const fileComplexities = fileMetrics.map((file) => {
     // 関数がない場合は複雑度0とする
     if (file.functions.length === 0) {
-      return { filename: file.filename, lines: 0, complexity: 0 };
+      return { filename: file.filename, functionName: '-', complexity: 0 };
     }
 
-    // ファイル内の関数の複雑度の最大値を取得
-    const maxComplexity = Math.max(...file.functions.map((func) => func[complexityType]));
+    // 複雑度が最大の関数を探す
+    let maxFunctionName = '';
+    let maxComplexity = 0;
 
-    // ファイル行数を取得（関数の行数の合計）
-    const lines = file.functions.reduce((sum, func) => sum + func.lines, 0);
+    // 全ての関数をループして最大の複雑度を持つ関数を見つける
+    file.functions.forEach((func) => {
+      const complexity = func[complexityType];
+      if (complexity > maxComplexity) {
+        maxFunctionName = func.name;
+        maxComplexity = complexity;
+      }
+    });
 
-    return { filename: file.filename, lines, complexity: maxComplexity };
+    return {
+      filename: file.filename,
+      functionName: maxFunctionName,
+      complexity: maxComplexity,
+    };
   });
 
   // 複雑度でソートして上位10件を返す

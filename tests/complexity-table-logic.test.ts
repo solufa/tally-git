@@ -27,13 +27,13 @@ test('prepareComplexityTableData - 通常のデータで正しく動作する', 
 
   expect(result.frontendCognitiveTop10?.[0]).toEqual({
     filename: 'frontend.js',
-    lines: 10,
+    functionName: 'func1',
     complexity: 3,
   });
 
   expect(result.frontendCyclomaticTop10?.[0]).toEqual({
     filename: 'frontend.js',
-    lines: 10,
+    functionName: 'func1',
     complexity: 2,
   });
 });
@@ -53,7 +53,7 @@ test('prepareComplexityTableData - 空のデータでundefinedを返す', () => 
 });
 
 test('prepareComplexityTableData - 関数が空のファイルを含むデータで正しく動作する', () => {
-  // このテストは未カバーの行（24-25行目）をカバーするためのもの
+  // このテストは未カバーの行をカバーするためのもの
   const dirMetrics: DirMetrics = {
     frontend: [
       {
@@ -78,7 +78,7 @@ test('prepareComplexityTableData - 関数が空のファイルを含むデータ
   );
   expect(emptyFunctionsFile).toEqual({
     filename: 'empty-functions.js',
-    lines: 0,
+    functionName: '-',
     complexity: 0,
   });
 
@@ -88,7 +88,7 @@ test('prepareComplexityTableData - 関数が空のファイルを含むデータ
   );
   expect(withFunctionsFile).toEqual({
     filename: 'with-functions.js',
-    lines: 10,
+    functionName: 'func1',
     complexity: 3,
   });
 });
@@ -111,17 +111,13 @@ test('prepareComplexityTableData - 複数の関数を持つファイルで最大
 
   expect(result.frontendCognitiveTop10?.[0]).toEqual({
     filename: 'multi-function.js',
-    // 全関数の行数の合計
-    lines: 45,
-    // 最大の認知的複雑度
+    functionName: 'func2',
     complexity: 7,
   });
 
   expect(result.frontendCyclomaticTop10?.[0]).toEqual({
     filename: 'multi-function.js',
-    // 全関数の行数の合計
-    lines: 45,
-    // 最大の循環的複雑度
+    functionName: 'func2',
     complexity: 5,
   });
 });
@@ -131,15 +127,15 @@ test('prepareComplexityTableData - 複雑度でソートされる', () => {
     backend: [
       {
         filename: 'low.js',
-        functions: [{ name: 'func1', fields: 1, cyclo: 1, cognitive: 1, lines: 10, loc: 8 }],
+        functions: [{ name: 'lowFunc', fields: 1, cyclo: 1, cognitive: 1, lines: 10, loc: 8 }],
       },
       {
         filename: 'high.js',
-        functions: [{ name: 'func1', fields: 1, cyclo: 5, cognitive: 8, lines: 20, loc: 15 }],
+        functions: [{ name: 'highFunc', fields: 1, cyclo: 5, cognitive: 8, lines: 20, loc: 15 }],
       },
       {
         filename: 'medium.js',
-        functions: [{ name: 'func1', fields: 1, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
+        functions: [{ name: 'mediumFunc', fields: 1, cyclo: 3, cognitive: 4, lines: 15, loc: 12 }],
       },
     ],
   };
@@ -165,7 +161,7 @@ test('prepareComplexityTableData - 上位10件のみ返される', () => {
     filename: `file${i}.js`,
     functions: [
       {
-        name: 'func1',
+        name: `func${i}`,
         fields: 1,
         cyclo: 10 - i, // 降順になるように
         cognitive: 10 - i, // 降順になるように

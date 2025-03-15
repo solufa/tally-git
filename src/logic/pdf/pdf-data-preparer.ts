@@ -9,35 +9,29 @@ import {
   getTopContributors,
 } from './pdf-data-processor';
 
-export const preparePdfData = (
+export function preparePdfData(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
   projectConfig: ProjectConfig,
-): PdfData => {
+): PdfData {
   const authorTotals = calculateAuthorTotals(authorLog);
-  const sortedAuthors = authorTotals
+  const sortedAuthors = [...authorTotals]
     .sort((a, b) => b.totalCommits - a.totalCommits)
     .filter((a) => a.totalCommits > 0);
 
   const monthlyTotals = calculateMonthlyTotals(authorLog, monthColumns);
-
-  // コミット数でソートされた開発者のトップ10（積み上げ棒グラフ用）
   const topContributorsByCommits = getTopContributors(authorTotals, 'commits', 10);
-
-  // 追加行数でソートされた開発者のトップ10（DualBarChart用）
   const topContributorsByInsertions = getTopContributors(authorTotals, 'insertions', 10);
-
-  // 開発者名のリスト
   const contributorNamesByCommits = topContributorsByCommits.map((a) => a.author);
   const contributorNamesByInsertions = topContributorsByInsertions.map((a) => a.author);
 
-  // グラフデータの準備
   const insertionsData = calculateAggregateData(
     authorLog,
     monthColumns,
     topContributorsByInsertions,
     'insertions',
   );
+
   const deletionsData = calculateAggregateData(
     authorLog,
     monthColumns,
@@ -45,19 +39,20 @@ export const preparePdfData = (
     'deletions',
   );
 
-  // 開発者別の月ごとのデータを準備
   const contributorCommitsData = calculateContributorData(
     authorLog,
     monthColumns,
     topContributorsByCommits,
     'commits',
   );
+
   const contributorInsertionsData = calculateContributorData(
     authorLog,
     monthColumns,
     topContributorsByInsertions,
     'insertions',
   );
+
   const contributorDeletionsData = calculateContributorData(
     authorLog,
     monthColumns,
@@ -65,7 +60,6 @@ export const preparePdfData = (
     'deletions',
   );
 
-  // testsが存在するdirTypesを抽出
   const dirTypesWithTests = getDirTypesWithTests(projectConfig);
 
   return {
@@ -80,4 +74,4 @@ export const preparePdfData = (
     contributorDeletionsData,
     dirTypesWithTests,
   };
-};
+}

@@ -10,14 +10,14 @@ import { ScatterPlotPage } from './pdf-pages/scatter-plot-page';
 import { SummaryPage } from './pdf-pages/summary-page';
 import type { AuthorLog, CommitDetail, DirMetrics, MonthColumns, ProjectConfig } from './types';
 
-export const toPdf = async (
+export async function toPdf(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
   projectName: string,
-  outlierCommits: CommitDetail[],
+  outlierCommits: readonly CommitDetail[],
   projectConfig: ProjectConfig,
   dirMetrics: DirMetrics,
-): Promise<Buffer> => {
+): Promise<Buffer> {
   const {
     sortedAuthors,
     monthlyTotals,
@@ -71,4 +71,4 @@ export const toPdf = async (
   );
 
   return await renderToBuffer(React.createElement(MyDocument));
-};
+}

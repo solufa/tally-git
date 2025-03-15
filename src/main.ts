@@ -23,24 +23,23 @@ import {
 import { getDirMetrics } from './utils/project-metrics';
 import { projectConfigValidator } from './validators';
 
-export const readProjectConfig = (targetDir: string): ProjectConfig => {
+export function readProjectConfig(targetDir: string): ProjectConfig {
   const configPath = path.join(targetDir, 'tally.config.json');
 
   if (!fs.existsSync(configPath)) return { dirTypes: {} };
 
   return projectConfigValidator.parse(JSON.parse(fs.readFileSync(configPath, 'utf8')));
-};
+}
 
-export const main = async (
+export async function main(
   option: Readonly<Period & { projectName?: string; targetDir: string; outputDir: string }>,
-): Promise<Result> => {
+): Promise<Result> {
   let authorLog: AuthorLog = {};
   const allCommitDetails: CommitDetail[] = [];
   const startDate = startOfMonth(parseDate(option.sinceYYMM, PERIOD_FORMAT));
   const endDate = endOfMonth(parseDate(option.untilYYMM, PERIOD_FORMAT));
   const monthDiff = diffInMonths(endDate, startDate) + 1;
   const projectConfig = readProjectConfig(option.targetDir);
-
   const monthIndices = Array.from({ length: monthDiff }, (_, i) => i);
 
   // getGitLogを並列処理するとメモリが不足するのでfor ofで直列処理する
@@ -85,15 +84,11 @@ export const main = async (
     },
     outlierCommits,
   };
-};
+}
 
 const execPromise = promisify(exec);
 
-export const getGitLog = async (
-  dir: string,
-  sinceDate: Dayjs,
-  untilDate: Dayjs,
-): Promise<string> => {
+export async function getGitLog(dir: string, sinceDate: Dayjs, untilDate: Dayjs): Promise<string> {
   const command = `
     cd ${dir} && git log --no-merges --grep='^Revert' --invert-grep --since="${toJSTString(sinceDate)}" --until="${toJSTString(untilDate)}" --pretty="%H,%an,%ad" --numstat --date=format:"%Y-%m-%d"
   `;
@@ -101,4 +96,4 @@ export const getGitLog = async (
   const { stdout } = await execPromise(command);
 
   return stdout;
-};
+}

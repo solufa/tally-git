@@ -1,16 +1,13 @@
-import type { AuthorLog, MonthColumns } from '../../types';
+import type { AuthorLog, Contributors, MonthColumns } from '../../types';
 
-export type DataByAuthor = Readonly<Record<string, number[]>>;
+export type DataByAuthor = Readonly<Record<string, readonly number[]>>;
 
-export type AuthorTotal = {
-  author: string;
-  total: number;
-};
+export type AuthorTotal = Readonly<{ author: string; total: number }>;
 
-export const calculateBackendDataByAuthor = (
+export function calculateBackendDataByAuthor(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-): { backendCodeByAuthor: DataByAuthor; backendTestByAuthor: DataByAuthor } => {
+): Readonly<{ backendCodeByAuthor: DataByAuthor; backendTestByAuthor: DataByAuthor }> {
   return Object.entries(authorLog).reduce<{
     backendCodeByAuthor: DataByAuthor;
     backendTestByAuthor: DataByAuthor;
@@ -29,47 +26,51 @@ export const calculateBackendDataByAuthor = (
     },
     { backendCodeByAuthor: {}, backendTestByAuthor: {} },
   );
-};
+}
 
-export const calculateAuthorTotals = (dataByAuthor: DataByAuthor): AuthorTotal[] => {
+export function calculateAuthorTotals(dataByAuthor: DataByAuthor): readonly AuthorTotal[] {
   return Object.entries(dataByAuthor).map(([author, data]) => ({
     author,
     total: data.reduce((sum, value) => sum + value, 0),
   }));
-};
+}
 
-export const getTopAuthors = (authorTotals: AuthorTotal[], limit: number): AuthorTotal[] => {
+export function getTopAuthors(
+  authorTotals: readonly AuthorTotal[],
+  limit: number,
+): readonly AuthorTotal[] {
   return authorTotals
     .filter((item) => item.total > 0)
     .sort((a, b) => b.total - a.total)
     .slice(0, limit);
-};
+}
 
-export const calculateTotalData = (topData: number[][], monthColumns: MonthColumns): number[] => {
+export function calculateTotalData(
+  topData: readonly (readonly number[])[],
+  monthColumns: MonthColumns,
+): readonly number[] {
   return monthColumns.map((_, i) =>
     topData.reduce((sum, authorData) => sum + (authorData[i] ?? 0), 0),
   );
-};
+}
 
-export const extractContributorData = (
-  contributors: string[],
+export function extractContributorData(
+  contributors: Contributors,
   dataByAuthor: DataByAuthor,
-): number[][] => {
-  return contributors
-    .map((author) => dataByAuthor[author])
-    .filter((data): data is number[] => data !== undefined);
-};
+): readonly (readonly number[])[] {
+  return contributors.map((author) => dataByAuthor[author]).filter((data) => data !== undefined);
+}
 
-export const prepareCodeVsTestChartData = (
+export function prepareCodeVsTestChartData(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-): {
-  totalCodeData: number[];
-  totalTestData: number[];
-  contributors: string[];
-  contributorCodeData: number[][];
-  contributorTestData: number[][];
-} => {
+): Readonly<{
+  totalCodeData: readonly number[];
+  totalTestData: readonly number[];
+  contributors: Contributors;
+  contributorCodeData: readonly (readonly number[])[];
+  contributorTestData: readonly (readonly number[])[];
+}> {
   const { backendCodeByAuthor, backendTestByAuthor } = calculateBackendDataByAuthor(
     authorLog,
     monthColumns,
@@ -77,17 +78,16 @@ export const prepareCodeVsTestChartData = (
 
   const authorTotalCode = calculateAuthorTotals(backendCodeByAuthor);
   const authorTotalTest = calculateAuthorTotals(backendTestByAuthor);
-
   const topCodeAuthors = getTopAuthors(authorTotalCode, 10);
   const topTestAuthors = getTopAuthors(authorTotalTest, 10);
 
   const topCodeData = topCodeAuthors
     .map(({ author }) => backendCodeByAuthor[author])
-    .filter((data): data is number[] => data !== undefined);
+    .filter((data) => data !== undefined);
 
   const topTestData = topTestAuthors
     .map(({ author }) => backendTestByAuthor[author])
-    .filter((data): data is number[] => data !== undefined);
+    .filter((data) => data !== undefined);
 
   const totalCodeData = calculateTotalData(topCodeData, monthColumns);
   const totalTestData = calculateTotalData(topTestData, monthColumns);
@@ -101,11 +101,5 @@ export const prepareCodeVsTestChartData = (
   const contributorCodeData = extractContributorData(contributors, backendCodeByAuthor);
   const contributorTestData = extractContributorData(contributors, backendTestByAuthor);
 
-  return {
-    totalCodeData,
-    totalTestData,
-    contributors,
-    contributorCodeData,
-    contributorTestData,
-  };
-};
+  return { totalCodeData, totalTestData, contributors, contributorCodeData, contributorTestData };
+}

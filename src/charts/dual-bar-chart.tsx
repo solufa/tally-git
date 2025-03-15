@@ -5,7 +5,7 @@ import { pdfStyles } from '../pdf-pages/pdf-styles';
 import { DualBarChartSvg } from './dual-bar-chart-svg';
 import type { DualBarChartProps } from './dual-bar-chart-utils';
 
-export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
+export function DualBarChart(props: DualBarChartProps): React.ReactNode {
   const { title, data, contributorData, labels, contributors, hasReferenceLines, ...restProps } =
     props;
 
@@ -34,4 +34,4 @@ export const DualBarChart: React.FC<DualBarChartProps> = (props) => {
       />
     </View>
   );
-};
+}

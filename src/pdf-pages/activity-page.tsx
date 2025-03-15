@@ -4,11 +4,11 @@ import { sortMonthlyTotals } from '../logic/pdf-pages/activity-page-logic';
 import type { MonthlyTotal } from '../logic/pdf/pdf-data-processor';
 import { pdfStyles } from './pdf-styles';
 
-export const ActivityPage = ({
+export function ActivityPage({
   monthlyTotals,
-}: {
-  monthlyTotals: MonthlyTotal[];
-}): React.ReactElement => {
+}: Readonly<{
+  monthlyTotals: readonly MonthlyTotal[];
+}>): React.ReactElement {
   const descSortedMonthlyTotals = sortMonthlyTotals(monthlyTotals);
 
   return (
@@ -48,4 +48,4 @@ export const ActivityPage = ({
       </View>
     </View>
   );
-};
+}

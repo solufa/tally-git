@@ -1,33 +1,33 @@
-export type AuthorSummary = {
+export type AuthorSummary = Readonly<{
   author: string;
   totalCommits: number;
   totalInsertions: number;
   totalDeletions: number;
   activeMonths: number;
-};
+}>;
 
-export const calculateTotalCommits = (sortedAuthors: AuthorSummary[]): number => {
+export function calculateTotalCommits(sortedAuthors: readonly AuthorSummary[]): number {
   return sortedAuthors.reduce((sum, a) => sum + a.totalCommits, 0);
-};
+}
 
-export const calculateTotalInsertions = (sortedAuthors: AuthorSummary[]): number => {
+export function calculateTotalInsertions(sortedAuthors: readonly AuthorSummary[]): number {
   return sortedAuthors.reduce((sum, a) => sum + a.totalInsertions, 0);
-};
+}
 
-export const calculateTotalDeletions = (sortedAuthors: AuthorSummary[]): number => {
+export function calculateTotalDeletions(sortedAuthors: readonly AuthorSummary[]): number {
   return sortedAuthors.reduce((sum, a) => sum + a.totalDeletions, 0);
-};
+}
 
-export const calculateOtherAuthorsStats = (
-  sortedAuthors: AuthorSummary[],
+export function calculateOtherAuthorsStats(
+  sortedAuthors: readonly AuthorSummary[],
   displayLimit: number = 20,
-): {
+): Readonly<{
   count: number;
   totalCommits: number;
   totalInsertions: number;
   totalDeletions: number;
   totalActiveMonths: number;
-} => {
+}> {
   if (sortedAuthors.length <= displayLimit) {
     return {
       count: 0,
@@ -47,25 +47,25 @@ export const calculateOtherAuthorsStats = (
     totalDeletions: otherAuthors.reduce((sum, a) => sum + a.totalDeletions, 0),
     totalActiveMonths: otherAuthors.reduce((sum, a) => sum + a.activeMonths, 0),
   };
-};
+}
 
-export const prepareSummaryPageData = (
-  sortedAuthors: AuthorSummary[],
+export function prepareSummaryPageData(
+  sortedAuthors: readonly AuthorSummary[],
   displayLimit: number = 20,
-): {
+): Readonly<{
   totalCommits: number;
   totalInsertions: number;
   totalDeletions: number;
   authorCount: number;
-  displayedAuthors: AuthorSummary[];
-  otherAuthors: {
+  displayedAuthors: readonly AuthorSummary[];
+  otherAuthors: Readonly<{
     count: number;
     totalCommits: number;
     totalInsertions: number;
     totalDeletions: number;
     totalActiveMonths: number;
-  };
-} => {
+  }>;
+}> {
   const totalCommits = calculateTotalCommits(sortedAuthors);
   const totalInsertions = calculateTotalInsertions(sortedAuthors);
   const totalDeletions = calculateTotalDeletions(sortedAuthors);
@@ -81,4 +81,4 @@ export const prepareSummaryPageData = (
     displayedAuthors,
     otherAuthors,
   };
-};
+}

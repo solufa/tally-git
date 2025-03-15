@@ -1,59 +1,48 @@
 import { STACKED_BAR_CHART_REF_LINES, STACKED_BAR_CHAT_Y_AXIS_STEP } from '../../constants';
+import type { ChartMargin } from '../../types';
 
-export type StackedBarChartData = {
+export type StackedBarChartData = Readonly<{
   width: number;
   height: number;
-  margin: { top: number; right: number; bottom: number; left: number };
+  margin: ChartMargin;
   chartWidth: number;
   chartHeight: number;
   maxValue: number;
-  stackTotals: number[];
-};
+  stackTotals: readonly number[];
+}>;
 
-export const calculateChartDimensions = (
+export function calculateChartDimensions(
   width: number = 500,
   height: number = 300,
-  margin: { top: number; right: number; bottom: number; left: number } = {
-    top: 20,
-    right: 120,
-    bottom: 40,
-    left: 50,
-  },
-): { chartWidth: number; chartHeight: number } => {
+  margin: ChartMargin = { top: 20, right: 120, bottom: 40, left: 50 },
+): Readonly<{ chartWidth: number; chartHeight: number }> {
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
   return { chartWidth, chartHeight };
-};
+}
 
-export const calculateStackTotals = (data: number[][]): number[] => {
-  if (!data[0]) return [];
-
-  return data[0].map((_, colIndex: number) =>
-    data.reduce((sum: number, row: number[]) => sum + (row[colIndex] || 0), 0),
+export function calculateStackTotals(data: readonly number[][]): readonly number[] {
+  return (
+    data[0]?.map((_, colIndex) => data.reduce((sum, row) => sum + (row[colIndex] ?? 0), 0)) ?? []
   );
-};
+}
 
-export const calculateMaxValue = (stackTotals: number[]): number => {
-  // データの最大値を計算
+export function calculateMaxValue(stackTotals: readonly number[]): number {
   const dataMaxValue = Math.max(...stackTotals);
-
-  // 基準線の最大値を計算
   const referenceMaxValue = Math.max(...STACKED_BAR_CHART_REF_LINES.map((line) => line.value));
-
-  // データの最大値と基準線の最大値を比較し、大きい方を採用
   const baseMaxValue = Math.max(dataMaxValue, referenceMaxValue);
 
   // 最大値よりも大きい次のステップまで表示する
   return Math.ceil(baseMaxValue / STACKED_BAR_CHAT_Y_AXIS_STEP) * STACKED_BAR_CHAT_Y_AXIS_STEP;
-};
+}
 
-export const prepareStackedBarChartData = (
-  data: number[][],
+export function prepareStackedBarChartData(
+  data: readonly number[][],
   width?: number,
   height?: number,
-  margin?: { top: number; right: number; bottom: number; left: number },
-): StackedBarChartData => {
+  margin?: ChartMargin,
+): StackedBarChartData {
   const safeWidth = width ?? 500;
   const safeHeight = height ?? 300;
   const safeMargin = margin ?? { top: 20, right: 120, bottom: 40, left: 50 };
@@ -71,4 +60,4 @@ export const prepareStackedBarChartData = (
     maxValue,
     stackTotals,
   };
-};
+}

@@ -1,37 +1,40 @@
-export type BarData = {
+import assert from 'assert';
+import type { ChartMargin, Contributors } from '../../types';
+
+export type BarData = Readonly<{
   key: string;
   x: number;
   y: number;
   width: number;
   height: number;
   fill: string;
-};
+}>;
 
-export const calculateBarWidth = (chartWidth: number, labelsLength: number): number => {
+export function calculateBarWidth(chartWidth: number, labelsLength: number): number {
   return (chartWidth / labelsLength) * 0.8;
-};
+}
 
-export const calculateBarSpacing = (chartWidth: number, labelsLength: number): number => {
+export function calculateBarSpacing(chartWidth: number, labelsLength: number): number {
   return (chartWidth / labelsLength) * 0.2;
-};
+}
 
-export const calculateBarPosition = (
+export function calculateBarPosition(
   monthIndex: number,
   chartWidth: number,
   labelsLength: number,
   barWidth: number,
   barSpacing: number,
-): number => {
+): number {
   return monthIndex * (chartWidth / labelsLength) + barWidth / 2 + barSpacing / 2;
-};
+}
 
-export const createStackedBarData = (
+export function createStackedBarData(
   monthIndex: number,
   contributorIndex: number,
   value: number,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartWidth: number,
   labelsLength: number,
   barWidth: number,
@@ -39,7 +42,7 @@ export const createStackedBarData = (
   yOffset: number,
   contributor: string,
   getContributorColor: (contributor: string) => string,
-): BarData => {
+): BarData {
   const barHeight = (value / maxValue) * chartHeight;
   const labelX = calculateBarPosition(monthIndex, chartWidth, labelsLength, barWidth, barSpacing);
   const x = margin.left + labelX - barWidth / 2;
@@ -53,33 +56,33 @@ export const createStackedBarData = (
     height: barHeight,
     fill: getContributorColor(contributor),
   };
-};
+}
 
-export const isValidContributor = (value: number, contributor: string | undefined): boolean => {
+export function isValidContributor(value: number, contributor: string | undefined): boolean {
   return value > 0 && typeof contributor === 'string';
-};
+}
 
-export const processContributorBar = (
-  data: number[][],
+export function processContributorBar(
+  data: readonly number[][],
   monthIndex: number,
   contributorIndex: number,
-  contributors: Readonly<string[]>,
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartWidth: number,
   labelsLength: number,
   barWidth: number,
   barSpacing: number,
   yOffset: number,
   getContributorColor: (contributor: string) => string,
-): { bar: BarData | null; height: number } => {
+): Readonly<{ bar: BarData | null; height: number }> {
   const value = data[contributorIndex]?.[monthIndex] ?? 0;
   const contributor = contributors[contributorIndex];
 
-  if (!isValidContributor(value, contributor)) {
-    return { bar: null, height: 0 };
-  }
+  if (!isValidContributor(value, contributor)) return { bar: null, height: 0 };
+
+  assert(contributor);
 
   const bar = createStackedBarData(
     monthIndex,
@@ -93,30 +96,29 @@ export const processContributorBar = (
     barWidth,
     barSpacing,
     yOffset,
-    contributor as string,
+    contributor,
     getContributorColor,
   );
 
   return { bar, height: bar.height };
-};
+}
 
-export const calculateMonthBars = (
-  data: number[][],
+export function calculateMonthBars(
+  data: readonly number[][],
   monthIndex: number,
-  contributors: Readonly<string[]>,
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartWidth: number,
   labelsLength: number,
   barWidth: number,
   barSpacing: number,
   getContributorColor: (contributor: string) => string,
-): BarData[] => {
+): readonly BarData[] {
   const monthBars: BarData[] = [];
   let yOffset = 0;
 
-  // 各開発者（データ行）ごとに処理
   for (let contributorIndex = 0; contributorIndex < data.length; contributorIndex++) {
     const { bar, height } = processContributorBar(
       data,
@@ -141,28 +143,22 @@ export const calculateMonthBars = (
   }
 
   return monthBars;
-};
+}
 
-export const prepareStackedBarChartSvgData = (
-  data: number[][],
-  labels: Readonly<string[]>,
-  contributors: Readonly<string[]>,
+export function prepareStackedBarChartSvgData(
+  data: readonly number[][],
+  labels: readonly string[],
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
   chartWidth: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   getContributorColor: (contributor: string) => string,
-): {
-  barWidth: number;
-  barSpacing: number;
-  bars: BarData[];
-} => {
+): Readonly<{ barWidth: number; barSpacing: number; bars: readonly BarData[] }> {
   const barWidth = calculateBarWidth(chartWidth, labels.length);
   const barSpacing = calculateBarSpacing(chartWidth, labels.length);
-
   const bars: BarData[] = [];
 
-  // 各月（X軸）ごとに処理
   for (let monthIndex = 0; monthIndex < labels.length; monthIndex++) {
     const monthBars = calculateMonthBars(
       data,
@@ -180,9 +176,5 @@ export const prepareStackedBarChartSvgData = (
     bars.push(...monthBars);
   }
 
-  return {
-    barWidth,
-    barSpacing,
-    bars,
-  };
-};
+  return { barWidth, barSpacing, bars };
+}

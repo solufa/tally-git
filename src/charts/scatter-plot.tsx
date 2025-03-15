@@ -3,10 +3,13 @@ import React from 'react';
 import type { ScatterPlotSvgData } from '../logic/pdf-pages/scatter-plot-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
 
-export const ScatterPlot: React.FC<{
+export function ScatterPlot({
+  title,
+  svgData,
+}: {
   title: string;
   svgData: ScatterPlotSvgData;
-}> = ({ title, svgData }) => {
+}): React.ReactNode {
   const {
     width,
     height,
@@ -158,4 +161,4 @@ export const ScatterPlot: React.FC<{
       </Svg>
     </View>
   );
-};
+}

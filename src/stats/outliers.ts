@@ -2,144 +2,113 @@ import { INSERTIONS_THRESHOLD } from '../constants';
 import type { AuthorLog, CommitData, CommitDetail, Insertions } from '../types';
 import { calculateTotalInsertions } from '../utils/insertions-calculator';
 
-export const findOutlierCommits = (commitDetails: Readonly<CommitDetail[]>): CommitDetail[] => {
+export function findOutlierCommits(
+  commitDetails: readonly CommitDetail[],
+): readonly CommitDetail[] {
   return commitDetails.filter((commit) => {
     const totalInsertions = calculateTotalInsertions(commit.insertions);
     return totalInsertions > INSERTIONS_THRESHOLD || commit.deletions >= totalInsertions * 10;
   });
-};
+}
 
-export const subtractCode = (
+export function subtractCode(
   baseCode: number | undefined,
   subtractCode: number | undefined,
-): number => {
+): number {
   if (baseCode === undefined) return 0;
   if (subtractCode === undefined) return baseCode;
-  return Math.max(0, baseCode - subtractCode);
-};
 
-export const subtractTest = (
+  return Math.max(0, baseCode - subtractCode);
+}
+
+export function subtractTest(
   baseTest: number | undefined,
   subtractTest: number | undefined,
-): number | undefined => {
+): number | undefined {
   if (baseTest === undefined) return undefined;
   if (subtractTest === undefined) return baseTest;
+
   const result = Math.max(0, baseTest - subtractTest);
   return result > 0 ? result : undefined;
-};
+}
 
-export const checkInputs = (
-  base?: { code: number; test?: number },
-  subtract?: { code: number; test?: number },
-): { base?: { code: number; test?: number }; subtract?: { code: number; test?: number } } => {
-  if (!base && !subtract) return { base: undefined, subtract: undefined };
-  if (!base) return { base: undefined, subtract };
-  if (!subtract) return { base, subtract: undefined };
-  return { base, subtract };
-};
-
-export const createNewValues = (
-  base: { code: number; test?: number },
-  subtract: { code: number; test?: number },
-): { newCode: number; newTest: number | undefined } => {
+export function createNewValues(
+  base: Readonly<{ code: number; test?: number }>,
+  subtract: Readonly<{ code: number; test?: number }>,
+): Readonly<{ newCode: number; newTest: number | undefined }> {
   const newCode = subtractCode(base.code, subtract.code);
   const newTest = subtractTest(base.test, subtract.test);
-  return { newCode, newTest };
-};
 
-export const createResult = (
+  return { newCode, newTest };
+}
+
+export function createResult(
   newCode: number,
   newTest: number | undefined,
-): { code: number; test?: number } | undefined => {
+): Readonly<{ code: number; test?: number }> | undefined {
   if (newCode === 0 && !newTest) return undefined;
+
   return { code: newCode, test: newTest };
-};
+}
 
-export const processFrontend = (
-  base?: { code: number; test?: number },
-  subtract?: { code: number; test?: number },
-): { code: number; test?: number } | undefined => {
-  const { base: checkedBase, subtract: checkedSubtract } = checkInputs(base, subtract);
+export function processCode(
+  base?: Readonly<{ code: number; test?: number }>,
+  subtract?: Readonly<{ code: number; test?: number }>,
+): Readonly<{ code: number; test?: number }> | undefined {
+  if (!base) return undefined;
+  if (!subtract) return { ...base };
 
-  if (!checkedBase) return undefined;
-  if (!checkedSubtract) return { ...checkedBase };
-
-  const { newCode, newTest } = createNewValues(checkedBase, checkedSubtract);
+  const { newCode, newTest } = createNewValues(base, subtract);
   return createResult(newCode, newTest);
-};
+}
 
-export const processBackend = (
-  base?: { code: number; test?: number },
-  subtract?: { code: number; test?: number },
-): { code: number; test?: number } | undefined => {
-  return processFrontend(base, subtract);
-};
-
-export const processInfra = (
-  base?: { code: number; test?: number },
-  subtract?: { code: number; test?: number },
-): { code: number; test?: number } | undefined => {
-  return processFrontend(base, subtract);
-};
-
-export const processOthers = (baseOthers: number, subtractOthers: number): number => {
-  return Math.max(0, baseOthers - subtractOthers);
-};
-
-export const subtractInsertions = (base: Insertions, subtract: Insertions): Insertions => {
+export function subtractInsertions(base: Insertions, subtract: Insertions): Insertions {
   return {
-    frontend: processFrontend(base.frontend, subtract.frontend),
-    backend: processBackend(base.backend, subtract.backend),
-    infra: processInfra(base.infra, subtract.infra),
-    others: processOthers(base.others, subtract.others),
+    frontend: processCode(base.frontend, subtract.frontend),
+    backend: processCode(base.backend, subtract.backend),
+    infra: processCode(base.infra, subtract.infra),
+    others: Math.max(0, base.others - subtract.others),
   };
-};
+}
 
-export const updateMonthData = (
+export function updateMonthData(
   monthData: CommitData,
   insertions: Insertions,
   deletions: number,
-): CommitData => {
+): CommitData {
   return {
     commits: Math.max(0, monthData.commits - 1),
     insertions: subtractInsertions(monthData.insertions, insertions),
     deletions: Math.max(0, monthData.deletions - deletions),
   };
-};
+}
 
-export const updateAuthorData = (
+export function updateAuthorData(
   authorData: Record<string, CommitData | undefined>,
   YM: string,
   monthData: CommitData,
   insertions: Insertions,
   deletions: number,
-): Record<string, CommitData | undefined> => {
-  return {
-    ...authorData,
-    [YM]: updateMonthData(monthData, insertions, deletions),
-  };
-};
+): Readonly<Record<string, CommitData | undefined>> {
+  return { ...authorData, [YM]: updateMonthData(monthData, insertions, deletions) };
+}
 
-export const createFilteredAuthorLog = (
+export function createFilteredAuthorLog(
   authorLog: AuthorLog,
-  outlierCommits: Readonly<CommitDetail[]>,
-): AuthorLog => {
-  // 深いコピーを作成
+  outlierCommits: readonly CommitDetail[],
+): AuthorLog {
   const filteredAuthorLog = structuredClone(authorLog);
 
-  // 新しいオブジェクトを作成して返す
   return outlierCommits.reduce((result, { author, date, insertions, deletions }) => {
     const YM = date.slice(0, 7);
     const authorData = result[author];
     const monthData = authorData?.[YM];
 
-    // 著者データまたは月データがない場合は何もしない
     if (!authorData || !monthData) return result;
 
-    // 新しいresultを作成
     return {
       ...result,
       [author]: updateAuthorData(authorData, YM, monthData, insertions, deletions),
     };
   }, filteredAuthorLog);
-};
+}

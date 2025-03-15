@@ -1,33 +1,6 @@
 import { expect, test } from 'vitest';
-import { assertString, getContributorColor } from '../src/charts/color-utils';
+import { getContributorColor } from '../src/charts/color-utils';
 import { COLORS } from '../src/constants';
-
-// assertString関数のテスト
-test('assertString - 文字列の場合はエラーをスローしない', () => {
-  // 文字列を渡した場合、エラーは発生しない
-  expect(() => assertString('test')).not.toThrow();
-  expect(() => assertString('')).not.toThrow();
-});
-
-test('assertString - 数値の場合はエラーをスロー', () => {
-  expect(() => assertString(123)).toThrow('Expected string but got number');
-});
-
-test('assertString - nullの場合はエラーをスロー', () => {
-  expect(() => assertString(null)).toThrow('Expected string but got object');
-});
-
-test('assertString - undefinedの場合はエラーをスロー', () => {
-  expect(() => assertString(undefined)).toThrow('Expected string but got undefined');
-});
-
-test('assertString - オブジェクトの場合はエラーをスロー', () => {
-  expect(() => assertString({})).toThrow('Expected string but got object');
-});
-
-test('assertString - 配列の場合はエラーをスロー', () => {
-  expect(() => assertString([])).toThrow('Expected string but got object');
-});
 
 // getContributorColor関数のテスト
 test('getContributorColor - 同じ開発者には同じ色を返す', () => {

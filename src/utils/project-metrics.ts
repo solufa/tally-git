@@ -1,11 +1,11 @@
-import type { DirMetrics, FileMetric, ProjectConfig } from '../types';
+import type { DirMetrics, DirType, FileMetric, ProjectConfig } from '../types';
 import { getDirectoryMetrics } from './directory-metrics';
 
 async function getMetricsForPath(
   basePath: string,
   dirPath: string,
-  testPaths: Readonly<string[]> | undefined,
-): Promise<Readonly<FileMetric[]>> {
+  testPaths: readonly string[] | undefined,
+): Promise<readonly FileMetric[]> {
   const fullPath = `${basePath}/${dirPath}`;
   const metrics = await getDirectoryMetrics(fullPath);
 
@@ -21,9 +21,9 @@ async function getMetricsForPath(
 
 async function getMetricsForPaths(
   basePath: string,
-  paths: Readonly<string[]>,
-  testPaths: Readonly<string[]> | undefined,
-): Promise<Readonly<FileMetric[]>> {
+  paths: readonly string[],
+  testPaths: readonly string[] | undefined,
+): Promise<readonly FileMetric[]> {
   const metrics: FileMetric[] = [];
 
   // getMetricsForPathを並列処理するとメモリが不足するのでfor ofで直列処理する
@@ -36,27 +36,28 @@ async function getMetricsForPaths(
 
 async function processDirType(
   targetDir: string,
-  dirType: { paths: Readonly<string[]>; tests?: Readonly<string[]> } | undefined,
-): Promise<Readonly<FileMetric[]>> {
+  dirType: DirType | undefined,
+): Promise<readonly FileMetric[]> {
   return dirType?.paths ? getMetricsForPaths(targetDir, dirType.paths, dirType.tests) : [];
 }
 
 async function processAllDirTypes(
   targetDir: string,
   dirTypes: ProjectConfig['dirTypes'],
-): Promise<[Readonly<FileMetric[]>, Readonly<FileMetric[]>, Readonly<FileMetric[]>]> {
+): Promise<readonly [readonly FileMetric[], readonly FileMetric[], readonly FileMetric[]]> {
   const frontend = await processDirType(targetDir, dirTypes.frontend);
   const backend = await processDirType(targetDir, dirTypes.backend);
   const infra = await processDirType(targetDir, dirTypes.infra);
+
   return [frontend, backend, infra];
 }
 
 function createDirMetricsResult(
-  frontend: Readonly<FileMetric[]>,
-  backend: Readonly<FileMetric[]>,
-  infra: Readonly<FileMetric[]>,
+  frontend: readonly FileMetric[],
+  backend: readonly FileMetric[],
+  infra: readonly FileMetric[],
 ): DirMetrics {
-  const result: Record<string, Readonly<FileMetric[]>> = {};
+  const result: Record<string, readonly FileMetric[]> = {};
 
   if (frontend.length > 0) result.frontend = frontend;
   if (backend.length > 0) result.backend = backend;

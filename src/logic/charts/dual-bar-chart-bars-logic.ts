@@ -1,3 +1,6 @@
+import assert from 'assert';
+import type { ChartMargin, Contributors } from '../../types';
+
 export type BarData = {
   key: string;
   x: number;
@@ -7,13 +10,13 @@ export type BarData = {
   fill: string;
 };
 
-export const createBarData = (
+export function createBarData(
   monthIndex: number,
   contributorIndex: number,
   value: number,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   monthX: number,
   monthPadding: number,
   barWidth: number,
@@ -21,7 +24,7 @@ export const createBarData = (
   contributor: string,
   getContributorColor: (contributor: string) => string,
   isSecondBar: boolean,
-): BarData => {
+): BarData {
   const barHeight = (value / maxValue) * chartHeight;
   const barType = isSecondBar ? 'deletion' : 'insertion';
 
@@ -33,25 +36,25 @@ export const createBarData = (
     height: barHeight,
     fill: getContributorColor(contributor),
   };
-};
+}
 
-export const isValidContributor = (value: number, contributor: string | undefined): boolean => {
+export function isValidContributor(value: number, contributor: string | undefined): boolean {
   return value > 0 && typeof contributor === 'string';
-};
+}
 
-export const processContributorData = (
-  contributorData: number[][],
+export function processContributorData(
+  contributorData: readonly (readonly number[])[],
   monthIndex: number,
-  contributors: Readonly<string[]>,
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   monthX: number,
   monthPadding: number,
   barWidth: number,
   getContributorColor: (contributor: string) => string,
   isSecondBar: boolean,
-): BarData[] => {
+): readonly BarData[] {
   const bars: BarData[] = [];
   let stackHeight = 0;
 
@@ -60,6 +63,8 @@ export const processContributorData = (
     const contributor = contributors[contributorIndex];
 
     if (!isValidContributor(value, contributor)) continue;
+
+    assert(contributor);
 
     const bar = createBarData(
       monthIndex,
@@ -72,7 +77,7 @@ export const processContributorData = (
       monthPadding,
       barWidth,
       stackHeight,
-      contributor as string,
+      contributor,
       getContributorColor,
       isSecondBar,
     );
@@ -82,20 +87,20 @@ export const processContributorData = (
   }
 
   return bars;
-};
+}
 
-export const calculateMonthInsertionBars = (
-  contributorInsertionsData: number[][],
+export function calculateMonthInsertionBars(
+  contributorInsertionsData: readonly (readonly number[])[],
   monthIndex: number,
-  contributors: Readonly<string[]>,
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   monthWidth: number,
   barWidth: number,
   monthPadding: number,
   getContributorColor: (contributor: string) => string,
-): BarData[] => {
+): readonly BarData[] {
   const monthX = margin.left + monthIndex * monthWidth;
 
   return processContributorData(
@@ -111,20 +116,20 @@ export const calculateMonthInsertionBars = (
     getContributorColor,
     false,
   );
-};
+}
 
 export const calculateMonthDeletionBars = (
-  contributorDeletionsData: number[][],
+  contributorDeletionsData: readonly (readonly number[])[],
   monthIndex: number,
-  contributors: Readonly<string[]>,
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   monthWidth: number,
   barWidth: number,
   monthPadding: number,
   getContributorColor: (contributor: string) => string,
-): BarData[] => {
+): readonly BarData[] => {
   const monthX = margin.left + monthIndex * monthWidth;
 
   return processContributorData(

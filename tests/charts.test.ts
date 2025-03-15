@@ -326,7 +326,6 @@ describe('dual-bar-chart-utils-logic', () => {
     const labels = ['2023-01', '2023-02', '2023-03'];
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     const chartHeight = 100;
-    const chartWidth = 200;
     const monthWidth = 50;
     const barWidth = 20;
     const monthPadding = 5;
@@ -335,7 +334,6 @@ describe('dual-bar-chart-utils-logic', () => {
       labels,
       margin,
       chartHeight,
-      chartWidth,
       monthWidth,
       barWidth,
       monthPadding,
@@ -351,7 +349,6 @@ describe('dual-bar-chart-utils-logic', () => {
     const labels = Array.from({ length: 15 }, (_, i) => `2023-${i + 1}`);
     const margin = { top: 10, right: 10, bottom: 10, left: 10 };
     const chartHeight = 100;
-    const chartWidth = 200;
     const monthWidth = 50;
     const barWidth = 20;
     const monthPadding = 5;
@@ -360,7 +357,6 @@ describe('dual-bar-chart-utils-logic', () => {
       labels,
       margin,
       chartHeight,
-      chartWidth,
       monthWidth,
       barWidth,
       monthPadding,

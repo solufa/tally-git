@@ -1,26 +1,22 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import type {
-  ReferenceLineData,
-  ReferenceLineLegendItemData,
-} from '../logic/charts/dual-bar-chart-reference-lines-logic';
 import {
   calculateReferenceLineLegendItems,
   calculateReferenceLines,
 } from '../logic/charts/dual-bar-chart-reference-lines-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
-import type { ChartReferenceLine } from '../types';
+import type { ChartMargin, ChartReferenceLine } from '../types';
 
-export const renderChartReferenceLines = (
-  referenceLines: Readonly<ChartReferenceLine[]>,
+export function renderChartReferenceLines(
+  referenceLines: readonly ChartReferenceLine[],
   maxValue: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartHeight: number,
   chartWidth: number,
-): React.ReactNode[] => {
+): readonly React.ReactNode[] {
   const lines = calculateReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth);
 
-  return lines.map((line: ReferenceLineData) => (
+  return lines.map((line) => (
     <G key={line.key}>
       <Path
         d={`M ${line.x1} ${line.y} L ${line.x2} ${line.y}`}
@@ -30,13 +26,13 @@ export const renderChartReferenceLines = (
       />
     </G>
   ));
-};
+}
 
-export const renderChartReferenceLineLegend = (
-  referenceLines: Readonly<ChartReferenceLine[]>,
-  margin: { top: number; right: number; bottom: number; left: number },
+export function renderChartReferenceLineLegend(
+  referenceLines: readonly ChartReferenceLine[],
+  margin: ChartMargin,
   chartHeight: number,
-): React.ReactNode => {
+): React.ReactNode {
   const legendItems = calculateReferenceLineLegendItems(
     referenceLines,
     margin,
@@ -46,7 +42,7 @@ export const renderChartReferenceLineLegend = (
 
   return (
     <G>
-      {legendItems.map((item: ReferenceLineLegendItemData) => (
+      {legendItems.map((item) => (
         <G key={item.key}>
           <Path
             d={`M ${item.pathX} ${item.pathY} L ${item.pathX + item.pathWidth} ${item.pathY}`}
@@ -65,4 +61,4 @@ export const renderChartReferenceLineLegend = (
       ))}
     </G>
   );
-};
+}

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import type { AnonymousAuthors, AuthorLog } from '../../types';
 
-export const anonymizeAuthors = (authorLog: AuthorLog): AnonymousAuthors => {
+export function anonymizeAuthors(authorLog: AuthorLog): AnonymousAuthors {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   return Object.keys(authorLog).reduce((dict, author, index): AnonymousAuthors => {
@@ -17,4 +17,4 @@ export const anonymizeAuthors = (authorLog: AuthorLog): AnonymousAuthors => {
       return { ...dict, [author]: `${firstChar}${secondChar}` };
     }
   }, {});
-};
+}

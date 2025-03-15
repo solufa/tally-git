@@ -2,15 +2,20 @@ import type { CommitDetail } from '../../types';
 import { compareDatesDesc, MONTH_FORMAT } from '../../utils/date-utils';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 
-export type MonthlyOutlierData = {
+export type MonthlyOutlierData = Readonly<{
   month: string;
   commits: number;
   insertions: number;
   deletions: number;
-};
+}>;
 
-export const groupOutliersByMonth = (commits: CommitDetail[]): MonthlyOutlierData[] => {
-  const monthlyData: Record<string, MonthlyOutlierData> = {};
+export function groupOutliersByMonth(
+  commits: readonly CommitDetail[],
+): readonly MonthlyOutlierData[] {
+  const monthlyData: Record<
+    string,
+    { month: string; commits: number; insertions: number; deletions: number }
+  > = {};
 
   commits.forEach((commit) => {
     // YYYY-MM 形式で月を取得
@@ -26,16 +31,16 @@ export const groupOutliersByMonth = (commits: CommitDetail[]): MonthlyOutlierDat
   });
 
   return Object.values(monthlyData);
-};
+}
 
-export const sortMonthlyOutliers = (
-  monthlyOutliers: MonthlyOutlierData[],
-): MonthlyOutlierData[] => {
+export function sortMonthlyOutliers(
+  monthlyOutliers: readonly MonthlyOutlierData[],
+): readonly MonthlyOutlierData[] {
   return [...monthlyOutliers].sort((a, b) => compareDatesDesc(a.month, b.month, MONTH_FORMAT));
-};
+}
 
-export const prepareOutliersPageData = (outlierCommits: CommitDetail[]): MonthlyOutlierData[] => {
-  // 月別データを作成し、降順にソート
-  const monthlyOutliers = groupOutliersByMonth(outlierCommits);
-  return sortMonthlyOutliers(monthlyOutliers);
-};
+export function prepareOutliersPageData(
+  outlierCommits: readonly CommitDetail[],
+): readonly MonthlyOutlierData[] {
+  return sortMonthlyOutliers(groupOutliersByMonth(outlierCommits));
+}

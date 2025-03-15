@@ -50,25 +50,25 @@ export type FunctionMetric = Readonly<{
   loc: number;
 }>;
 
-export type FileMetric = Readonly<{ filename: string; functions: FunctionMetric[] }>;
+export type FileMetric = Readonly<{ filename: string; functions: readonly FunctionMetric[] }>;
 
 export type DirMetrics = Readonly<{
-  [Key in keyof ProjectConfig['dirTypes']]: Readonly<FileMetric[]>;
+  [Key in keyof ProjectConfig['dirTypes']]: readonly FileMetric[];
 }>;
 
 export type Result = Readonly<{
   authorLog: AuthorLog;
   filteredAuthorLog: AuthorLog;
   dirMetrics: DirMetrics;
-  csv: { path: string; content: string };
-  pdf: { path: string; content: Buffer };
-  outlierCommits: Readonly<CommitDetail[]>;
+  csv: Readonly<{ path: string; content: string }>;
+  pdf: Readonly<{ path: string; content: Buffer }>;
+  outlierCommits: readonly CommitDetail[];
 }>;
 
 export type ChartReferenceLine = Readonly<{ value: number; label: string; color: string }>;
 
 export type PlotReferenceLine = Readonly<{
-  values: { x: number; y: number };
+  values: Readonly<{ x: number; y: number }>;
   label: string;
   color: string;
 }>;
@@ -77,4 +77,8 @@ export type ProjectDirType = keyof ProjectConfig['dirTypes'];
 
 export type AnonymousAuthors = Readonly<Record<string, string>>;
 
-export type MonthColumns = Readonly<string[]>;
+export type MonthColumns = readonly string[];
+
+export type ChartMargin = Readonly<{ top: number; right: number; bottom: number; left: number }>;
+
+export type Contributors = readonly string[];

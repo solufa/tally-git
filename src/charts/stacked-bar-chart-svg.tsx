@@ -1,7 +1,6 @@
 import { G, Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
 import { STACKED_BAR_CHART_REF_LINES } from '../constants';
-import type { BarData } from '../logic/charts/stacked-bar-chart-svg-logic';
 import { prepareStackedBarChartSvgData } from '../logic/charts/stacked-bar-chart-svg-logic';
 import { getContributorColor } from './color-utils';
 import {
@@ -17,7 +16,7 @@ import {
   type StackedBarChartSvgProps,
 } from './stacked-bar-chart-utils';
 
-export const StackedBarChartSvg = ({
+export function StackedBarChartSvg({
   width,
   height,
   margin,
@@ -27,7 +26,7 @@ export const StackedBarChartSvg = ({
   data,
   labels,
   contributors,
-}: StackedBarChartSvgProps): React.ReactElement => {
+}: StackedBarChartSvgProps): React.ReactElement {
   const { barWidth, bars } = prepareStackedBarChartSvgData(
     data,
     labels,
@@ -52,7 +51,7 @@ export const StackedBarChartSvg = ({
         chartHeight,
         chartWidth,
       )}
-      {bars.map((bar: BarData) => (
+      {bars.map((bar) => (
         <Rect
           key={bar.key}
           x={bar.x}
@@ -73,4 +72,4 @@ export const StackedBarChartSvg = ({
       </G>
     </Svg>
   );
-};
+}

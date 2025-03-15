@@ -1,18 +1,18 @@
 import type { ChartReferenceLine, PlotReferenceLine } from './types';
 
-export const STACKED_BAR_CHART_REF_LINES: ChartReferenceLine[] = [
+export const STACKED_BAR_CHART_REF_LINES: readonly ChartReferenceLine[] = [
   { value: 90, label: '松田のコミット', color: '#FF0000' },
   { value: 70, label: '月単価120万のコミット', color: '#00AA00' },
   { value: 50, label: 'IT系学部3年のコミット', color: '#0000FF' },
 ];
 
-export const DUAL_BAR_CHART_REF_LINES: ChartReferenceLine[] = [
+export const DUAL_BAR_CHART_REF_LINES: readonly ChartReferenceLine[] = [
   { value: 25000, label: '松田の追加行数', color: '#FF0000' },
   { value: 15000, label: '月単価120万の追加行数', color: '#00AA00' },
   { value: 10000, label: 'IT系学部3年の追加行数', color: '#0000FF' },
 ];
 
-export const SCATTER_PLOT_REF_LINES: PlotReferenceLine[] = [
+export const SCATTER_PLOT_REF_LINES: readonly PlotReferenceLine[] = [
   { values: { x: 50, y: 20 }, label: 'バグ混入確率60%', color: '#FF0000' },
   { values: { x: 20, y: 15 }, label: 'バグ混入確率40%', color: '#00AA00' },
   { values: { x: 10, y: 10 }, label: 'バグ混入確率20%', color: '#0000FF' },
@@ -26,7 +26,7 @@ export const STACKED_BAR_CHAT_Y_AXIS_STEP = 25;
 
 export const SCATTER_PLOT_AXIS_STEP = 5;
 
-export const EXCLUDED_FILES = [
+export const EXCLUDED_FILES: readonly string[] = [
   '.txt',
   '.json',
   '.csv',
@@ -36,9 +36,12 @@ export const EXCLUDED_FILES = [
   'composer.lock',
 ];
 
-export const EXCLUDED_AUTHORS = ['github-actions', 'codebuild-municipality-api-ci'];
+export const EXCLUDED_AUTHORS: readonly string[] = [
+  'github-actions',
+  'codebuild-municipality-api-ci',
+];
 
-export const COLORS = [
+export const COLORS: readonly string[] = [
   '#4285F4', // Googleブルー
   '#DB4437', // Googleレッド
   '#F4B400', // Googleイエロー

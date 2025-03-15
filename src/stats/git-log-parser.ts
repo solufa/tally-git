@@ -4,9 +4,9 @@ import type { CommitInfo, ProjectConfig } from '../types';
 import { categorizeInsertions } from '../utils/insertions-classifier';
 import { mergeInsertions } from '../utils/insertions-merger';
 
-export const parseGitLogLine = (
+export function parseGitLogLine(
   line: string,
-): { hash: string; author: string; date: string; YM: string } | null => {
+): Readonly<{ hash: string; author: string; date: string; YM: string } | null> {
   if (!line.match(/^[a-f0-9]+,.+,\d{4}-\d{2}-\d{2}$/)) return null;
 
   const [hash, author, date] = line.split(',');
@@ -15,15 +15,14 @@ export const parseGitLogLine = (
   assert(author);
   assert(date);
 
-  const YM = date.slice(0, 7);
-  return { hash, author, date, YM };
-};
+  return { hash, author, date, YM: date.slice(0, 7) };
+}
 
-export const processStatLine = (
+export function processStatLine(
   line: string,
   current: CommitInfo | null,
   projectConfig: ProjectConfig,
-): CommitInfo | null => {
+): CommitInfo | null {
   if (!current) return null;
 
   const [insertions, deletions, file] = line.split('\t');
@@ -37,41 +36,31 @@ export const processStatLine = (
   }
 
   const insertionCount = +insertions;
-
-  // 挿入行数を分類
   const categorizedInsertions = categorizeInsertions(file, insertionCount, projectConfig);
   const newInsertions = mergeInsertions(current.insertions, categorizedInsertions);
 
-  return {
-    ...current,
-    insertions: newInsertions,
-    deletions: current.deletions + +deletions,
-  };
-};
+  return { ...current, insertions: newInsertions, deletions: current.deletions + +deletions };
+}
 
-export const isCommitLine = (line: string): boolean => {
+export function isCommitLine(line: string): boolean {
   return /^[a-f0-9]+,.+,\d{4}-\d{2}-\d{2}$/.test(line);
-};
+}
 
-export const isStatLine = (line: string): boolean => {
+export function isStatLine(line: string): boolean {
   return /^\d+\t\d+\t.+/.test(line);
-};
+}
 
-export const processCommitLine = (
+export function processCommitLine(
   line: string,
-): { commitInfo: CommitInfo | null; skipCommit: boolean } => {
+): Readonly<{ commitInfo: CommitInfo | null; skipCommit: boolean }> {
   const commitInfo = parseGitLogLine(line);
 
-  if (!commitInfo) {
-    return { commitInfo: null, skipCommit: false };
-  }
+  if (!commitInfo) return { commitInfo: null, skipCommit: false };
 
-  if (EXCLUDED_AUTHORS.includes(commitInfo.author)) {
-    return { commitInfo: null, skipCommit: true };
-  }
+  if (EXCLUDED_AUTHORS.includes(commitInfo.author)) return { commitInfo: null, skipCommit: true };
 
   return {
     commitInfo: { ...commitInfo, insertions: { others: 0 }, deletions: 0 },
     skipCommit: false,
   };
-};
+}

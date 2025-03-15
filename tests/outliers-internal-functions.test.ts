@@ -1,14 +1,10 @@
 import { expect, test } from 'vitest';
 import {
-  checkInputs,
   createFilteredAuthorLog,
   createNewValues,
   createResult,
   findOutlierCommits,
-  processBackend,
-  processFrontend,
-  processInfra,
-  processOthers,
+  processCode,
   subtractCode,
   subtractInsertions,
   subtractTest,
@@ -57,30 +53,6 @@ test('subtractTest - 結果が0以下の場合', () => {
   expect(result).toBeUndefined();
 });
 
-test('checkInputs - 両方undefinedの場合', () => {
-  const result = checkInputs(undefined, undefined);
-  expect(result).toEqual({ base: undefined, subtract: undefined });
-});
-
-test('checkInputs - baseがundefinedの場合', () => {
-  const subtract = { code: 100, test: 50 };
-  const result = checkInputs(undefined, subtract);
-  expect(result).toEqual({ base: undefined, subtract });
-});
-
-test('checkInputs - subtractがundefinedの場合', () => {
-  const base = { code: 100, test: 50 };
-  const result = checkInputs(undefined, base);
-  expect(result).toEqual({ base: undefined, subtract: base });
-});
-
-test('checkInputs - 両方定義されている場合', () => {
-  const base = { code: 100, test: 50 };
-  const subtract = { code: 50, test: 20 };
-  const result = checkInputs(base, subtract);
-  expect(result).toEqual({ base, subtract });
-});
-
 test('createNewValues - 基本的なケース', () => {
   const base = { code: 100, test: 50 };
   const subtract = { code: 50, test: 20 };
@@ -103,47 +75,23 @@ test('createResult - newCodeが0でnewTestが定義されている場合', () =>
   expect(result).toEqual({ code: 0, test: 30 });
 });
 
-test('processFrontend - 基本的なケース', () => {
+test('processCode - 基本的なケース', () => {
   const base = { code: 100, test: 50 };
   const subtract = { code: 50, test: 20 };
-  const result = processFrontend(base, subtract);
+  const result = processCode(base, subtract);
   expect(result).toEqual({ code: 50, test: 30 });
 });
 
-test('processFrontend - baseがundefinedの場合', () => {
+test('processCode - baseがundefinedの場合', () => {
   const subtract = { code: 50, test: 20 };
-  const result = processFrontend(undefined, subtract);
+  const result = processCode(undefined, subtract);
   expect(result).toBeUndefined();
 });
 
-test('processFrontend - subtractがundefinedの場合', () => {
+test('processCode - subtractがundefinedの場合', () => {
   const base = { code: 100, test: 50 };
-  const result = processFrontend(base, undefined);
+  const result = processCode(base, undefined);
   expect(result).toEqual({ code: 100, test: 50 });
-});
-
-test('processBackend - 基本的なケース', () => {
-  const base = { code: 100, test: 50 };
-  const subtract = { code: 50, test: 20 };
-  const result = processBackend(base, subtract);
-  expect(result).toEqual({ code: 50, test: 30 });
-});
-
-test('processInfra - 基本的なケース', () => {
-  const base = { code: 100, test: 50 };
-  const subtract = { code: 50, test: 20 };
-  const result = processInfra(base, subtract);
-  expect(result).toEqual({ code: 50, test: 30 });
-});
-
-test('processOthers - 基本的なケース', () => {
-  const result = processOthers(100, 50);
-  expect(result).toBe(50);
-});
-
-test('processOthers - 結果が負の場合', () => {
-  const result = processOthers(50, 100);
-  expect(result).toBe(0);
 });
 
 test('subtractInsertions - 基本的なケース', () => {

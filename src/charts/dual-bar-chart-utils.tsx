@@ -1,84 +1,80 @@
 import { G, Path, Text } from '@react-pdf/renderer';
 import React from 'react';
-import type {
-  LegendItemData,
-  XAxisLabelData,
-  XAxisProps,
-  YAxisLabelData,
-  YAxisProps,
-} from '../logic/charts/dual-bar-chart-utils-logic';
+import type { XAxisProps, YAxisProps } from '../logic/charts/dual-bar-chart-utils-logic';
 import {
   calculateLegendItems,
   calculateXAxisLabels,
   calculateYAxisLabels,
 } from '../logic/charts/dual-bar-chart-utils-logic';
 import { pdfStyles } from '../pdf-pages/pdf-styles';
-import type { ChartReferenceLine } from '../types';
+import type { ChartMargin, ChartReferenceLine, Contributors } from '../types';
 import { getContributorColor } from './color-utils';
 
-export interface DualBarChartProps {
+export type DualBarChartProps = Readonly<{
   title: string;
-  data: [number[], number[]]; // [追加データ, 削除データ]
-  contributorData: [number[][], number[][]]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
-  labels: Readonly<string[]>;
-  contributors: string[]; // 開発者名
+  data: readonly [readonly number[], readonly number[]]; // [追加データ, 削除データ]
+  contributorData: readonly [readonly (readonly number[])[], readonly (readonly number[])[]]; // [開発者ごとの追加データ, 開発者ごとの削除データ]
+  labels: readonly string[];
+  contributors: Contributors;
   hasReferenceLines: boolean;
   width?: number;
   height?: number;
-  margin?: { top: number; right: number; bottom: number; left: number };
-}
+  margin?: ChartMargin;
+}>;
 
-export interface DualBarChartSvgProps {
+export type DualBarChartSvgProps = Readonly<{
   width: number;
   height: number;
-  margin: { top: number; right: number; bottom: number; left: number };
+  margin: ChartMargin;
   chartWidth: number;
   chartHeight: number;
   maxValue: number;
-  contributorData: [number[][], number[][]];
-  labels: Readonly<string[]>;
-  contributors: string[];
-  referenceLines: ChartReferenceLine[];
+  contributorData: readonly [readonly (readonly number[])[], readonly (readonly number[])[]];
+  labels: readonly string[];
+  contributors: readonly string[];
+  referenceLines: readonly ChartReferenceLine[];
+}>;
+
+export function XAxis({ margin, chartHeight, chartWidth }: XAxisProps): React.ReactElement {
+  return (
+    <Path
+      d={`M ${margin.left} ${margin.top + chartHeight} L ${margin.left + chartWidth} ${
+        margin.top + chartHeight
+      }`}
+      stroke="#000000"
+      strokeWidth={1}
+    />
+  );
 }
 
-export const XAxis = ({ margin, chartHeight, chartWidth }: XAxisProps): React.ReactElement => (
-  <Path
-    d={`M ${margin.left} ${margin.top + chartHeight} L ${margin.left + chartWidth} ${
-      margin.top + chartHeight
-    }`}
-    stroke="#000000"
-    strokeWidth={1}
-  />
-);
+export function YAxis({ margin, chartHeight }: YAxisProps): React.ReactElement {
+  return (
+    <Path
+      d={`M ${margin.left} ${margin.top} L ${margin.left} ${margin.top + chartHeight}`}
+      stroke="#000000"
+      strokeWidth={1}
+    />
+  );
+}
 
-export const YAxis = ({ margin, chartHeight }: YAxisProps): React.ReactElement => (
-  <Path
-    d={`M ${margin.left} ${margin.top} L ${margin.left} ${margin.top + chartHeight}`}
-    stroke="#000000"
-    strokeWidth={1}
-  />
-);
-
-export const renderXAxisLabels = (
-  labels: Readonly<string[]>,
-  margin: { top: number; right: number; bottom: number; left: number },
+export function renderXAxisLabels(
+  labels: readonly string[],
+  margin: ChartMargin,
   chartHeight: number,
-  chartWidth: number,
   monthWidth: number,
   barWidth: number,
   monthPadding: number,
-): React.ReactNode[] => {
+): React.ReactNode[] {
   const xAxisLabels = calculateXAxisLabels(
     labels,
     margin,
     chartHeight,
-    chartWidth,
     monthWidth,
     barWidth,
     monthPadding,
   );
 
-  return xAxisLabels.map((labelData: XAxisLabelData) => (
+  return xAxisLabels.map((labelData) => (
     <G key={labelData.key}>
       <Path
         d={`M ${labelData.tickX} ${labelData.tickY1} L ${labelData.tickX} ${labelData.tickY2}`}
@@ -99,17 +95,17 @@ export const renderXAxisLabels = (
       </Text>
     </G>
   ));
-};
+}
 
-export const renderYAxisLabels = (
+export function renderYAxisLabels(
   maxValue: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartHeight: number,
   chartWidth: number,
-): React.ReactNode[] => {
+): readonly React.ReactNode[] {
   const yAxisLabels = calculateYAxisLabels(maxValue, margin, chartHeight, chartWidth);
 
-  return yAxisLabels.map((labelData: YAxisLabelData) => (
+  return yAxisLabels.map((labelData) => (
     <G key={labelData.key}>
       <Path
         d={`M ${labelData.tickX1} ${labelData.tickY} L ${labelData.tickX2} ${labelData.tickY}`}
@@ -131,14 +127,14 @@ export const renderYAxisLabels = (
       </Text>
     </G>
   ));
-};
+}
 
-export const renderLegend = (
-  contributors: string[],
-  margin: { top: number; right: number; bottom: number; left: number },
+export function renderLegend(
+  contributors: Contributors,
+  margin: ChartMargin,
   chartWidth: number,
-  referenceLines?: ChartReferenceLine[],
-): React.ReactNode => {
+  referenceLines?: readonly ChartReferenceLine[],
+): React.ReactNode {
   const legendItems = calculateLegendItems(
     contributors,
     margin,
@@ -149,7 +145,7 @@ export const renderLegend = (
 
   return (
     <G>
-      {legendItems.map((item: LegendItemData) => (
+      {legendItems.map((item) => (
         <G key={item.key}>
           <Path
             d={`M ${item.pathX} ${item.pathY} L ${item.pathX + item.pathWidth} ${item.pathY}`}
@@ -171,4 +167,4 @@ export const renderLegend = (
       ))}
     </G>
   );
-};
+}

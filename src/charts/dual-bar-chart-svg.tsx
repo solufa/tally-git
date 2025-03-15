@@ -1,6 +1,5 @@
 import { Path, Rect, Svg } from '@react-pdf/renderer';
 import React from 'react';
-import type { BarData, SeparatorData } from '../logic/charts/dual-bar-chart-svg-logic';
 import { prepareDualBarChartSvgData } from '../logic/charts/dual-bar-chart-svg-logic';
 import { getContributorColor } from './color-utils';
 import { renderChartReferenceLines } from './dual-bar-chart-reference-lines';
@@ -13,7 +12,7 @@ import {
   type DualBarChartSvgProps,
 } from './dual-bar-chart-utils';
 
-export const DualBarChartSvg = ({
+export function DualBarChartSvg({
   width,
   height,
   margin,
@@ -24,9 +23,8 @@ export const DualBarChartSvg = ({
   labels,
   contributors,
   referenceLines,
-}: DualBarChartSvgProps): React.ReactElement => {
+}: DualBarChartSvgProps): React.ReactElement {
   const [contributorInsertionsData, contributorDeletionsData] = contributorData;
-
   const { monthWidth, barWidth, monthPadding, insertionBars, deletionBars, separators } =
     prepareDualBarChartSvgData(
       contributorInsertionsData,
@@ -44,19 +42,11 @@ export const DualBarChartSvg = ({
     <Svg width={width} height={height}>
       <XAxis margin={margin} chartHeight={chartHeight} chartWidth={chartWidth} />
       <YAxis margin={margin} chartHeight={chartHeight} />
-      {renderXAxisLabels(
-        labels,
-        margin,
-        chartHeight,
-        chartWidth,
-        monthWidth,
-        barWidth,
-        monthPadding,
-      )}
+      {renderXAxisLabels(labels, margin, chartHeight, monthWidth, barWidth, monthPadding)}
       {renderYAxisLabels(maxValue, margin, chartHeight, chartWidth)}
       {referenceLines &&
         renderChartReferenceLines(referenceLines, maxValue, margin, chartHeight, chartWidth)}
-      {insertionBars.map((bar: BarData) => (
+      {insertionBars.map((bar) => (
         <Rect
           key={bar.key}
           x={bar.x}
@@ -66,7 +56,7 @@ export const DualBarChartSvg = ({
           fill={bar.fill}
         />
       ))}
-      {deletionBars.map((bar: BarData) => (
+      {deletionBars.map((bar) => (
         <Rect
           key={bar.key}
           x={bar.x}
@@ -76,7 +66,7 @@ export const DualBarChartSvg = ({
           fill={bar.fill}
         />
       ))}
-      {separators.map((separator: SeparatorData) => (
+      {separators.map((separator) => (
         <Path
           key={separator.key}
           d={`M ${separator.x} ${separator.startY} L ${separator.x} ${separator.endY}`}
@@ -88,4 +78,4 @@ export const DualBarChartSvg = ({
       {renderLegend(contributors, margin, chartWidth, referenceLines)}
     </Svg>
   );
-};
+}

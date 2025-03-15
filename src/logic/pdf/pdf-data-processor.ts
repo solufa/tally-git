@@ -2,35 +2,35 @@ import type { AuthorLog, MonthColumns, ProjectConfig, ProjectDirType } from '../
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 import { getAggregateMonthValue, getMonthDataValue } from './pdf-data-utils';
 
-export type AuthorTotal = {
+export type AuthorTotal = Readonly<{
   author: string;
   totalCommits: number;
   totalInsertions: number;
   totalDeletions: number;
   activeMonths: number;
-};
+}>;
 
-export type MonthlyTotal = {
+export type MonthlyTotal = Readonly<{
   month: string;
   commits: number;
   insertions: number;
   deletions: number;
-};
+}>;
 
-export type PdfData = {
-  sortedAuthors: AuthorTotal[];
-  monthlyTotals: MonthlyTotal[];
-  contributorNamesByCommits: string[];
-  contributorNamesByInsertions: string[];
-  insertionsData: number[];
-  deletionsData: number[];
-  contributorCommitsData: number[][];
-  contributorInsertionsData: number[][];
-  contributorDeletionsData: number[][];
-  dirTypesWithTests: ProjectDirType[];
-};
+export type PdfData = Readonly<{
+  sortedAuthors: readonly AuthorTotal[];
+  monthlyTotals: readonly MonthlyTotal[];
+  contributorNamesByCommits: readonly string[];
+  contributorNamesByInsertions: readonly string[];
+  insertionsData: readonly number[];
+  deletionsData: readonly number[];
+  contributorCommitsData: readonly number[][];
+  contributorInsertionsData: readonly number[][];
+  contributorDeletionsData: readonly number[][];
+  dirTypesWithTests: readonly ProjectDirType[];
+}>;
 
-export const calculateAuthorTotals = (authorLog: AuthorLog): AuthorTotal[] => {
+export function calculateAuthorTotals(authorLog: AuthorLog): readonly AuthorTotal[] {
   return Object.entries(authorLog).map(([author, monthData]) => {
     const totalCommits = Object.values(monthData).reduce(
       (sum, data) => sum + (data?.commits ?? 0),
@@ -44,16 +44,16 @@ export const calculateAuthorTotals = (authorLog: AuthorLog): AuthorTotal[] => {
       (sum, data) => sum + (data?.deletions ?? 0),
       0,
     );
-    // 稼働月数を計算（コミット数が1回以上ある月をカウント）
     const activeMonths = Object.values(monthData).filter((data) => (data?.commits ?? 0) > 0).length;
+
     return { author, totalCommits, totalInsertions, totalDeletions, activeMonths };
   });
-};
+}
 
-export const calculateMonthlyTotals = (
+export function calculateMonthlyTotals(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-): MonthlyTotal[] => {
+): readonly MonthlyTotal[] {
   return monthColumns.map((month) => {
     const commits = Object.values(authorLog).reduce(
       (sum, monthData) => sum + (monthData[month]?.commits ?? 0),
@@ -68,55 +68,54 @@ export const calculateMonthlyTotals = (
       (sum, monthData) => sum + (monthData[month]?.deletions ?? 0),
       0,
     );
+
     return { month, commits, insertions, deletions };
   });
-};
+}
 
-export const getTopContributors = (
-  authorTotals: AuthorTotal[],
+export function getTopContributors(
+  authorTotals: readonly AuthorTotal[],
   sortBy: 'commits' | 'insertions',
   limit: number,
-): AuthorTotal[] => {
+): readonly AuthorTotal[] {
   const sortedAuthors = [...authorTotals].sort((a, b) => {
-    if (sortBy === 'commits') {
-      return b.totalCommits - a.totalCommits;
-    }
-    return b.totalInsertions - a.totalInsertions;
+    return sortBy === 'commits'
+      ? b.totalCommits - a.totalCommits
+      : b.totalInsertions - a.totalInsertions;
   });
 
   return sortedAuthors
     .filter((a) => (sortBy === 'commits' ? a.totalCommits > 0 : a.totalInsertions > 0))
     .slice(0, limit);
-};
+}
 
-export const calculateContributorData = (
+export function calculateContributorData(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-  contributors: AuthorTotal[],
+  contributors: readonly AuthorTotal[],
   dataType: 'commits' | 'insertions' | 'deletions',
-): number[][] => {
+): readonly number[][] {
   return contributors.map((author) => {
     return monthColumns.map((month) => {
-      const monthData = authorLog[author.author]?.[month];
-      return getMonthDataValue(monthData, dataType);
+      return getMonthDataValue(authorLog[author.author]?.[month], dataType);
     });
   });
-};
+}
 
-export const calculateAggregateData = (
+export function calculateAggregateData(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-  topContributors: AuthorTotal[],
+  topContributors: readonly AuthorTotal[],
   dataType: 'insertions' | 'deletions',
-): number[] => {
+): readonly number[] {
   return monthColumns.map((month) =>
     getAggregateMonthValue(authorLog, month, topContributors, dataType),
   );
-};
+}
 
-export const getDirTypesWithTests = (projectConfig: ProjectConfig): ProjectDirType[] => {
+export function getDirTypesWithTests(projectConfig: ProjectConfig): readonly ProjectDirType[] {
   const { dirTypes } = projectConfig;
   return Object.entries(dirTypes)
     .filter(([_, config]) => config.tests && config.tests.length > 0)
     .map(([type]) => type as ProjectDirType);
-};
+}

@@ -1,56 +1,53 @@
 import type { AuthorLog } from '../../types';
+import { condition } from '../../utils/condition';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 import type { AuthorTotal } from './pdf-data-processor';
 
-export const getCommitsValue = (monthData: AuthorLog[string][string] | undefined): number => {
+export function getCommitsValue(monthData: AuthorLog[string][string] | undefined): number {
   return monthData?.commits ?? 0;
-};
+}
 
-export const getInsertionsValue = (monthData: AuthorLog[string][string] | undefined): number => {
+export function getInsertionsValue(monthData: AuthorLog[string][string] | undefined): number {
   return monthData ? calculateTotalInsertions(monthData.insertions) : 0;
-};
+}
 
-export const getDeletionsValue = (monthData: AuthorLog[string][string] | undefined): number => {
+export function getDeletionsValue(monthData: AuthorLog[string][string] | undefined): number {
   return monthData?.deletions ?? 0;
-};
+}
 
-export const getMonthDataValue = (
+export function getMonthDataValue(
   monthData: AuthorLog[string][string] | undefined,
   dataType: 'commits' | 'insertions' | 'deletions',
-): number => {
+): number {
   if (!monthData) return 0;
 
-  if (dataType === 'commits') {
-    return getCommitsValue(monthData);
-  } else if (dataType === 'insertions') {
-    return getInsertionsValue(monthData);
-  } else {
-    return getDeletionsValue(monthData);
-  }
-};
+  return condition(dataType)
+    .case('commits', () => getCommitsValue(monthData))
+    .case('insertions', () => getInsertionsValue(monthData))
+    .case('deletions', () => getDeletionsValue(monthData)).done;
+}
 
-export const getAuthorMonthValue = (
+export function getAuthorMonthValue(
   authorLog: AuthorLog,
   author: string,
   month: string,
   dataType: 'insertions' | 'deletions',
-): number => {
+): number {
   const monthData = authorLog[author]?.[month];
-  if (dataType === 'insertions') {
-    return getInsertionsValue(monthData);
-  } else {
-    return getDeletionsValue(monthData);
-  }
-};
 
-export const getAggregateMonthValue = (
+  return condition(dataType)
+    .case('insertions', () => getInsertionsValue(monthData))
+    .case('deletions', () => getDeletionsValue(monthData)).done;
+}
+
+export function getAggregateMonthValue(
   authorLog: AuthorLog,
   month: string,
-  topContributors: AuthorTotal[],
+  topContributors: readonly AuthorTotal[],
   dataType: 'insertions' | 'deletions',
-): number => {
+): number {
   return topContributors.reduce(
     (sum, author) => sum + getAuthorMonthValue(authorLog, author.author, month, dataType),
     0,
   );
-};
+}

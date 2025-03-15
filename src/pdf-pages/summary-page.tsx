@@ -4,11 +4,9 @@ import type { AuthorSummary } from '../logic/pdf-pages/summary-page-logic';
 import { prepareSummaryPageData } from '../logic/pdf-pages/summary-page-logic';
 import { pdfStyles } from './pdf-styles';
 
-export const SummaryPage = ({
+export function SummaryPage({
   sortedAuthors,
-}: {
-  sortedAuthors: AuthorSummary[];
-}): React.ReactElement => {
+}: Readonly<{ sortedAuthors: readonly AuthorSummary[] }>): React.ReactElement {
   const {
     totalCommits,
     totalInsertions,
@@ -88,4 +86,4 @@ export const SummaryPage = ({
       </View>
     </>
   );
-};
+}

@@ -8,7 +8,7 @@ function removeAnsiCodes(text: string): string {
   return text.replace(/\x1b\[[0-9;]*m/g, '');
 }
 
-export async function getDirectoryMetrics(directory: string): Promise<Readonly<FileMetric[]>> {
+export async function getDirectoryMetrics(directory: string): Promise<readonly FileMetric[]> {
   const command = `qlty metrics --functions --quiet ${directory}`;
   const { stdout } = await promisify(execCallback)(command);
 

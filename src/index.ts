@@ -4,7 +4,7 @@ import { main } from './main';
 import type { Period, Result } from './types';
 import { getDefaultPeriod } from './utils/date-utils';
 
-const run = async (): Promise<void> => {
+async function run(): Promise<void> {
   if (process.argv[2]) {
     const result = await main({ targetDir: process.argv[2], outputDir: 'out', ...parsePeriod() });
 
@@ -13,7 +13,7 @@ const run = async (): Promise<void> => {
     return;
   }
 
-  const targets: Readonly<(Period & { projectName: string; dir: string })[]> = [
+  const targets: readonly (Period & { projectName: string; dir: string })[] = [
     { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2303', untilYYMM: '2402' },
     { projectName: 'Laravel版法人請求', dir: '../yuso', sinceYYMM: '2403', untilYYMM: '2502' },
     {
@@ -71,20 +71,20 @@ const run = async (): Promise<void> => {
     JSON.stringify(laravelResult.outlierCommits, null, 2),
     'utf8',
   );
-};
+}
 
-const parsePeriod = (): Period => {
+function parsePeriod(): Period {
   const period = z.tuple([z.string(), z.string()]).optional().parse(process.argv[3]?.split('-'));
 
   return period ? { sinceYYMM: period[0], untilYYMM: period[1] } : getDefaultPeriod(12);
-};
+}
 
-const generateFiles = async (result: Result): Promise<void> => {
+async function generateFiles(result: Result): Promise<void> {
   await writeFile(result.csv.path, result.csv.content, 'utf8');
   await writeFile(result.pdf.path, result.pdf.content);
 
   console.log('generated:', result.csv.path);
   console.log('generated:', result.pdf.path);
-};
+}
 
 run();

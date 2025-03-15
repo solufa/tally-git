@@ -5,9 +5,8 @@ import { pdfStyles } from '../pdf-pages/pdf-styles';
 import { StackedBarChartSvg } from './stacked-bar-chart-svg';
 import type { StackedBarChartProps } from './stacked-bar-chart-utils';
 
-export const StackedBarChart: React.FC<StackedBarChartProps> = (props) => {
+export function StackedBarChart(props: StackedBarChartProps): React.ReactNode {
   const { title, data, labels, contributors, ...restProps } = props;
-
   const chartData = prepareStackedBarChartData(
     data,
     restProps.width,
@@ -31,4 +30,4 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = (props) => {
       />
     </View>
   );
-};
+}

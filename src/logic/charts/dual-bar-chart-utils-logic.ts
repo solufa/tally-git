@@ -1,18 +1,11 @@
 import { DUAL_BAR_CHAT_Y_AXIS_STEP } from '../../constants';
-import type { ChartReferenceLine } from '../../types';
+import type { ChartMargin, ChartReferenceLine, Contributors } from '../../types';
 
-export type XAxisProps = {
-  margin: { top: number; right: number; bottom: number; left: number };
-  chartHeight: number;
-  chartWidth: number;
-};
+export type XAxisProps = Readonly<{ margin: ChartMargin; chartHeight: number; chartWidth: number }>;
 
-export type YAxisProps = {
-  margin: { top: number; right: number; bottom: number; left: number };
-  chartHeight: number;
-};
+export type YAxisProps = Readonly<{ margin: ChartMargin; chartHeight: number }>;
 
-export type XAxisLabelData = {
+export type XAxisLabelData = Readonly<{
   key: string;
   x: number;
   y: number;
@@ -24,9 +17,9 @@ export type XAxisLabelData = {
   textAnchor: 'start' | 'middle' | 'end';
   transform: string;
   transformOrigin: string;
-};
+}>;
 
-export type YAxisLabelData = {
+export type YAxisLabelData = Readonly<{
   key: string;
   tickX1: number;
   tickX2: number;
@@ -38,9 +31,9 @@ export type YAxisLabelData = {
   fontSize: number;
   textAnchor: 'start' | 'middle' | 'end';
   value: number;
-};
+}>;
 
-export type LegendItemData = {
+export type LegendItemData = Readonly<{
   key: string;
   pathX: number;
   pathY: number;
@@ -53,24 +46,24 @@ export type LegendItemData = {
   isDashed?: boolean;
   strokeWidth?: number;
   strokeDasharray?: string;
-};
+}>;
 
-export const calculateXAxisLabels = (
-  labels: Readonly<string[]>,
-  margin: { top: number; right: number; bottom: number; left: number },
+export function calculateXAxisLabels(
+  labels: readonly string[],
+  margin: ChartMargin,
   chartHeight: number,
-  chartWidth: number,
   monthWidth: number,
   barWidth: number,
   monthPadding: number,
-): XAxisLabelData[] => {
+): readonly XAxisLabelData[] {
   return labels
     .map((label, i) => {
-      // 追加と削除の棒グラフのちょうど中間に配置
       const x = margin.left + i * monthWidth + monthPadding + barWidth;
       const y = margin.top + chartHeight + 20;
+
       // ラベルが多い場合は間引く
       if (labels.length > 12 && i % 2 !== 0 && i !== labels.length - 1) return null;
+
       return {
         key: `x-label-${i}`,
         x,
@@ -85,20 +78,18 @@ export const calculateXAxisLabels = (
         transformOrigin: `${x}px ${y - 5}px`,
       };
     })
-    .filter(Boolean) as XAxisLabelData[];
-};
+    .filter((data) => data !== null);
+}
 
-export const calculateYAxisLabels = (
+export function calculateYAxisLabels(
   maxValue: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartHeight: number,
   chartWidth?: number,
-): YAxisLabelData[] => {
+): readonly YAxisLabelData[] {
   const labels: YAxisLabelData[] = [];
 
-  // maxValueはすでにDUAL_BAR_CHAT_Y_AXIS_STEPの倍数になっているので再計算不要
   for (let value = 0; value <= maxValue; value += DUAL_BAR_CHAT_Y_AXIS_STEP) {
-    // 最大値に対する比率を計算
     const ratio = value / maxValue;
     const y = margin.top + chartHeight - chartHeight * ratio;
 
@@ -118,16 +109,15 @@ export const calculateYAxisLabels = (
   }
 
   return labels;
-};
+}
 
-export const calculateLegendItems = (
-  contributors: string[],
-  margin: { top: number; right: number; bottom: number; left: number },
+export function calculateLegendItems(
+  contributors: Contributors,
+  margin: ChartMargin,
   chartWidth: number,
   getContributorColor: (contributor: string) => string,
-  referenceLines?: ChartReferenceLine[],
-): LegendItemData[] => {
-  // 凡例をグラフの右側に配置
+  referenceLines?: readonly ChartReferenceLine[],
+): readonly LegendItemData[] {
   const contributorLegendItems = contributors.map((contributor, i) => {
     // 右側の余白に配置
     const x = margin.left + chartWidth + 10;
@@ -147,7 +137,6 @@ export const calculateLegendItems = (
     };
   });
 
-  // リファレンスラインの凡例（破線）
   const referenceLineLegendItems = referenceLines
     ? referenceLines.map((line, i) => {
         const x = margin.left + chartWidth + 10;
@@ -172,4 +161,4 @@ export const calculateLegendItems = (
     : [];
 
   return [...contributorLegendItems, ...referenceLineLegendItems];
-};
+}

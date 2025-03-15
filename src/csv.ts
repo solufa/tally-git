@@ -2,12 +2,12 @@ import { DUAL_BAR_CHAT_Y_AXIS_STEP } from './constants';
 import type { AuthorLog, CommitData, CommitDetail, DirMetrics, MonthColumns } from './types';
 import { calculateTotalInsertions } from './utils/insertions-calculator';
 
-const formatDataRow = (
+function formatDataRow(
   author: string,
-  monthData: Record<string, CommitData | undefined>,
+  monthData: Readonly<Record<string, CommitData | undefined>>,
   key: keyof CommitData,
   monthColumns: MonthColumns,
-): string => {
+): string {
   if (key === 'insertions') {
     return `${author},${monthColumns
       .map((column) => {
@@ -17,29 +17,31 @@ const formatDataRow = (
       .join(',')}`;
   }
   return `${author},${monthColumns.map((column) => monthData[column]?.[key] ?? 0).join(',')}`;
-};
+}
 
-const formatOutlierCommits = (outlierCommits: CommitDetail[]): string => {
-  if (outlierCommits.length === 0) {
-    return '外れ値のコミットはありません';
-  }
+function formatOutlierCommits(outlierCommits: readonly CommitDetail[]): string {
+  if (outlierCommits.length === 0) return '外れ値のコミットはありません';
+
   return outlierCommits
     .map((commit) => {
       const totalInsertions = calculateTotalInsertions(commit.insertions);
       return `${commit.author},${commit.date},${commit.hash.substring(0, 7)},${totalInsertions},${commit.deletions}`;
     })
     .join('\n');
-};
+}
 
-const formatThresholdValues = (): string => {
+function formatThresholdValues(): string {
   return `追加行数の閾値,${DUAL_BAR_CHAT_Y_AXIS_STEP}
 削除行数の閾値（追加行数の10倍以上）,追加行数 × 10`;
-};
+}
 
-const generateActivityRows = (
-  authorLog: AuthorLog,
-  monthColumns: MonthColumns,
-): { commits: string[]; insertions: string[]; deletions: string[] } => {
+type ActivityData = Readonly<{
+  commits: readonly string[];
+  insertions: readonly string[];
+  deletions: readonly string[];
+}>;
+
+function generateActivityRows(authorLog: AuthorLog, monthColumns: MonthColumns): ActivityData {
   const commits = Object.entries(authorLog).map(([author, monthData]) =>
     formatDataRow(author, monthData, 'commits', monthColumns),
   );
@@ -51,9 +53,9 @@ const generateActivityRows = (
   );
 
   return { commits, insertions, deletions };
-};
+}
 
-const formatDirMetrics = (dirMetrics: DirMetrics): string => {
+function formatDirMetrics(dirMetrics: DirMetrics): string {
   const sections: string[] = [];
 
   if (dirMetrics.frontend) {
@@ -102,15 +104,15 @@ ${dirMetrics.infra
   }
 
   return sections.join('\n\n\n');
-};
+}
 
-const formatCsvContent = (
+function formatCsvContent(
   header: string,
-  activityData: Readonly<{ commits: string[]; insertions: string[]; deletions: string[] }>,
+  activityData: ActivityData,
   thresholdInfo: string,
   outlierInfo: string,
   dirMetricsContent: string,
-): string => {
+): string {
   return `${header}
 コミット数
 ${activityData.commits.join('\n')}
@@ -135,14 +137,14 @@ ${outlierInfo}
 
 コード複雑度メトリクス
 ${dirMetricsContent}`;
-};
+}
 
-export const toCsv = (
+export function toCsv(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
-  outlierCommits: CommitDetail[],
+  outlierCommits: readonly CommitDetail[],
   dirMetrics: DirMetrics,
-): string => {
+): string {
   const header = `,${monthColumns.join(',')}`;
   const activityData = generateActivityRows(authorLog, monthColumns);
   const thresholdInfo = formatThresholdValues();
@@ -150,4 +152,4 @@ export const toCsv = (
   const dirMetricsContent = formatDirMetrics(dirMetrics);
 
   return formatCsvContent(header, activityData, thresholdInfo, outlierInfo, dirMetricsContent);
-};
+}

@@ -5,11 +5,9 @@ import { prepareComplexityChartData } from '../logic/pdf-pages/scatter-plot-logi
 import type { DirMetrics } from '../types';
 import { pdfStyles } from './pdf-styles';
 
-type ScatterPlotPageProps = {
-  dirMetrics: DirMetrics;
-};
-
-export const ScatterPlotPage: React.FC<ScatterPlotPageProps> = ({ dirMetrics }) => {
+export function ScatterPlotPage({
+  dirMetrics,
+}: Readonly<{ dirMetrics: DirMetrics }>): React.ReactNode {
   const chartData = prepareComplexityChartData(dirMetrics, {
     width: 500,
     height: 300,
@@ -32,4 +30,4 @@ export const ScatterPlotPage: React.FC<ScatterPlotPageProps> = ({ dirMetrics }) 
       )}
     </View>
   );
-};
+}

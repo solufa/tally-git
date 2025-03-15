@@ -1,12 +1,12 @@
 import type { Insertions } from '../types';
 
-export const calculateTypeInsertions = (
+export function calculateTypeInsertions(
   typeData?: Readonly<{ code: number; test?: number }>,
-): number => {
+): number {
   return (typeData?.code ?? 0) + (typeData?.test ?? 0);
-};
+}
 
-export const calculateTotalInsertions = (insertions?: Insertions): number => {
+export function calculateTotalInsertions(insertions?: Insertions): number {
   if (!insertions) return 0;
 
   return (
@@ -15,4 +15,4 @@ export const calculateTotalInsertions = (insertions?: Insertions): number => {
     calculateTypeInsertions(insertions.backend) +
     calculateTypeInsertions(insertions.infra)
   );
-};
+}

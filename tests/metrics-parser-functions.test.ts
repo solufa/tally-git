@@ -1,5 +1,4 @@
 import { expect, test } from 'vitest';
-import type { FileMetric } from '../src/types';
 import {
   addCurrentFileToResult,
   addFunctionToFile,
@@ -160,10 +159,13 @@ test('createFileMetric - 基本的なケース', () => {
 });
 
 test('addFunctionToFile - 基本的なケース', () => {
-  const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  addFunctionToFile(currentFile, 'safeParseInt | 3 | 2 | 4 | 5 | 6');
-  expect(currentFile.functions).toHaveLength(1);
-  expect(currentFile.functions[0]).toEqual({
+  const currentFile = addFunctionToFile(
+    createFileMetric('src/utils/metrics-parser.ts'),
+    'safeParseInt | 3 | 2 | 4 | 5 | 6',
+  );
+
+  expect(currentFile!.functions).toHaveLength(1);
+  expect(currentFile!.functions[0]).toEqual({
     name: 'safeParseInt',
     fields: 3,
     cyclo: 2,
@@ -180,66 +182,60 @@ test('addFunctionToFile - currentFileがnullの場合', () => {
 });
 
 test('addCurrentFileToResult - 基本的なケース', () => {
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
-  addCurrentFileToResult(result, currentFile);
+  const result = addCurrentFileToResult([], currentFile);
+
   expect(result).toHaveLength(1);
   expect(result[0]).toBe(currentFile);
 });
 
 test('addCurrentFileToResult - currentFileがnullの場合', () => {
-  const result: FileMetric[] = [];
   const currentFile = null;
-  addCurrentFileToResult(result, currentFile);
+  const result = addCurrentFileToResult([], currentFile);
+
   expect(result).toHaveLength(0);
 });
 
 test('processLine - 空行の場合', () => {
   const line = '';
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
   const isParsingFunctions = false;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
 
-  expect(newCurrentFile).toBe(currentFile);
+  expect(newCurrentFile!.filename).toBe(currentFile.filename);
   expect(newIsParsingFunctions).toBe(false);
   expect(result).toHaveLength(0);
 });
 
 test('processLine - ファイル名行の場合', () => {
   const line = 'src/utils/metrics-parser.ts';
-  const result: FileMetric[] = [];
   const currentFile = null;
   const isParsingFunctions = false;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
 
   expect(newCurrentFile).not.toBeNull();
-  expect(newCurrentFile!.filename).toBe('src/utils/metrics-parser.ts');
+  expect(newCurrentFile!.filename).toBe(line);
   expect(newIsParsingFunctions).toBe(false);
   expect(result).toHaveLength(0);
 });
 
 test('processLine - ヘッダー行の場合', () => {
   const line = 'function | fields | cyclo';
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
   const isParsingFunctions = false;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
@@ -251,13 +247,11 @@ test('processLine - ヘッダー行の場合', () => {
 
 test('processLine - 区切り行の場合（isParsingFunctionsがtrue）', () => {
   const line = '---+---+---';
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
   const isParsingFunctions = true;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
@@ -269,13 +263,11 @@ test('processLine - 区切り行の場合（isParsingFunctionsがtrue）', () =>
 
 test('processLine - 区切り行の場合（isParsingFunctionsがfalse）', () => {
   const line = '---+---+---';
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
   const isParsingFunctions = false;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
@@ -287,22 +279,20 @@ test('processLine - 区切り行の場合（isParsingFunctionsがfalse）', () =
 
 test('processLine - 関数メトリクス行の場合（isParsingFunctionsがtrue）', () => {
   const line = 'safeParseInt | 3 | 2 | 4 | 5 | 6';
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
   const isParsingFunctions = true;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
 
-  expect(newCurrentFile).toBe(currentFile);
+  expect(newCurrentFile!.filename).toBe(currentFile.filename);
   expect(newIsParsingFunctions).toBe(true);
   expect(result).toHaveLength(0);
-  expect(currentFile.functions).toHaveLength(1);
-  expect(currentFile.functions[0]).toEqual({
+  expect(newCurrentFile!.functions).toHaveLength(1);
+  expect(newCurrentFile!.functions[0]).toEqual({
     name: 'safeParseInt',
     fields: 3,
     cyclo: 2,
@@ -314,21 +304,19 @@ test('processLine - 関数メトリクス行の場合（isParsingFunctionsがtru
 
 test('processLine - 関数メトリクス行の場合（isParsingFunctionsがfalse）', () => {
   const line = 'safeParseInt | 3 | 2 | 4 | 5 | 6';
-  const result: FileMetric[] = [];
   const currentFile = createFileMetric('src/utils/metrics-parser.ts');
   const isParsingFunctions = false;
-
-  const [newCurrentFile, newIsParsingFunctions] = processLine(
+  const [result, newCurrentFile, newIsParsingFunctions] = processLine(
     line,
-    result,
+    [],
     currentFile,
     isParsingFunctions,
   );
 
-  expect(newCurrentFile).toBe(currentFile);
+  expect(newCurrentFile!.filename).toBe(currentFile.filename);
   expect(newIsParsingFunctions).toBe(false);
   expect(result).toHaveLength(0);
-  expect(currentFile.functions).toHaveLength(0);
+  expect(newCurrentFile!.functions).toHaveLength(0);
 });
 
 test('metricsParser - 基本的なケース', () => {

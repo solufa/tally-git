@@ -5,13 +5,13 @@ import { generatePromptTemplate } from '../logic/pdf-pages/prompt-template-gener
 import type { AuthorLog, MonthColumns } from '../types';
 import { pdfStyles } from './pdf-styles';
 
-export const PromptPage = ({
+export function PromptPage({
   authorLog,
   monthColumns,
-}: {
+}: Readonly<{
   authorLog: AuthorLog;
   monthColumns: MonthColumns;
-}): React.ReactElement => {
+}>): React.ReactElement {
   const anonymousMap = anonymizeAuthors(authorLog);
   const promptTemplate = generatePromptTemplate(authorLog, monthColumns, anonymousMap);
 
@@ -75,4 +75,4 @@ export const PromptPage = ({
       </View>
     </>
   );
-};
+}

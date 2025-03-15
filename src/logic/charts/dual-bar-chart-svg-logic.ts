@@ -1,3 +1,4 @@
+import type { ChartMargin, Contributors } from '../../types';
 import type { BarData as BarDataImport } from './dual-bar-chart-bars-logic';
 import {
   calculateMonthDeletionBars,
@@ -6,76 +7,65 @@ import {
 
 export type BarData = BarDataImport;
 
-export type SeparatorData = {
-  key: string;
-  x: number;
-  startY: number;
-  endY: number;
-};
+export type SeparatorData = Readonly<{ key: string; x: number; startY: number; endY: number }>;
 
-export const calculateMonthWidth = (chartWidth: number, labelsLength: number): number => {
+export function calculateMonthWidth(chartWidth: number, labelsLength: number): number {
   return chartWidth / labelsLength;
-};
+}
 
-export const calculateBarWidth = (monthWidth: number): number => {
+export function calculateBarWidth(monthWidth: number): number {
   return monthWidth * 0.45;
-};
+}
 
-export const calculateMonthPadding = (monthWidth: number): number => {
+export function calculateMonthPadding(monthWidth: number): number {
   return monthWidth * 0.05;
-};
+}
 
-export const calculateBarPosition = (
+export function calculateBarPosition(
   monthIndex: number,
   monthWidth: number,
   monthPadding: number,
   barWidth: number,
   isSecondBar: boolean,
-): number => {
-  const monthX = monthIndex * monthWidth;
-  return monthX + monthPadding + (isSecondBar ? barWidth : 0);
-};
+): number {
+  return monthIndex * monthWidth + monthPadding + (isSecondBar ? barWidth : 0);
+}
 
-export const calculateBarHeight = (
-  value: number,
-  maxValue: number,
-  chartHeight: number,
-): number => {
+export function calculateBarHeight(value: number, maxValue: number, chartHeight: number): number {
   return (value / maxValue) * chartHeight;
-};
+}
 
-export const calculateMonthTotal = (contributorData: number[][], monthIndex: number): number => {
+export function calculateMonthTotal(
+  contributorData: readonly (readonly number[])[],
+  monthIndex: number,
+): number {
   return contributorData.reduce(
-    (total, contributorData) => total + (contributorData?.[monthIndex] ?? 0),
+    (total, contributorData) => total + (contributorData[monthIndex] ?? 0),
     0,
   );
-};
+}
 
-export const calculateBarSeparators = (
-  contributorInsertionsData: number[][],
-  contributorDeletionsData: number[][],
+export function calculateBarSeparators(
+  contributorInsertionsData: readonly (readonly number[])[],
+  contributorDeletionsData: readonly (readonly number[])[],
   labelsLength: number,
   maxValue: number,
   chartHeight: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   monthWidth: number,
   barWidth: number,
   monthPadding: number,
-): SeparatorData[] => {
+): readonly SeparatorData[] {
   const separators: SeparatorData[] = [];
 
   for (let monthIndex = 0; monthIndex < labelsLength; monthIndex++) {
     const monthX = margin.left + monthIndex * monthWidth;
     const separatorX = monthX + monthPadding + barWidth;
-
     const insertionTotal = calculateMonthTotal(contributorInsertionsData, monthIndex);
     const deletionTotal = calculateMonthTotal(contributorDeletionsData, monthIndex);
-
     const lowerValue = Math.min(insertionTotal, deletionTotal);
 
-    if (lowerValue <= 0) {
-      continue;
-    }
+    if (lowerValue <= 0) continue;
 
     const lineHeight = (lowerValue / maxValue) * chartHeight;
     const startY = margin.top + chartHeight - lineHeight;
@@ -89,36 +79,33 @@ export const calculateBarSeparators = (
   }
 
   return separators;
-};
+}
 
-export const prepareDualBarChartSvgData = (
-  contributorInsertionsData: number[][],
-  contributorDeletionsData: number[][],
-  labels: Readonly<string[]>,
-  contributors: Readonly<string[]>,
+export function prepareDualBarChartSvgData(
+  contributorInsertionsData: readonly (readonly number[])[],
+  contributorDeletionsData: readonly (readonly number[])[],
+  labels: readonly string[],
+  contributors: Contributors,
   maxValue: number,
   chartHeight: number,
   chartWidth: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   getContributorColor: (contributor: string) => string,
-): {
+): Readonly<{
   monthWidth: number;
   barWidth: number;
   monthPadding: number;
-  insertionBars: BarData[];
-  deletionBars: BarData[];
-  separators: SeparatorData[];
-} => {
+  insertionBars: readonly BarData[];
+  deletionBars: readonly BarData[];
+  separators: readonly SeparatorData[];
+}> {
   const monthWidth = calculateMonthWidth(chartWidth, labels.length);
   const barWidth = calculateBarWidth(monthWidth);
   const monthPadding = calculateMonthPadding(monthWidth);
-
   const insertionBars: BarData[] = [];
   const deletionBars: BarData[] = [];
 
-  // 各月ごとに処理
   for (let monthIndex = 0; monthIndex < labels.length; monthIndex++) {
-    // 追加行数の棒グラフを計算
     const monthInsertionBars = calculateMonthInsertionBars(
       contributorInsertionsData,
       monthIndex,
@@ -133,7 +120,6 @@ export const prepareDualBarChartSvgData = (
     );
     insertionBars.push(...monthInsertionBars);
 
-    // 削除行数の棒グラフを計算
     const monthDeletionBars = calculateMonthDeletionBars(
       contributorDeletionsData,
       monthIndex,
@@ -149,7 +135,6 @@ export const prepareDualBarChartSvgData = (
     deletionBars.push(...monthDeletionBars);
   }
 
-  // 棒グラフの間の区切り線を計算
   const separators = calculateBarSeparators(
     contributorInsertionsData,
     contributorDeletionsData,
@@ -162,12 +147,5 @@ export const prepareDualBarChartSvgData = (
     monthPadding,
   );
 
-  return {
-    monthWidth,
-    barWidth,
-    monthPadding,
-    insertionBars,
-    deletionBars,
-    separators,
-  };
-};
+  return { monthWidth, barWidth, monthPadding, insertionBars, deletionBars, separators };
+}

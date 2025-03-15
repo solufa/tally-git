@@ -5,11 +5,11 @@ import { prepareOutliersPageData } from '../logic/pdf-pages/outliers-page-logic'
 import type { CommitDetail } from '../types';
 import { pdfStyles } from './pdf-styles';
 
-export const OutliersPage = ({
+export function OutliersPage({
   outlierCommits,
-}: {
-  outlierCommits: CommitDetail[];
-}): React.ReactElement => {
+}: Readonly<{
+  outlierCommits: readonly CommitDetail[];
+}>): React.ReactElement {
   const monthlyOutliers = prepareOutliersPageData(outlierCommits);
 
   return (
@@ -66,4 +66,4 @@ export const OutliersPage = ({
       <Text style={pdfStyles.text}>2. 追加行数の10倍以上の削除行数を持つコミット</Text>
     </>
   );
-};
+}

@@ -25,17 +25,19 @@ export function isFunctionMetricLine(line: string): boolean {
 }
 
 export function getLineType(line: string): LineType {
-  const result = [
-    [isEmptyLine(line), 'empty'],
-    [isFilenameLine(line), 'filename'],
-    [isHeaderLine(line), 'header'],
-    [isSeparatorLine(line), 'separator'],
-    [isFunctionMetricLine(line), 'functionMetrics'],
-  ].find(([condition]) => condition);
+  const result = (
+    [
+      [isEmptyLine(line), 'empty'],
+      [isFilenameLine(line), 'filename'],
+      [isHeaderLine(line), 'header'],
+      [isSeparatorLine(line), 'separator'],
+      [isFunctionMetricLine(line), 'functionMetrics'],
+    ] as const
+  ).find(([condition]) => condition);
 
   assert(result, `Unexpected line type: ${line}`);
 
-  return result[1] as LineType;
+  return result[1];
 }
 
 export function safeParseInt(value: string | undefined): number {
@@ -44,12 +46,13 @@ export function safeParseInt(value: string | undefined): number {
   return isNaN(parsed) ? 0 : parsed;
 }
 
-export function splitLine(line: string): string[] {
+export function splitLine(line: string): readonly string[] {
   return line.split('|').map((part) => part.trim());
 }
 
 export function parseFunctionMetricLine(line: string): FunctionMetric {
   const parts = splitLine(line);
+
   return {
     name: parts[0] || '',
     fields: safeParseInt(parts[1]),
@@ -60,59 +63,63 @@ export function parseFunctionMetricLine(line: string): FunctionMetric {
   };
 }
 
-export function addCurrentFileToResult(result: FileMetric[], currentFile: FileMetric | null): void {
-  if (currentFile) {
-    result.push(currentFile);
-  }
+export function addCurrentFileToResult(
+  result: readonly FileMetric[],
+  currentFile: FileMetric | null,
+): readonly FileMetric[] {
+  return currentFile ? [...result, currentFile] : result;
 }
 
 export function createFileMetric(filename: string): FileMetric {
   return { filename, functions: [] };
 }
 
-export function addFunctionToFile(currentFile: FileMetric | null, line: string): void {
-  if (currentFile) {
-    const functionMetrics = parseFunctionMetricLine(line);
-    currentFile.functions.push(functionMetrics);
-  }
+export function addFunctionToFile(currentFile: FileMetric | null, line: string): FileMetric | null {
+  return currentFile
+    ? {
+        filename: currentFile.filename,
+        functions: [...currentFile.functions, parseFunctionMetricLine(line)],
+      }
+    : null;
 }
 
 export function processLine(
   line: string,
-  result: FileMetric[],
+  result: readonly FileMetric[],
   currentFile: FileMetric | null,
   isParsingFunctions: boolean,
-): [FileMetric | null, boolean] {
+): readonly [readonly FileMetric[], FileMetric | null, boolean] {
   const trimmedLine = line.trim();
   const lineType = getLineType(trimmedLine);
 
   return condition(lineType)
-    .case('empty', () => [currentFile, false] as [FileMetric | null, boolean])
+    .case('empty', () => [result, currentFile, false])
     .case('filename', () => {
-      addCurrentFileToResult(result, currentFile);
-      return [createFileMetric(trimmedLine), false] as [FileMetric | null, boolean];
+      return [addCurrentFileToResult(result, currentFile), createFileMetric(trimmedLine), false];
     })
-    .case('header', () => [currentFile, true] as [FileMetric | null, boolean])
-    .case('separator', () => [currentFile, isParsingFunctions] as [FileMetric | null, boolean])
-    .case('functionMetrics', () => {
-      if (isParsingFunctions) {
-        addFunctionToFile(currentFile, trimmedLine);
-      }
-      return [currentFile, isParsingFunctions] as [FileMetric | null, boolean];
-    }).done;
+    .case('header', () => [result, currentFile, true])
+    .case('separator', () => [result, currentFile, isParsingFunctions])
+    .case('functionMetrics', () => [
+      result,
+      isParsingFunctions ? addFunctionToFile(currentFile, trimmedLine) : currentFile,
+      isParsingFunctions,
+    ]).done as [FileMetric[], FileMetric | null, boolean];
 }
 
-export function metricsParser(text: string): FileMetric[] {
+export function metricsParser(text: string): readonly FileMetric[] {
   const lines = text.split('\n');
-  const result: FileMetric[] = [];
-
+  let result: readonly FileMetric[] = [];
   let currentFile: FileMetric | null = null;
   let isParsingFunctions = false;
 
-  for (const line of lines) {
-    [currentFile, isParsingFunctions] = processLine(line, result, currentFile, isParsingFunctions);
-  }
+  lines.forEach((line) => {
+    [result, currentFile, isParsingFunctions] = processLine(
+      line,
+      result,
+      currentFile,
+      isParsingFunctions,
+    );
+  });
 
-  addCurrentFileToResult(result, currentFile);
-  return result;
+  return addCurrentFileToResult(result, currentFile);
 }

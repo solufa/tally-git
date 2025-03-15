@@ -1,11 +1,11 @@
 import type { AnonymousAuthors, AuthorLog, MonthColumns } from '../../types';
 import { calculateTotalInsertions } from '../../utils/insertions-calculator';
 
-export const generatePromptTemplate = (
+export function generatePromptTemplate(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
   anonymousAuthors: AnonymousAuthors,
-): string => {
+): string {
   const csvData = generateCsvDataForPrompt(authorLog, monthColumns, anonymousAuthors);
   const csvText = csvData.csvList
     .map(
@@ -67,15 +67,14 @@ ${csvText}
 を詳細に示してください。結果として得られる提案やプランは、私（執行役員）がすぐにプロジェクト改善に着手できるレベルの具体性を期待します。
 
 以上の指示に基づき、回答をお願いします。`;
-};
+}
 
-export const generateCsvDataForPrompt = (
+export function generateCsvDataForPrompt(
   authorLog: AuthorLog,
   monthColumns: MonthColumns,
   anonymousMap: AnonymousAuthors,
-): { header: string; csvList: { title: string; rows: string[] }[] } => {
+): Readonly<{ header: string; csvList: readonly { title: string; rows: readonly string[] }[] }> {
   const header = `,${monthColumns.join(',')}`;
-
   const commitsRows = Object.entries(authorLog).map(([author, monthData]) => {
     const anonymousAuthor = anonymousMap[author];
     const values = monthColumns.map((month) => monthData[month]?.commits ?? 0).join(',');
@@ -122,4 +121,4 @@ export const generateCsvDataForPrompt = (
       { title: 'バックエンドテストコード行数', rows: backendTestRows },
     ],
   };
-};
+}

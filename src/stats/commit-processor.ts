@@ -2,10 +2,10 @@ import type { AuthorLog, CommitDetail, CommitInfo, LogState, ProjectConfig } fro
 import { mergeInsertions } from '../utils/insertions-merger';
 import { isCommitLine, isStatLine, processCommitLine, processStatLine } from './git-log-parser';
 
-const updateAuthorCommitData = (
+function updateAuthorCommitData(
   authorLog: AuthorLog,
   commit: CommitInfo,
-): { authorLog: AuthorLog; commitDetail: CommitDetail } => {
+): Readonly<{ authorLog: AuthorLog; commitDetail: CommitDetail }> {
   const authorData = authorLog[commit.author] ?? {};
   const commitData = authorData[commit.YM] ?? {
     commits: 0,
@@ -19,10 +19,7 @@ const updateAuthorCommitData = (
     deletions: commitData.deletions + commit.deletions,
   };
 
-  // 著者の月別データを更新
   const updatedAuthorData = { ...authorData, [commit.YM]: updatedMonthData };
-
-  // 全体のログを更新
   const updatedAuthorLog = { ...authorLog, [commit.author]: updatedAuthorData };
 
   return {
@@ -35,17 +32,13 @@ const updateAuthorCommitData = (
       deletions: commit.deletions,
     },
   };
-};
+}
 
-const handleCommitLine = (
+function handleCommitLine(
   line: string,
   state: LogState,
   authorLog: AuthorLog,
-): {
-  state: LogState;
-  authorLog: AuthorLog;
-  commitDetail: CommitDetail | null;
-} => {
+): Readonly<{ state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null }> {
   let newAuthorLog = authorLog;
   let commitDetail: CommitDetail | null = null;
 
@@ -57,7 +50,6 @@ const handleCommitLine = (
     commitDetail = updated.commitDetail;
   }
 
-  // 新しいコミット情報を取得
   const { commitInfo, skipCommit } = processCommitLine(line);
 
   return {
@@ -69,43 +61,37 @@ const handleCommitLine = (
     authorLog: newAuthorLog,
     commitDetail,
   };
-};
+}
 
-const processStatLogLine = (
-  line: string,
-  state: LogState,
-  projectConfig: ProjectConfig,
-): LogState => {
+function processStatLogLine(line: string, state: LogState, projectConfig: ProjectConfig): LogState {
   if (!state.currentCommit || state.skipCurrentCommit) return state;
 
   return {
     ...state,
     currentCommit: processStatLine(line, state.currentCommit, projectConfig) ?? state.currentCommit,
   };
-};
+}
 
-const processLogLine = (
+function processLogLine(
   line: string,
   state: LogState,
   authorLog: AuthorLog,
   projectConfig: ProjectConfig,
-): { state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null } | null => {
-  if (isCommitLine(line)) {
-    return handleCommitLine(line, state, authorLog);
-  }
+): Readonly<{ state: LogState; authorLog: AuthorLog; commitDetail: CommitDetail | null } | null> {
+  if (isCommitLine(line)) return handleCommitLine(line, state, authorLog);
 
   if (isStatLine(line)) {
     return { authorLog, state: processStatLogLine(line, state, projectConfig), commitDetail: null };
   }
 
   return null;
-};
+}
 
-export const processLogData = (
+export function processLogData(
   logData: string,
   authorLog: AuthorLog,
   projectConfig: ProjectConfig,
-): { authorLog: AuthorLog; commitDetails: CommitDetail[] } => {
+): Readonly<{ authorLog: AuthorLog; commitDetails: CommitDetail[] }> {
   const lines = logData.split('\n');
   let newAuthorLog = authorLog;
   let state: LogState = { currentCommit: null, skipCurrentCommit: false, lastHash: null };
@@ -129,12 +115,11 @@ export const processLogData = (
   if (state.currentCommit && !state.skipCurrentCommit) {
     const updated = updateAuthorCommitData(newAuthorLog, state.currentCommit);
 
-    newAuthorLog = updated.authorLog;
     return {
-      authorLog: newAuthorLog,
+      authorLog: updated.authorLog,
       commitDetails: [...commitDetails, updated.commitDetail],
     };
   }
 
   return { authorLog: newAuthorLog, commitDetails };
-};
+}

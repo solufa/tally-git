@@ -1,6 +1,6 @@
-import type { ChartReferenceLine } from '../../types';
+import type { ChartMargin, ChartReferenceLine } from '../../types';
 
-export type ReferenceLineData = {
+export type ReferenceLineData = Readonly<{
   key: string;
   x1: number;
   y: number;
@@ -8,9 +8,9 @@ export type ReferenceLineData = {
   stroke: string;
   strokeWidth: number;
   strokeDasharray: string;
-};
+}>;
 
-export type ReferenceLineLegendItemData = {
+export type ReferenceLineLegendItemData = Readonly<{
   key: string;
   pathX: number;
   pathY: number;
@@ -23,18 +23,17 @@ export type ReferenceLineLegendItemData = {
   label: string;
   strokeWidth: number;
   strokeDasharray: string;
-};
+}>;
 
-export const calculateReferenceLines = (
-  referenceLines: Readonly<ChartReferenceLine[]>,
+export function calculateReferenceLines(
+  referenceLines: readonly ChartReferenceLine[],
   maxValue: number,
-  margin: { top: number; right: number; bottom: number; left: number },
+  margin: ChartMargin,
   chartHeight: number,
   chartWidth: number,
-): ReferenceLineData[] => {
+): readonly ReferenceLineData[] {
   return referenceLines
     .map((line, i) => {
-      // maxValueを超える場合は描画しない
       if (line.value > maxValue) return null;
 
       // 最大値に対する比率を計算（Y軸のラベルと同じ計算方法）
@@ -51,15 +50,15 @@ export const calculateReferenceLines = (
         strokeDasharray: '5,3',
       };
     })
-    .filter(Boolean) as ReferenceLineData[];
-};
+    .filter((data) => data !== null);
+}
 
-export const calculateReferenceLineLegendItems = (
-  referenceLines: Readonly<ChartReferenceLine[]>,
-  margin: { top: number; right: number; bottom: number; left: number },
+export function calculateReferenceLineLegendItems(
+  referenceLines: readonly ChartReferenceLine[],
+  margin: ChartMargin,
   chartHeight: number,
   fontFamily: string,
-): ReferenceLineLegendItemData[] => {
+): readonly ReferenceLineLegendItemData[] {
   return referenceLines.map((line, i) => {
     const x = margin.left + 10;
     const y = margin.top + chartHeight + 30 + i * 12;
@@ -79,4 +78,4 @@ export const calculateReferenceLineLegendItems = (
       strokeDasharray: '5,3',
     };
   });
-};
+}

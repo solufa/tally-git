@@ -4,7 +4,7 @@ import { StackedBarChart } from '../charts/stacked-bar-chart';
 import { prepareCodeVsTestChartData } from '../logic/pdf-pages/chart-page-logic';
 import type { AuthorLog, MonthColumns } from '../types';
 
-export const ActivityChartPage = ({
+export function ActivityChartPage({
   monthColumns,
   contributorCommitsData,
   contributorNamesByCommits,
@@ -13,45 +13,44 @@ export const ActivityChartPage = ({
   deletionsData,
   contributorInsertionsData,
   contributorDeletionsData,
-}: {
+}: Readonly<{
   monthColumns: MonthColumns;
-  contributorCommitsData: number[][];
-  contributorNamesByCommits: string[];
-  contributorNamesByInsertions: string[];
-  insertionsData: number[];
-  deletionsData: number[];
-  contributorInsertionsData: number[][];
-  contributorDeletionsData: number[][];
-}): React.ReactElement => (
-  <>
-    <StackedBarChart
-      title="上位10人のコミット数推移"
-      data={contributorCommitsData}
-      labels={monthColumns}
-      contributors={contributorNamesByCommits}
-      width={500}
-      height={250}
-    />
-    <DualBarChart
-      title="上位10人の追加（左グラフ）・削除（右グラフ）行数推移"
-      data={[insertionsData, deletionsData]}
-      contributorData={[contributorInsertionsData, contributorDeletionsData]}
-      labels={monthColumns}
-      contributors={contributorNamesByInsertions}
-      hasReferenceLines
-      width={500}
-      height={350}
-    />
-  </>
-);
+  contributorCommitsData: readonly number[][];
+  contributorNamesByCommits: readonly string[];
+  contributorNamesByInsertions: readonly string[];
+  insertionsData: readonly number[];
+  deletionsData: readonly number[];
+  contributorInsertionsData: readonly number[][];
+  contributorDeletionsData: readonly number[][];
+}>): React.ReactElement {
+  return (
+    <>
+      <StackedBarChart
+        title="上位10人のコミット数推移"
+        data={contributorCommitsData}
+        labels={monthColumns}
+        contributors={contributorNamesByCommits}
+        width={500}
+        height={250}
+      />
+      <DualBarChart
+        title="上位10人の追加（左グラフ）・削除（右グラフ）行数推移"
+        data={[insertionsData, deletionsData]}
+        contributorData={[contributorInsertionsData, contributorDeletionsData]}
+        labels={monthColumns}
+        contributors={contributorNamesByInsertions}
+        hasReferenceLines
+        width={500}
+        height={350}
+      />
+    </>
+  );
+}
 
-export const CodeVsTestChartPage = ({
+export function CodeVsTestChartPage({
   monthColumns,
   authorLog,
-}: {
-  monthColumns: MonthColumns;
-  authorLog: AuthorLog;
-}): React.ReactElement => {
+}: Readonly<{ monthColumns: MonthColumns; authorLog: AuthorLog }>): React.ReactElement {
   const { totalCodeData, totalTestData, contributors, contributorCodeData, contributorTestData } =
     prepareCodeVsTestChartData(authorLog, monthColumns);
 
@@ -67,4 +66,4 @@ export const CodeVsTestChartPage = ({
       height={250}
     />
   );
-};
+}

@@ -3,15 +3,15 @@ import React from 'react';
 import type { MonthColumns } from '../types';
 import { pdfStyles } from './pdf-styles';
 
-export const PdfLayout = ({
+export function PdfLayout({
   projectName,
   monthColumns,
   children,
-}: {
+}: Readonly<{
   projectName: string;
   monthColumns: MonthColumns;
   children: React.ReactNode;
-}): React.ReactElement => {
+}>): React.ReactElement {
   return (
     <Page size="A4" style={pdfStyles.page}>
       <View style={pdfStyles.header} fixed>
@@ -30,4 +30,4 @@ export const PdfLayout = ({
       </View>
     </Page>
   );
-};
+}

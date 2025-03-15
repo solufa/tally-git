@@ -46,8 +46,8 @@ interfaceを使わず、typeで型を定義する。
 型アサーション（as キーワード）は使用禁止。
 
 複数のコンポーネントから参照する型は `src/types.ts` に定義する。
-ここに定義する型には全てReadonlyを付与する。
-ReadonlyArrayはReadonlyに統一する。
+ここに定義するオブジェクトの型には全てReadonlyを付与する。
+配列やタプルにはreadonly修飾子を付与する。
 Readonlyが付与されている型は実質DeepReadonlyとして扱う。
 外部ライブラリからimportした型にReadonlyを付与してはいけない。
 `src/types.ts` からimportした型にはすでにReadonlyが付与されているので追加のReadonlyを付与してはいけない。

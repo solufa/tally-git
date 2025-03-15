@@ -1,9 +1,9 @@
 import type { Insertions } from '../types';
 
-export function calculateTypeInsertions(
+function calculateTypeInsertions(
   typeData?: Readonly<{ code: number; test?: number }>,
 ): number {
-  return (typeData?.code ?? 0) + (typeData?.test ?? 0);
+  return typeData ? (typeData.code) + (typeData.test ?? 0) : 0;
 }
 
 export function calculateTotalInsertions(insertions?: Insertions): number {

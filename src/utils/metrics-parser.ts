@@ -1,12 +1,9 @@
 import assert from 'assert';
+import { z } from 'zod';
 import type { FileMetric, FunctionMetric } from '../types';
 import { condition } from './condition';
 
 type LineType = 'empty' | 'filename' | 'header' | 'separator' | 'functionMetrics';
-
-export function isEmptyLine(line: string): boolean {
-  return line === '';
-}
 
 export function isFilenameLine(line: string): boolean {
   return line.length > 0 && !line.includes('|') && !line.includes('+');
@@ -16,22 +13,14 @@ export function isHeaderLine(line: string): boolean {
   return line.includes('function') && line.includes('fields') && line.includes('cyclo');
 }
 
-export function isSeparatorLine(line: string): boolean {
-  return line.includes('---') && line.includes('+');
-}
-
-export function isFunctionMetricLine(line: string): boolean {
-  return line.includes('|');
-}
-
 export function getLineType(line: string): LineType {
   const result = (
     [
-      [isEmptyLine(line), 'empty'],
+      [line === '', 'empty'],
       [isFilenameLine(line), 'filename'],
       [isHeaderLine(line), 'header'],
-      [isSeparatorLine(line), 'separator'],
-      [isFunctionMetricLine(line), 'functionMetrics'],
+      [line.includes('---') && line.includes('+'), 'separator'],
+      [line.includes('|'), 'functionMetrics'],
     ] as const
   ).find(([condition]) => condition);
 
@@ -40,21 +29,22 @@ export function getLineType(line: string): LineType {
   return result[1];
 }
 
-export function safeParseInt(value: string | undefined): number {
-  if (!value) return 0;
+export function safeParseInt(value: string): number {
   const parsed = parseInt(value, 10);
   return isNaN(parsed) ? 0 : parsed;
 }
 
-export function splitLine(line: string): readonly string[] {
-  return line.split('|').map((part) => part.trim());
+export function splitLine(line: string): readonly [string, string, string, string, string, string] {
+  return z
+    .tuple([z.string(), z.string(), z.string(), z.string(), z.string(), z.string()])
+    .parse(line.split('|').map((part) => part.trim()));
 }
 
 export function parseFunctionMetricLine(line: string): FunctionMetric {
   const parts = splitLine(line);
 
   return {
-    name: parts[0] || '',
+    name: parts[0],
     fields: safeParseInt(parts[1]),
     cyclo: safeParseInt(parts[2]),
     cognitive: safeParseInt(parts[3]),

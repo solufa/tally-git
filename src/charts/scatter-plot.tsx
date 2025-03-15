@@ -149,14 +149,19 @@ export function ScatterPlot({
 
         {/* データポイント */}
         {points.map((point, i) => (
-          <Path
-            key={`point-${i}`}
-            d={`M ${point.scaledX - 2} ${point.scaledY} L ${point.scaledX + 2} ${
-              point.scaledY
-            } M ${point.scaledX} ${point.scaledY - 2} L ${point.scaledX} ${point.scaledY + 2}`}
-            stroke="#4285F4"
-            strokeWidth={1}
-          />
+          <React.Fragment key={`point-${i}`}>
+            <Path
+              d={`M ${point.scaledX} ${point.scaledY} m -4,0 a 4,4 0 1,0 8,0 a 4,4 0 1,0 -8,0`}
+              fill="#FFFF00"
+            />
+            <Text
+              x={point.scaledX - 2}
+              y={point.scaledY + 2}
+              style={{ fontSize: 6, textAlign: 'center', fontFamily: pdfStyles.page.fontFamily }}
+            >
+              {point.count}
+            </Text>
+          </React.Fragment>
         ))}
       </Svg>
     </View>

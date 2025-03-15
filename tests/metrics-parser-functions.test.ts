@@ -4,11 +4,8 @@ import {
   addFunctionToFile,
   createFileMetric,
   getLineType,
-  isEmptyLine,
   isFilenameLine,
-  isFunctionMetricLine,
   isHeaderLine,
-  isSeparatorLine,
   metricsParser,
   parseFunctionMetricLine,
   processLine,
@@ -29,21 +26,6 @@ test('safeParseInt - 無効な数値文字列', () => {
 test('safeParseInt - 空文字列', () => {
   const result = safeParseInt('');
   expect(result).toBe(0);
-});
-
-test('safeParseInt - undefinedの場合', () => {
-  const result = safeParseInt(undefined);
-  expect(result).toBe(0);
-});
-
-test('isEmptyLine - 空文字列', () => {
-  const result = isEmptyLine('');
-  expect(result).toBe(true);
-});
-
-test('isEmptyLine - 空白文字列', () => {
-  const result = isEmptyLine('   ');
-  expect(result).toBe(false);
 });
 
 test('isFilenameLine - ファイル名の行', () => {
@@ -68,26 +50,6 @@ test('isHeaderLine - ヘッダー行', () => {
 
 test('isHeaderLine - ヘッダーでない行', () => {
   const result = isHeaderLine('src/utils/metrics-parser.ts');
-  expect(result).toBe(false);
-});
-
-test('isSeparatorLine - 区切り行', () => {
-  const result = isSeparatorLine('---+---+---');
-  expect(result).toBe(true);
-});
-
-test('isSeparatorLine - 区切りでない行', () => {
-  const result = isSeparatorLine('src/utils/metrics-parser.ts');
-  expect(result).toBe(false);
-});
-
-test('isFunctionMetricLine - 関数メトリクス行', () => {
-  const result = isFunctionMetricLine('safeParseInt | 3 | 2');
-  expect(result).toBe(true);
-});
-
-test('isFunctionMetricLine - 関数メトリクスでない行', () => {
-  const result = isFunctionMetricLine('src/utils/metrics-parser.ts');
   expect(result).toBe(false);
 });
 
@@ -117,13 +79,12 @@ test('getLineType - 関数メトリクス行', () => {
 });
 
 test('splitLine - 基本的なケース', () => {
-  const result = splitLine('safeParseInt | 3 | 2');
-  expect(result).toEqual(['safeParseInt', '3', '2']);
+  const result = splitLine('safeParseInt | 1 | 2 | 3 | 4 | 5');
+  expect(result).toEqual(['safeParseInt', '1', '2', '3', '4', '5']);
 });
 
 test('splitLine - 空の部分を含む場合', () => {
-  const result = splitLine('safeParseInt | | 2');
-  expect(result).toEqual(['safeParseInt', '', '2']);
+  expect(() => splitLine('safeParseInt | | 2')).toThrow();
 });
 
 test('parseFunctionMetricLine - 基本的なケース', () => {
@@ -177,7 +138,6 @@ test('addFunctionToFile - 基本的なケース', () => {
 
 test('addFunctionToFile - currentFileがnullの場合', () => {
   const currentFile = null;
-  // エラーが発生しないことを確認
   expect(() => addFunctionToFile(currentFile, 'safeParseInt | 3 | 2 | 4 | 5 | 6')).not.toThrow();
 });
 

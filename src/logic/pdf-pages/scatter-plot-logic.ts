@@ -14,6 +14,7 @@ export type ScatterPlotSvgPoint = Readonly<{
   scaledY: number;
   name: string;
   filename: string;
+  count: number;
 }>;
 
 export type ScatterPlotRefLine = Readonly<{
@@ -96,10 +97,26 @@ export const prepareScatterPlotSvgData = (
     yAxisLabels.push({ value, position: yScale(value) });
   }
 
-  const scaledPoints = points.map((point) => ({
+  // 同じ座標（x, y）を持つポイントをグループ化
+  const pointGroups = new Map<string, { point: ScatterPlotPoint; count: number }>();
+
+  points.forEach((point) => {
+    const key = `${point.x},${point.y}`;
+    const existing = pointGroups.get(key);
+
+    if (existing) {
+      existing.count += 1;
+    } else {
+      pointGroups.set(key, { point, count: 1 });
+    }
+  });
+
+  // グループ化されたポイントをスケーリング
+  const scaledPoints = Array.from(pointGroups.entries()).map(([_, { point, count }]) => ({
     ...point,
     scaledX: xScale(point.x),
     scaledY: yScale(point.y),
+    count,
   }));
 
   const refLines = SCATTER_PLOT_REF_LINES.map((refLine) => ({

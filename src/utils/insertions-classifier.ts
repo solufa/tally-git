@@ -1,4 +1,4 @@
-import type { ProjectConfig, ProjectDirType } from '../types';
+import type { Insertions, ProjectConfig, ProjectDirType } from '../types';
 
 export function isPathMatched(filePath: string, paths: readonly string[]): boolean {
   return paths.some((path) => filePath.includes(`/${path}/`) || filePath.startsWith(path));
@@ -18,7 +18,7 @@ export function checkTypePath<T extends ProjectDirType>(
 
   if (!typeConfig) return null;
 
-  if (typeConfig.tests && isTestPath(file, typeConfig.tests)) {
+  if (isTestPath(file, typeConfig.tests)) {
     return { [type]: { code: 0, test: insertionCount }, others: 0 } as {
       [K in T]?: { code: number; test?: number };
     } & { others: number };
@@ -37,12 +37,7 @@ export function categorizeInsertions(
   file: string,
   insertionCount: number,
   projectConfig: ProjectConfig,
-): Readonly<{
-  frontend?: { code: number; test?: number };
-  backend?: { code: number; test?: number };
-  infra?: { code: number; test?: number };
-  others: number;
-}> {
+): Insertions {
   const { dirTypes } = projectConfig;
 
   const frontendResult = checkTypePath(file, insertionCount, dirTypes, 'frontend');

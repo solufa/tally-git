@@ -19,44 +19,29 @@ async function getMetricsForPath(
     }));
 }
 
-async function getMetricsForPaths(
-  basePath: string,
-  paths: readonly string[],
-  testPaths: readonly string[] | undefined,
+async function processDirType(
+  targetDir: string,
+  dirType: DirType | undefined,
 ): Promise<readonly FileMetric[]> {
+  if (!dirType?.paths) return [];
+
   const metrics: FileMetric[] = [];
 
   // getMetricsForPathを並列処理するとメモリが不足するのでfor ofで直列処理する
-  for (const path of paths) {
-    metrics.push(...(await getMetricsForPath(basePath, path, testPaths)));
+  for (const path of dirType.paths) {
+    metrics.push(...(await getMetricsForPath(targetDir, path, dirType.tests)));
   }
 
   return metrics;
 }
 
-async function processDirType(
+export async function getDirMetrics(
   targetDir: string,
-  dirType: DirType | undefined,
-): Promise<readonly FileMetric[]> {
-  return dirType?.paths ? getMetricsForPaths(targetDir, dirType.paths, dirType.tests) : [];
-}
-
-async function processAllDirTypes(
-  targetDir: string,
-  dirTypes: ProjectConfig['dirTypes'],
-): Promise<readonly [readonly FileMetric[], readonly FileMetric[], readonly FileMetric[]]> {
-  const frontend = await processDirType(targetDir, dirTypes.frontend);
-  const backend = await processDirType(targetDir, dirTypes.backend);
-  const infra = await processDirType(targetDir, dirTypes.infra);
-
-  return [frontend, backend, infra];
-}
-
-function createDirMetricsResult(
-  frontend: readonly FileMetric[],
-  backend: readonly FileMetric[],
-  infra: readonly FileMetric[],
-): DirMetrics {
+  projectConfig: ProjectConfig,
+): Promise<DirMetrics> {
+  const frontend = await processDirType(targetDir, projectConfig.dirTypes.frontend);
+  const backend = await processDirType(targetDir, projectConfig.dirTypes.backend);
+  const infra = await processDirType(targetDir, projectConfig.dirTypes.infra);
   const result: Record<string, readonly FileMetric[]> = {};
 
   if (frontend.length > 0) result.frontend = frontend;
@@ -64,13 +49,4 @@ function createDirMetricsResult(
   if (infra.length > 0) result.infra = infra;
 
   return result;
-}
-
-export async function getDirMetrics(
-  targetDir: string,
-  projectConfig: ProjectConfig,
-): Promise<DirMetrics> {
-  const [frontend, backend, infra] = await processAllDirTypes(targetDir, projectConfig.dirTypes);
-
-  return createDirMetricsResult(frontend, backend, infra);
 }

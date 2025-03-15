@@ -82,8 +82,8 @@ export function ScatterPlot({
 
         {/* X軸のタイトル */}
         <Text
-          x={width / 2 - 60}
-          y={height - 10}
+          x={width / 2 - 100}
+          y={height - 20}
           style={{ fontSize: 10, textAlign: 'center', fontFamily: pdfStyles.page.fontFamily }}
         >
           循環的複雑度（テストケースが増加）

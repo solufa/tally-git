@@ -31,7 +31,7 @@ export function ActivityChartPage({
         labels={monthColumns}
         contributors={contributorNamesByCommits}
         width={500}
-        height={250}
+        height={280}
       />
       <DualBarChart
         title="上位10人の追加（左グラフ）・削除（右グラフ）行数推移"
@@ -63,7 +63,7 @@ export function CodeVsTestChartPage({
       contributors={contributors}
       hasReferenceLines={false}
       width={500}
-      height={250}
+      height={300}
     />
   );
 }

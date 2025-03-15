@@ -101,8 +101,8 @@ export const pdfStyles = StyleSheet.create({
     textAlign: 'right',
   },
   chart: {
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
   chartTitle: {
     fontSize: 14,

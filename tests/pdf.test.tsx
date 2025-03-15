@@ -14,6 +14,7 @@ const mockActivityPage = vi.fn().mockReturnValue('ActivityPage');
 const mockActivityChartPage = vi.fn().mockReturnValue('ActivityChartPage');
 const mockCodeVsTestChartPage = vi.fn().mockReturnValue('CodeVsTestChartPage');
 const mockScatterPlotPage = vi.fn().mockReturnValue('ScatterPlotPage');
+const mockComplexityTablePage = vi.fn().mockReturnValue('ComplexityTablePage');
 const mockPromptPage = vi.fn().mockReturnValue('PromptPage');
 const mockOutliersPage = vi.fn().mockReturnValue('OutliersPage');
 const mockPdfLayout = vi.fn().mockImplementation(({ children }) => children);
@@ -28,6 +29,10 @@ const mockCreateElement = vi.fn().mockImplementation((component, props) => {
 vi.mock('@react-pdf/renderer', () => ({
   Document: (props: { children: React.ReactNode }): React.ReactNode => mockDocument(props),
   renderToBuffer: vi.fn().mockResolvedValue(Buffer.from('test')),
+  Font: {
+    register: vi.fn(),
+    registerHyphenationCallback: vi.fn(),
+  },
 }));
 vi.mock('react', () => ({
   default: {
@@ -74,6 +79,11 @@ vi.mock('../src/pdf-pages/scatter-plot-page', () => ({
   ScatterPlotPage: (props: { dirMetrics: DirMetrics }): string => mockScatterPlotPage(props),
 }));
 
+vi.mock('../src/pdf-pages/complexity-table-page', () => ({
+  ComplexityTablePage: (props: { dirMetrics: DirMetrics }): string =>
+    mockComplexityTablePage(props),
+}));
+
 vi.mock('../src/pdf-pages/prompt-page', () => ({
   PromptPage: (): string => mockPromptPage(),
 }));
@@ -112,6 +122,7 @@ describe('toPdf', () => {
     expect(mockOutliersPage).toHaveBeenCalled();
 
     expect(mockScatterPlotPage).not.toHaveBeenCalled();
+    expect(mockComplexityTablePage).not.toHaveBeenCalled();
   });
 
   it('dirMetrics.backendとdirMetrics.frontendが空の配列の場合でも、ScatterPlotPageを含める', async () => {
@@ -123,6 +134,16 @@ describe('toPdf', () => {
     await toPdf(authorLog, monthColumns, projectName, outlierCommits, projectConfig, dirMetrics);
 
     expect(mockScatterPlotPage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dirMetrics,
+      }),
+    );
+    expect(mockComplexityTablePage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dirMetrics,
+      }),
+    );
+    expect(mockComplexityTablePage).toHaveBeenCalledWith(
       expect.objectContaining({
         dirMetrics,
       }),
@@ -142,6 +163,11 @@ describe('toPdf', () => {
     await toPdf(authorLog, monthColumns, projectName, outlierCommits, projectConfig, dirMetrics);
 
     expect(mockScatterPlotPage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dirMetrics,
+      }),
+    );
+    expect(mockComplexityTablePage).toHaveBeenCalledWith(
       expect.objectContaining({
         dirMetrics,
       }),

@@ -71,9 +71,9 @@ export function ScatterPlot({
               strokeWidth={1}
             />
             <Text
-              x={margin.left - 25}
+              x={margin.left - 10}
               y={label.position + 2}
-              style={{ fontSize: 8, textAlign: 'right' }}
+              style={{ fontSize: 8, textAnchor: 'end' }}
             >
               {label.value}
             </Text>

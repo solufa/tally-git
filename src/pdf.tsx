@@ -3,6 +3,7 @@ import React from 'react';
 import { preparePdfData } from './logic/pdf/pdf-data-preparer';
 import { ActivityPage } from './pdf-pages/activity-page';
 import { ActivityChartPage, CodeVsTestChartPage } from './pdf-pages/chart-page';
+import { ComplexityTablePage } from './pdf-pages/complexity-table-page';
 import { PdfLayout } from './pdf-pages/layout';
 import { OutliersPage } from './pdf-pages/outliers-page';
 import { PromptPage } from './pdf-pages/prompt-page';
@@ -57,9 +58,14 @@ export async function toPdf(
         </PdfLayout>
       )}
       {(dirMetrics.backend || dirMetrics.frontend) && (
-        <PdfLayout projectName={projectName} monthColumns={monthColumns}>
-          <ScatterPlotPage dirMetrics={dirMetrics} />
-        </PdfLayout>
+        <>
+          <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+            <ScatterPlotPage dirMetrics={dirMetrics} />
+          </PdfLayout>
+          <PdfLayout projectName={projectName} monthColumns={monthColumns}>
+            <ComplexityTablePage dirMetrics={dirMetrics} />
+          </PdfLayout>
+        </>
       )}
       <PdfLayout projectName={projectName} monthColumns={monthColumns}>
         <PromptPage authorLog={authorLog} monthColumns={monthColumns} />
